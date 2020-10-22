@@ -206,14 +206,14 @@
                     <div class="modal-body card-block">
                         <div class="row form-group">
                             <div class="col col-md-3">
-                                <label  class=" form-control-label">Professeur/enseignant</label>
+                                <label  class=" form-control-label">enseignant</label>
                             </div>
                             <div class="col-12 col-md-9">
                                 <select name="enseignantId" class="form-control">
-                                    <option value="">Choisir un professeur/enseignant</option>
+                                    <option value="">Choisir un enseignant</option>
                                     <option th:each="teacher:${teachers}" th:value="${teacher.id}" th:text="${teacher.name}+' '+${teacher.prenom}">Choisir un enseignant</option>
                                 </select>
-                                <small class="form-text text-muted">Prénom de l'enseignant/professeur</small>
+                                <small class="form-text text-muted">Prénom de l'enseignant</small>
                             </div>
                         </div>
                     </div>

@@ -143,50 +143,43 @@ public class AdminLoginController {
         return "admin/ecoles";
     }
 
-    @GetMapping("/ecole/enseignants/{id}")
-    public String getAllEnseignants(@PathVariable Long id, Model model){
-        Ecole ecole = ecoleRepository.getOne(id);
+    @GetMapping("/ecole/enseignants")
+    public String getAllEnseignants(Model model){
         List<Enseignant> lists = new ArrayList<>();
-        Collection<Salle> salles = salleRepository.findAllByEcole_Id(ecole.getId());
+        Collection<Salle> salles = salleRepository.findAll();
         for (Salle salle : salles){
             lists.addAll(enseignantRepository.findAllBySalles_Id(salle.getId()));
         }
 
         model.addAttribute("lists",lists);
-        model.addAttribute("ecole",ecole);
         return "admin/enseignants";
 
     }
-    @GetMapping("/ecole/classes/{id}")
-    public String getAllSalles(@PathVariable Long id, Model model){
-        Ecole ecole = ecoleRepository.getOne(id);
-        Collection<Salle> lists = salleRepository.findAllByEcole_Id(ecole.getId());
+    @GetMapping("/ecole/classes")
+    public String getAllSalles( Model model){
+        Collection<Salle> lists = salleRepository.findAll();
         model.addAttribute("lists",lists);
-        model.addAttribute("ecole",ecole);
         return "admin/classes";
 
     }
-    @GetMapping("/ecole/eleves/{id}")
-    public String getAllEleves(@PathVariable Long id, Model model){
-        Ecole ecole = ecoleRepository.getOne(id);
+    @GetMapping("/ecole/eleves")
+    public String getAllEleves( Model model){
         List<Eleve> lists = new ArrayList<>();
-        Collection<Salle> salles = salleRepository.findAllByEcole_Id(ecole.getId());
+        Collection<Salle> salles = salleRepository.findAll();
         for (Salle salle : salles){
             lists.addAll(eleveRepository.findAllBySalle_Id(salle.getId()));
         }
 
         model.addAttribute("lists",lists);
-        model.addAttribute("ecole",ecole);
         return "admin/eleves";
 
     }
 
-    @GetMapping("/ecole/parents/{id}")
-    public String getAllParents(@PathVariable Long id, Model model){
-        Ecole ecole = ecoleRepository.getOne(id);
+    @GetMapping("/ecole/parents")
+    public String getAllParents( Model model){
         List<Eleve> lists = new ArrayList<>();
         List<Parent> parents = new ArrayList<>();
-        Collection<Salle> salles = salleRepository.findAllByEcole_Id(ecole.getId());
+        Collection<Salle> salles = salleRepository.findAll();
         for (Salle salle : salles){
             lists.addAll(eleveRepository.findAllBySalle_Id(salle.getId()));
         }
@@ -196,20 +189,18 @@ public class AdminLoginController {
         }
 
         model.addAttribute("lists",parents);
-        model.addAttribute("ecole",ecole);
         return "admin/parents";
 
 
 
     }
 
-    @GetMapping("/ecole/accounts/parents/{id}")
+    @GetMapping("/ecole/accounts/parents")
     public String getAllAccounts(@PathVariable Long id, Model model) {
-        Ecole ecole = ecoleRepository.getOne(id);
         List<Eleve> lists = new ArrayList<>();
         List<Parent> parents = new ArrayList<>();
         List<Compte> accounts = new ArrayList<>();
-        Collection<Salle> salles = salleRepository.findAllByEcole_Id(ecole.getId());
+        Collection<Salle> salles = salleRepository.findAll();
         for (Salle salle : salles) {
             lists.addAll(eleveRepository.findAllBySalle_Id(salle.getId()));
         }
@@ -229,7 +220,6 @@ public class AdminLoginController {
         }
 
         model.addAttribute("lists", accounts);
-        model.addAttribute("ecole", ecole);
         return "admin/accounts";
     }
 

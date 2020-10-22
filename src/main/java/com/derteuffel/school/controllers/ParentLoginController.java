@@ -93,19 +93,13 @@ public class ParentLoginController {
         Compte compte = compteService.findByUsername(principal.getName());
         Parent parent = compte.getParent();
         Collection<Eleve> eleves =eleveRepository.findAllByParent_Id(parent.getId());
-        Collection<Ecole> ecoles = new ArrayList<>();
-        for (Eleve eleve : eleves){
-            if (!(ecoles.contains(eleve.getSalle().getEcole()))) {
-                ecoles.add(eleve.getSalle().getEcole());
-            }
-        }
-        request.getSession().setAttribute("ecoles", ecoles);
+
         request.getSession().setAttribute("compte",compte);
-        return "parent/home";
+        return "redirect:/parent/ecole/detail";
     }
 
-    @GetMapping("/ecole/detail/{id}")
-    public String ecoleDetail(@PathVariable Long id, Model model, HttpServletRequest request){
+    @GetMapping("/ecole/detail")
+    public String ecoleDetail( Model model, HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         System.out.println(principal.getName());
         Compte compte = compteService.findByUsername(principal.getName());
@@ -117,15 +111,10 @@ public class ParentLoginController {
             salles.add(eleve.getSalle());
         }
 
-        Ecole ecole = ecoleRepository.getOne(id);
-        for (Salle salle : salles){
-            if (salleRepository.findAllByEcole_Id(ecole.getId()).contains(salle)){
-                lists.add(salle);
-            }
-        }
+
         List<Enseignant> enseignants = new ArrayList<>();
         List<Compte> directeur = new ArrayList();
-        List<Compte> comptes = (List<Compte>) compteRepository.findAllByEcole_Id(id);
+        List<Compte> comptes = (List<Compte>) compteRepository.findAll();
         for(int i=0;i<comptes.size();i++){
             if(comptes.get(i).getId()!=compte.getId()&&comptes.get(i).getEnseignant()!=null)
                 enseignants.add(comptes.get(i).getEnseignant());
@@ -137,26 +126,23 @@ public class ParentLoginController {
             }
         }
 
-        model.addAttribute("lists1", lists);
+        model.addAttribute("lists1", salles);
         model.addAttribute("lists", enseignants);
-        model.addAttribute("ecole",ecole);
 
         model.addAttribute("directeur",directeur);
-        request.getSession().setAttribute("ecole",ecole);
 
         return "parent/ecole/home";
     }
 
-    @GetMapping("/classe/detail/{id}")
+    @GetMapping("/classe/detail")
     public String parentClasse(@PathVariable Long id, Model model, HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
         Salle salle = salleRepository.getOne(id);
-        Ecole ecole = salle.getEcole();
-        Collection<Message> messages = messageRepository.findAllByVisibiliteAndSalleAndEcole(EVisibilite.PARENT.toString(),(salle.getNiveau()+""+salle.getId()),ecole.getName(), Sort.by(Sort.Direction.DESC,"id"));
+        Collection<Message> messages = messageRepository.findAllByVisibiliteAndSalle(EVisibilite.PARENT.toString(),(salle.getNiveau()+""+salle.getId()), Sort.by(Sort.Direction.DESC,"id"));
         System.out.println(salle.getNiveau());
-        messages.addAll(messageRepository.findAllByVisibiliteAndSalleAndEcole(EVisibilite.PUBLIC.toString(),(salle.getNiveau()+""+salle.getId()),ecole.getName(), Sort.by(Sort.Direction.DESC,"id")));
-        messages.addAll(messageRepository.findAllByVisibiliteAndEcole(EVisibilite.PUBLIC.toString(),ecole.getName(), Sort.by(Sort.Direction.DESC,"id")));
+        messages.addAll(messageRepository.findAllByVisibiliteAndSalle(EVisibilite.PUBLIC.toString(),(salle.getNiveau()+""+salle.getId()), Sort.by(Sort.Direction.DESC,"id")));
+        messages.addAll(messageRepository.findAllByVisibilite(EVisibilite.PUBLIC.toString(), Sort.by(Sort.Direction.DESC,"id")));
         Collection<Message> messages1 = messageRepository.findAllByCompte_Id(compte.getId());
         for (Message message : messages1){
             if(!(messages.contains(message))){
@@ -164,7 +150,6 @@ public class ParentLoginController {
             }
         }
         System.out.println(messages.size());
-        model.addAttribute("ecole",ecole);
         model.addAttribute("classe",salle);
         model.addAttribute("lists",messages);
         model.addAttribute("message",new Message());
@@ -182,15 +167,13 @@ public class ParentLoginController {
     public String cours(@PathVariable Long id, Model model){
 
         Salle salle = salleRepository.getOne(id);
-        Ecole ecole = salle.getEcole();
-        Collection<Salle> salles = salleRepository.findAllByEcole_Id(ecole.getId());
+        Collection<Salle> salles = salleRepository.findAll();
         Collection<Cours> cours = new ArrayList<>();
         if (salles.contains(salle)) {
             cours = coursRepository.findAllBySalleAndType(salle.getNiveau()+""+salle.getId(), ECours.COURS.toString());
         }else {
             model.addAttribute("error","Vous n'avez aucune classe avec ce nom dans cet établissement");
         }
-        model.addAttribute("ecole",ecole);
         model.addAttribute("lists",cours);
         model.addAttribute("classe",salle);
         return "parent/courses";
@@ -201,7 +184,6 @@ public class ParentLoginController {
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
         Salle salle = salleRepository.getOne(id);
-        Ecole ecole = salle.getEcole();
         List<Livre> livres = new ArrayList<>();
         List<Livre> niveaux = livreRepository.findAll(Sort.by(Sort.Direction.DESC,"id"));
         for (Livre livre : niveaux){
@@ -209,9 +191,7 @@ public class ParentLoginController {
                 livres.add(livre);
             }
         }
-        List<Livre> generals = livreRepository.findAllBySalle(ENiveau.generale_primaire.toString(),Sort.by(Sort.Direction.DESC,"id"));
         List<Livre> generals1 = livreRepository.findAllBySalle(ENiveau.generale_secondaire.toString(),Sort.by(Sort.Direction.DESC,"id"));
-        livres.addAll(generals);
         livres.addAll(generals1);
         List<Livre> alls = new ArrayList<>();
         for (int i=0; i<livres.size();i++){
@@ -221,7 +201,6 @@ public class ParentLoginController {
         }
 
 
-        model.addAttribute("ecole",ecole);
         model.addAttribute("classe",salle);
         if (compte.getStatus() == false || compte.getStatus() == null){
             model.addAttribute("classe",salle);
@@ -253,18 +232,15 @@ public class ParentLoginController {
     public String devoirs(@PathVariable Long id, Model model, HttpServletRequest request){
 
         Salle salle = salleRepository.getOne(id);
-        Ecole ecole = salle.getEcole();
-        Collection<Salle> salles = salleRepository.findAllByEcole_Id(ecole.getId());
+        Collection<Salle> salles = salleRepository.findAll();
         Collection<Cours> devoirs = new ArrayList<>();
         if (salles.contains(salle)) {
             devoirs = coursRepository.findAllBySalleAndType(salle.getNiveau()+""+salle.getId(), ECours.DEVOIRS.toString());
         }else {
             model.addAttribute("error","Vous n'avez aucune classe avec ce nom dans cet établissement");
         }
-        model.addAttribute("ecole",ecole);
         model.addAttribute("lists",devoirs);
         model.addAttribute("classe",salle);
-        request.getSession().setAttribute("ecoleId", ecole.getId());
         request.getSession().setAttribute("salleId", salle.getId());
         return "parent/devoirs";
     }
@@ -273,8 +249,7 @@ public class ParentLoginController {
     public String reponse(@PathVariable Long id,@PathVariable String username, Model model, HttpServletRequest request){
         Compte compte = compteService.findByUsername(username);
         Salle salle = salleRepository.getOne(id);
-        Ecole ecole = salle.getEcole();
-        Collection<Salle> salles = salleRepository.findAllByEcole_Id(ecole.getId());
+        Collection<Salle> salles = salleRepository.findAll();
 
         Collection<Response> reponses = new ArrayList<>();
         if (salles.contains(salle)) {
@@ -282,7 +257,6 @@ public class ParentLoginController {
         }else {
             model.addAttribute("error","Vous n'avez aucune classe avec ce nom dans cet établissement");
         }
-        model.addAttribute("ecole",ecole);
         model.addAttribute("lists",reponses);
         model.addAttribute("classe",salle);
         return "parent/reponses";
@@ -326,15 +300,13 @@ public class ParentLoginController {
     @GetMapping("/examens/lists/{id}")
     public String examens(@PathVariable Long id, Model model){
         Salle salle = salleRepository.getOne(id);
-        Ecole ecole = salle.getEcole();
-        Collection<Salle> salles = salleRepository.findAllByEcole_Id(ecole.getId());
+        Collection<Salle> salles = salleRepository.findAll();
         Collection<Examen> examens = new ArrayList<>();
         if (salles.contains(salle)) {
             examens = examenRepository.findAllBySalle(salle.getNiveau()+""+salle.getId());
         }else {
             model.addAttribute("error","Vous n'avez aucune classe avec ce nom dans cet établissement");
         }
-        model.addAttribute("ecole",ecole);
         model.addAttribute("lists",examens);
         model.addAttribute("classe",salle);
         return "parent/examens";
@@ -349,10 +321,8 @@ public class ParentLoginController {
         Compte compte = compteService.findByUsername(principal.getName());
         Parent parent = compte.getParent();
         Salle salle = salleRepository.getOne(id);
-        Ecole ecole = salle.getEcole();
 
         Collection<Hebdo> hebdos = hebdoRepository.findAllBySalle_Id(salle.getId(),Sort.by(Sort.Direction.DESC,"id"));
-        model.addAttribute("ecole",ecole);
         model.addAttribute("classe",salle);
         model.addAttribute("lists",hebdos);
         return "parent/hebdos";
@@ -393,13 +363,11 @@ public class ParentLoginController {
         }
 
         Salle salle = hebdo.getSalle();
-        Ecole ecole = salle.getEcole();
 
 
         model.addAttribute("plannings",plannings);
         model.addAttribute("dates",removeDuplicates(dates));
         model.addAttribute("hebdo",hebdo);
-        model.addAttribute("ecole",ecole);
         model.addAttribute("classe",salle);
         return "parent/hebdo";
     }
@@ -417,7 +385,6 @@ public class ParentLoginController {
         model.addAttribute("lists",eleves);
         model.addAttribute("hebdo",hebdo);
         model.addAttribute("classe",hebdo.getSalle());
-        model.addAttribute("ecole",hebdo.getSalle().getEcole());
         return "parent/presence";
 
     }
@@ -436,7 +403,6 @@ public class ParentLoginController {
         model.addAttribute("eleve",eleve);
         model.addAttribute("hebdo",hebdo);
         model.addAttribute("classe",hebdo.getSalle());
-        model.addAttribute("ecole",hebdo.getSalle().getEcole());
         return "parent/presenceDetail";
 
     }
@@ -448,8 +414,7 @@ public class ParentLoginController {
         planningRepository.save(planning);
         Hebdo hebdo = planning.getHebdo();
         Salle salle = hebdo.getSalle();
-        Ecole ecole = salle.getEcole();
-        return "redirect:/parent/hebdo/detail/"+hebdo.getId()+"/"+ecole.getId();
+        return "redirect:/parent/hebdo/detail/"+hebdo.getId();
     }
 
 
@@ -473,7 +438,6 @@ public class ParentLoginController {
         System.out.println(compte.getUsername());
         message.setSender(compte.getUsername());
         message.setSalle(salle.getNiveau()+""+salle.getId());
-        message.setEcole(salle.getEcole().getName());
         message.setDate(new SimpleDateFormat("dd/MM/yyyy hh:mm").format(new Date()));
         System.out.println(message.getVisibilite().toString());
         message.setVisibilite(message.getVisibilite().toString());

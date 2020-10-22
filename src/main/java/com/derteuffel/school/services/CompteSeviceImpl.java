@@ -50,15 +50,13 @@ public class CompteSeviceImpl implements CompteService{
     }
 
     @Override
-    public Compte save(String email, String password, String username, String s,Long id) {
+    public Compte save(String email, String password, String username, String s) {
         Compte compte = new Compte();
 
-        Ecole ecole = ecoleRepository.getOne(id);
         compte.setEmail(email);
         compte.setPassword(passwordEncoder.encode(password));
         compte.setUsername(username);
         compte.setAvatar(s);
-        compte.setEcole(ecole);
         compte.setEncode(password);
         compte.setStatus(false);
 
@@ -66,8 +64,10 @@ public class CompteSeviceImpl implements CompteService{
 
         if (compteRepository.findAll().size() <=1){
             role.setName(ERole.ROLE_ROOT.toString());
+            compte.setType("root");
         }else {
             role.setName(ERole.ROLE_DIRECTEUR.toString());
+            compte.setType("directeur");
         }
 
         Role existRole = roleRepository.findByName(role.getName());
@@ -107,15 +107,13 @@ public class CompteSeviceImpl implements CompteService{
     }
 
     @Override
-    public Compte saveEnseignant(CompteRegistrationDto compteRegistrationDto, String s, Long id, Enseignant enseignant) {
+    public Compte saveEnseignant(CompteRegistrationDto compteRegistrationDto, String s,  Enseignant enseignant) {
         Compte compte = new Compte();
 
-        Ecole ecole = ecoleRepository.getOne(id);
         compte.setEmail(compteRegistrationDto.getEmail());
         compte.setPassword(passwordEncoder.encode(compteRegistrationDto.getPassword()));
         compte.setUsername(compteRegistrationDto.getUsername());
         compte.setAvatar(s);
-        compte.setEcole(ecole);
         compte.setEncode(compteRegistrationDto.getPassword());
         compte.setEnseignant(enseignant);
         compte.setStatus(false);

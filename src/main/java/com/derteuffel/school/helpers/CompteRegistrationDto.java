@@ -27,4 +27,6 @@ public class CompteRegistrationDto {
     @Email
     @NotEmpty
     private String email;
+
+    private String type;
 }

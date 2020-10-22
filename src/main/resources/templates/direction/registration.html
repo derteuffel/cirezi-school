@@ -51,7 +51,7 @@
                         </a>
                     </div>
                     <div class="login-form">
-                        <form th:action="@{/direction/registration}" th:object="${compte}" method="post">
+                        <form th:action="@{/direction/registration}" th:object="${compte}" method="post" enctype="multipart/form-data">
 
                             <p class="error-message" th:if="${#fields.hasGlobalErrors()}"
                                th:each="error : ${#fields.errors('global')}" th:text="${error}">Validation
@@ -86,8 +86,8 @@
                                    th:text="${error}">Validation error</p>
                             </div>
                             <div class="form-group" >
-                                <label class="control-label">Code de votre etablissement</label>
-                                <input class="au-input au-input--full" type="text" name="ecole" placeholder="Entrer le code de votre ecole">
+                                <label class="control-label">Photo de profil</label>
+                                <input class="au-input au-input--full" type="file" name="file">
                             </div>
 
                             <button class="au-btn au-btn--block au-btn--green m-b-20" type="submit">Enregistrer</button>

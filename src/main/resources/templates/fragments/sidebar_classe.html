@@ -6,19 +6,19 @@
                 <table class="table table-top-countries">
                     <tbody>
                     <tr>
-                        <td><a class="text-white" th:href="@{/direction/enseignant/classe/}+${classe?.id}">Enseignants/Professeurs</a></td>
+                        <td><a class="text-white" th:href="@{/direction/enseignant/classe/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Enseignants</a></td>
                     </tr>
                     <tr>
-                        <td><a class="text-white" th:href="@{/direction/classe/eleves/}+${classe?.id}">Eleves/Apprenants</a></td>
+                        <td><a class="text-white" th:href="@{/direction/classe/eleves/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Eleves</a></td>
                     </tr>
                     <tr>
-                        <td><a class="text-white" th:href="@{/direction/classe/parents/}+${classe?.id}">Parents/Tuteurs</a></td>
+                        <td><a class="text-white" th:href="@{/direction/classe/parents/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Parents/Tuteurs</a></td>
                     </tr>
                     <tr>
-                        <td><a class="text-white" th:href="@{/direction/classe/hebdos/}+${classe?.id}">Planning hebdomadaire</a></td>
+                        <td><a class="text-white" th:href="@{/direction/classe/hebdos/}+${classe?.id}"><i class="fa fa-calendar-check"></i>&nbsp;Planning hebdomadaire</a></td>
                     </tr>
                     <tr>
-                        <td><a class="text-white" th:href="@{/direction/update/classe/form/}+${classe?.id}">Editer la classe</a></td>
+                        <td><a class="text-white" th:href="@{/direction/update/classe/form/}+${classe?.id}"><i class="fa fa-edit"></i>&nbsp;Editer la classe</a></td>
                     </tr>
                     </tbody>
                 </table>

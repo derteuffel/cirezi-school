@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,6 +20,6 @@ public interface CompteRepository extends JpaRepository<Compte,Long> {
     Compte findByEnfant_Id(Long id);
     Compte findByParent_Id(Long id);
     Collection<Compte> findAllByEmail(String email);
-    Collection<Compte> findAllByEcole_Id(Long id);
+    List<Compte> findAllByType(String type);
     Optional<Compte> findByResetToken(String resettoken);
 }

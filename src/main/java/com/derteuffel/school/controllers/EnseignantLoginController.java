@@ -88,16 +88,13 @@ public class EnseignantLoginController {
         Principal principal = request.getUserPrincipal();
         System.out.println(principal.getName());
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
-        System.out.println(ecole.getName());
 
-        request.getSession().setAttribute("ecole", ecole);
         request.getSession().setAttribute("compte",compte);
-        return "redirect:/enseignant/ecole/detail/"+ecole.getId();
+        return "redirect:/enseignant/ecole/detail";
     }
 
-    @GetMapping("/ecole/detail/{id}")
-    public String detail(Model model, @PathVariable Long id,HttpServletRequest request){
+    @GetMapping("/ecole/detail")
+    public String detail(Model model, HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         System.out.println(principal.getName());
         Compte compte = compteService.findByUsername(principal.getName());
@@ -114,11 +111,10 @@ public class EnseignantLoginController {
         }*/
         request.getSession().setAttribute("salles",salles);
         model.addAttribute("salles",salles);
-        Ecole ecole = ecoleRepository.getOne(id);
         List<Enseignant> enseignants = new ArrayList<>();
         List<Parent> parents = new ArrayList<>();
         List<Compte> directeur = new ArrayList();
-          List<Compte> comptes = (List<Compte>) compteRepository.findAllByEcole_Id(id);
+          List<Compte> comptes = (List<Compte>) compteRepository.findAll();
           for(int i=0;i<comptes.size();i++){
               if(comptes.get(i).getId()!=compte.getId()&&comptes.get(i).getEnseignant()!=null)
                   enseignants.add(comptes.get(i).getEnseignant());
@@ -136,9 +132,6 @@ public class EnseignantLoginController {
 
         }
     System.out.println(directeur);
-        request.getSession().setAttribute("ecole", ecole);
-        model.addAttribute("ecole",ecole);
-        model.addAttribute("ecoleId",ecole.getId());
         model.addAttribute("lists",enseignants);
         model.addAttribute("parents",parents);
         model.addAttribute("directeur",directeur);
@@ -201,9 +194,7 @@ public class EnseignantLoginController {
                 livres.add(livre);
             }
         }
-        List<Livre> generals = livreRepository.findAllBySalle(ENiveau.generale_primaire.toString(),Sort.by(Sort.Direction.DESC,"id"));
         List<Livre> generals1 = livreRepository.findAllBySalle(ENiveau.generale_secondaire.toString(),Sort.by(Sort.Direction.DESC,"id"));
-        livres.addAll(generals);
         livres.addAll(generals1);
         List<Livre> alls = new ArrayList<>();
         for (int i=0; i<livres.size();i++){
@@ -266,8 +257,6 @@ public class EnseignantLoginController {
         }
         model.addAttribute("classe",salleRepository.getOne(id));
         model.addAttribute("parents",parents);
-        Ecole ecole = ecoleRepository.getOne(id);
-        model.addAttribute("ecoleId",ecole.getId());
         return "enseignant/parents";
     }
 
@@ -325,7 +314,7 @@ public class EnseignantLoginController {
             MailService mailService = new MailService();
             mailService.sendSimpleMessage(
                     compteRegistrationDto.getEmail(),
-                    "Vous venez d'être ajouté en tant que enseignant dans l'école virtuelle  :",
+                    "Vous venez d'être ajouté en tant que enseignant dans le lycee cirezi  :",
                     "vos identifiants : username:" +compteRegistrationDto.getUsername()+" et password : "+compteRegistrationDto.getPassword()
 
             );
@@ -359,7 +348,6 @@ public class EnseignantLoginController {
 
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
         Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(compte.getEnseignant().getId());
         Salle salle = salleRepository.getOne(id);
         Collection<Cours> cours = coursRepository.findAllBySalleAndType(salle.getNiveau()+""+salle.getId(), ECours.COURS.toString());
@@ -375,7 +363,6 @@ public class EnseignantLoginController {
     public String updateCours(@PathVariable Long id, Model model,HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
         Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
         Cours cours = coursRepository.getOne(id);
         model.addAttribute("cours",cours);
@@ -418,7 +405,6 @@ public class EnseignantLoginController {
 
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
         Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
         Salle salle = salleRepository.getOne(id);
         Collection<Cours> devoirs = coursRepository.findAllBySalleAndType(salle.getNiveau()+""+salle.getId(), ECours.DEVOIRS.toString());
@@ -433,7 +419,6 @@ public class EnseignantLoginController {
     public String updateDevoir(@PathVariable Long id, Model model,HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
         Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
         Cours devoir = coursRepository.getOne(id);
         model.addAttribute("devoir",devoir);
@@ -473,7 +458,6 @@ public class EnseignantLoginController {
 
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
         Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
         Salle salle = salleRepository.getOne(id);
         Collection<Response> reponses = responseRepository.findAllBySalle(salle.getNiveau()+""+salle.getId());
@@ -488,7 +472,6 @@ public class EnseignantLoginController {
     public String examens(@PathVariable Long id, Model model, HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
         Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
         Salle salle = salleRepository.getOne(id);
         Collection<Examen> examens = examenRepository.findAllBySalle(salle.getNiveau()+""+salle.getId());
@@ -503,7 +486,6 @@ public class EnseignantLoginController {
     public String updateExamen(@PathVariable Long id, Model model,HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
         Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
         Cours examen = coursRepository.getOne(id);
         model.addAttribute("examen",examen);
@@ -553,7 +535,6 @@ public class EnseignantLoginController {
         Salle salle = salleRepository.getOne(id);
         message.setCompte(compte);
         message.setSender(compte.getUsername());
-        message.setEcole(salle.getEcole().getName());
         message.setSalle(salle.getNiveau()+""+salle.getId());
         message.setDate(new SimpleDateFormat("dd/MM/yyyy hh:mm").format(new Date()));
         message.setVisibilite(message.getVisibilite().toString());
@@ -563,18 +544,15 @@ public class EnseignantLoginController {
 
         messageRepository.save(message);
         Mail sender = new Mail();
-        Collection<Compte> comptes = compteRepository.findAllByEcole_Id(compte.getEcole().getId());
+        Collection<Compte> comptes = compteRepository.findAll();
 
         for (Compte compte1 : comptes){
             if (message.getVisibilite().toString().contains(EVisibilite.DIRECTION.toString())){
-                if (compte1.getEcole() == salle.getEcole()){
-
                     sender.sender(
                             compte1.getEmail(),
                             "Envoi d'un message",
                             "Message de  ---> "+message.getContent()+", envoye le "+message.getDate()+", fichier associe(s) "+message.getFichier()+"avec un visibilite ----> "+message.getVisibilite());
 
-                }
             }else {
                 sender.sender(
                         compte.getEmail(),
@@ -601,7 +579,6 @@ public class EnseignantLoginController {
         Compte compte = compteService.findByUsername(principal.getName());
         message.setCompte(compte);
         message.setSender(compte.getUsername());
-        message.setEcole(compte.getEcole().getName());
         message.setDate(new SimpleDateFormat("dd/MM/yyyy hh:mm").format(new Date()));
         message.setVisibilite(message.getVisibilite().toString());
         multipart.store(file);
@@ -610,18 +587,15 @@ public class EnseignantLoginController {
 
         messageRepository.save(message);
         Mail sender = new Mail();
-        Collection<Compte> comptes = compteRepository.findAllByEcole_Id(compte.getEcole().getId());
+        Collection<Compte> comptes = compteRepository.findAll();
 
         for (Compte compte1 : comptes){
             if (message.getVisibilite().toString().contains(EVisibilite.DIRECTION.toString())){
-                if (compte1.getEcole() == compte.getEcole()){
-
                     sender.sender(
                             compte1.getEmail(),
                             "Envoi d'un message",
                             "Message de  ---> "+message.getContent()+", envoye le "+message.getDate()+", fichier associe(s) "+message.getFichier()+"avec un visibilite ----> "+message.getVisibilite());
 
-                }
             }else {
                 sender.sender(
                         compte.getEmail(),
@@ -646,9 +620,8 @@ public class EnseignantLoginController {
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
         Salle salle = salleRepository.getOne(id);
-        Ecole ecole = salle.getEcole();
-        Collection<Message> messages = messageRepository.findAllByVisibiliteAndSalleAndEcole(EVisibilite.ENSEIGNANT.toString(),(salle.getNiveau()+""+salle.getId()),ecole.getName(), Sort.by(Sort.Direction.DESC,"id"));
-        messages.addAll(messageRepository.findAllByVisibiliteAndEcole(EVisibilite.PUBLIC.toString(),ecole.getName(),Sort.by(Sort.Direction.DESC,"id")));
+        Collection<Message> messages = messageRepository.findAllByVisibiliteAndSalle(EVisibilite.ENSEIGNANT.toString(),(salle.getNiveau()+""+salle.getId()), Sort.by(Sort.Direction.DESC,"id"));
+        messages.addAll(messageRepository.findAllByVisibilite(EVisibilite.PUBLIC.toString(),Sort.by(Sort.Direction.DESC,"id")));
         Collection<Message> messages1 = messageRepository.findAllByCompte_Id(compte.getId());
         for (Message message : messages1){
             if(!(messages.contains(message))){
@@ -657,7 +630,6 @@ public class EnseignantLoginController {
         }
         System.out.println(messages.size());
         model.addAttribute("lists",messages);
-        model.addAttribute("ecole",ecole);
         model.addAttribute("classe",salle);
         model.addAttribute("message",new Message());
         return "enseignant/messages";
@@ -668,9 +640,8 @@ public class EnseignantLoginController {
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
 
-        Ecole ecole = compte.getEcole();
-        Collection<Message> messages = messageRepository.findAllByVisibiliteAndEcole(EVisibilite.ENSEIGNANT.toString(),ecole.getName(),Sort.by(Sort.Direction.DESC,"id"));
-        messages.addAll(messageRepository.findAllByVisibiliteAndEcole(EVisibilite.PUBLIC.toString(),ecole.getName(),Sort.by(Sort.Direction.DESC, "id")));
+        Collection<Message> messages = messageRepository.findAllByVisibilite(EVisibilite.ENSEIGNANT.toString(),Sort.by(Sort.Direction.DESC,"id"));
+        messages.addAll(messageRepository.findAllByVisibilite(EVisibilite.PUBLIC.toString(),Sort.by(Sort.Direction.DESC, "id")));
         messages.addAll(messageRepository.findAllByCompte_Id(compte.getId()));
         model.addAttribute("lists",messages);
         model.addAttribute("message", new Message());
@@ -693,7 +664,6 @@ public class EnseignantLoginController {
 
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
         Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
         Salle salle = salleRepository.getOne(id);
         Collection<Hebdo> hebdos = hebdoRepository.findAllByCompte_IdAndSalle_Id(compte.getId(),salle.getId(), Sort.by(Sort.Direction.DESC,"id"));
@@ -732,7 +702,6 @@ public class EnseignantLoginController {
     public String detailHebdo(Model model, @PathVariable Long id, HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Ecole ecole = compte.getEcole();
         Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
         Hebdo hebdo = hebdoRepository.getOne(id);
         Collection<Planning> plannings = planningRepository.findAllByHebdo_Id(hebdo.getId());

@@ -67,15 +67,11 @@ public class HomeController {
 
     @Autowired
     private StorageService storageService;
-    @GetMapping("/home")
-    public String home(){
-        return "home";
-    }
+
 
     @GetMapping("/")
-    public String accueil(Model model){
-        model.addAttribute("form", new EcoleFormHelper());
-        return "index1";
+    public String home(){
+        return "index";
     }
 
 

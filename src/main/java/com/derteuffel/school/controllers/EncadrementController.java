@@ -541,9 +541,7 @@ public class EncadrementController {
         request.getSession().setAttribute("compte",compte);
         List<Livre> alls = new ArrayList<>();
         List<Livre> livres = livreRepository.findAll(Sort.by(Sort.Direction.DESC,"id"));
-        List<Livre> generals = livreRepository.findAllBySalle(ENiveau.generale_primaire.toString(),Sort.by(Sort.Direction.DESC,"id"));
         List<Livre> generals1 = livreRepository.findAllBySalle(ENiveau.generale_secondaire.toString(),Sort.by(Sort.Direction.DESC,"id"));
-        livres.addAll(generals);
         livres.addAll(generals1);
         for (int i=0;i<livres.size();i++){
             if (!(i>12)){

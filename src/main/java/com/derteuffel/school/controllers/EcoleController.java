@@ -1,23 +1,11 @@
 package com.derteuffel.school.controllers;
 
-import com.derteuffel.school.entities.Compte;
-import com.derteuffel.school.entities.Ecole;
-import com.derteuffel.school.helpers.EcoleFormHelper;
 import com.derteuffel.school.repositories.EcoleRepository;
 import com.derteuffel.school.services.CompteService;
-import com.derteuffel.school.services.Mail;
 import com.derteuffel.school.services.Multipart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.UUID;
 
 /**
  * Created by user on 23/03/2020.
@@ -37,12 +25,9 @@ public class EcoleController {
 
     @Autowired
     private Multipart multipart;
-    @GetMapping("/connexion")
-    public String home(){
-        return "index";
-    }
 
-    @PostMapping("/save")
+
+    /*@PostMapping("/save")
     public String save(EcoleFormHelper formHelper, Model model, HttpServletRequest request, @RequestParam("file") MultipartFile file){
         Ecole ecole = new Ecole();
         Compte compte = new Compte();
@@ -83,7 +68,7 @@ public class EcoleController {
             model.addAttribute("success", "Votre école a été ajouté avec succès, veuillez contacter les administrateurs du site pour vous fournir le code de validation de votre école pour continuer à l'adresse");
             return "index";
         }
-    }
+    }*/
 
 
 }
