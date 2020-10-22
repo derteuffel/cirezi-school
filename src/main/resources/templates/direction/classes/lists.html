@@ -71,10 +71,10 @@
 
                             <button type="button" data-toggle="modal" data-target="#addSalleModal" class="btn btn-primary">Nouvelle classe&nbsp;<i class="zmdi zmdi-plus"></i></button>
                             <hr>
-                            <h2>Liste des Classes</h2>
+                            <h3 class="title-1">Liste des Classes</h3>
                             <hr>
                             <div class="row"  >
-                                <div class="col-lg-6 col-md-6 m-2" th:each="salle : ${lists}">
+                                <div class="col-lg-5 col-md-6 m-2" th:each="salle : ${lists}">
                                     <a class="btn" th:href="@{/direction/salle/detail/}+${salle?.id}" style="width: 100%">
                                         <div class="alert alert-dark row" role="alert">
                                         <div class="text-left">

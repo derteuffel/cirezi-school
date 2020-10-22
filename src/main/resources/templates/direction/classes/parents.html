@@ -69,11 +69,10 @@
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
 
-                            <h3>Liste des tuteurs/parents d'élève <span th:text="${classe.niveau}"></span></h3>
+                            <h3 class="title-1">Liste des tuteurs/parents d'élève <span th:text="${classe.niveau}"></span></h3>
                             <hr>
                             <div class="row"  >
-                                <div class="col-lg-12">
-                                    <table class="table table-bordered" id="add-row">
+                                    <table class="table table-bordered table-responsive" id="add-row">
                                         <thead>
                                         <th>Nom</th>
                                         <th>Telephone</th>
@@ -88,7 +87,6 @@
                                             <td><span th:text="${parent?.whatsapp}"></span></td>
                                         </tbody>
                                     </table>
-                                </div>
                             </div>
 
                         </div>

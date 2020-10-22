@@ -131,7 +131,7 @@ public class DirectionLoginController {
                 model.addAttribute("error", "Cet Etablissement a deja un dirigeant veuillez choisir celui que vous avez creer");
                 return "direction/registration";
             }
-            compteService.save(compteDto.getEmail(),compteDto.getPassword(), compteDto.getUsername(), location+file.getOriginalFilename());
+            compteService.save(compteDto.getEmail(),compteDto.getPassword(), compteDto.getUsername(), "/upload-dir/"+file.getOriginalFilename());
             Mail sender = new Mail();
             sender.sender(
                     "confirmation@yesbanana.org",
@@ -263,7 +263,7 @@ public class DirectionLoginController {
             compte3.setPassword(passwordEncoder.encode("1234567890"));
             compte3.setEncode("1234567890");
             compte3.setType(compte.getType());
-            compte3.setAvatar(location+file.getOriginalFilename());
+            compte3.setAvatar("/upload-dir/"+file.getOriginalFilename());
             if (role!=null){
                 compte3.setRoles(Arrays.asList(role));
             }else {
@@ -377,10 +377,7 @@ public class DirectionLoginController {
 
 
     @GetMapping("/enseignant/lists")
-    public String teacherLists(Model model, HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        System.out.println(principal.getName());
-        Compte compte = compteService.findByUsername(principal.getName());
+    public String teacherLists(Model model) {
 
         Collection<Salle> salles = salleRepository.findAll();
         List<Enseignant> enseignants = enseignantRepository.findAll();
@@ -541,11 +538,8 @@ public class DirectionLoginController {
 
     @GetMapping("/classe/lists")
     public String classe(Model model) {
-        Collection<Compte> comptes = compteRepository.findAll();
-        List<Enseignant> enseignants = new ArrayList<>();
-        for (Compte compte1 : comptes) {
-            enseignants.add(compte1.getEnseignant());
-        }
+        List<Enseignant> enseignants = enseignantRepository.findAll();
+
         model.addAttribute("lists", salleRepository.findAll());
         model.addAttribute("enseignants", enseignants);
         model.addAttribute("salle", new Salle());

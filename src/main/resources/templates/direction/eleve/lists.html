@@ -69,20 +69,21 @@
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
 
-                            <h2>Liste des élèves/apprenants : <span th:text="${ecole?.name+'  '+ecole?.province}"></span></h2>
+                            <h3 class="title-1">Liste des élèves : <span th:text="${'Lycee cirezi de Bukavu'}"></span></h3>
                             <hr>
                             <div class="row"  >
-                                <div class="col-lg-12">
                                     <table class="table table-bordered" id="add-row">
                                         <thead>
                                         <th>Nom</th>
-                                        <th>Classe</th>
+                                        <th>Prenom</th>
+                                        <th>Age</th>
                                         <th>ACTION</th>
                                         </thead>
                                         <tbody>
                                         <tr th:each="eleve : ${lists}">
                                             <td th:text="${eleve?.name}"></td>
-                                            <td th:text="${eleve?.salle.niveau}"></td>
+                                            <td th:text="${eleve?.prenom}"></td>
+                                            <td th:text="${eleve?.age+' ans'}"></td>
                                             <td>
                                                 <button type="button" data-toggle="modal" data-target="#detailEleveModal" th:attr="data-target='#detailEleveModal'+${eleve?.id}" class="text-success"><i class="fas fa-eye"></i></button>
                                             </td>
@@ -125,7 +126,7 @@
                                                                     <label  class=" form-control-label">Age</label>
                                                                 </div>
                                                                 <div class="col-12 col-md-9">
-                                                                    <small class="form-text text-muted" th:text="${eleve?.age}">Postnom de l'enseignant</small>
+                                                                    <small class="form-text text-muted" th:text="${eleve?.age+' ans'}">Postnom de l'enseignant</small>
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
@@ -186,8 +187,6 @@
                                         </tr>
                                         </tbody>
                                     </table>
-                                </div>
-
                             </div>
 
                         </div>

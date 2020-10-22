@@ -56,11 +56,11 @@
                     <div class="col-xl-6">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
-                            <h3>Gestion de la classe&nbsp;&nbsp; <span th:text="${classe.niveau}"></span></h3>
+                            <h3 class="title-1">CLASSE : <span style="text-transform: uppercase" th:text="${classe.niveau}"></span></h3>
                             <hr>
-                            <h3>Professeur/Enseignant : <span class="text-primary" th:text="${classe.principal}"></span></h3>
+                            <p>Enseignant : <span class="text-primary" th:text="${classe.principal}"></span></p>
                             <hr>
-                            <div class="row">
+                            <div>
                                 <h2>Messages</h2>
                                 <div class="page-content row container-fluid my-5" style="overflow: scroll" th:each="message : ${lists}">
                                     <div class="col-lg-12 col-md-6" th:if="${session.compte.username}!= ${message.sender}">

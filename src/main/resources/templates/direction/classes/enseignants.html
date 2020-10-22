@@ -68,13 +68,12 @@
                     <div class="col-xl-6">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
-
+                            <h3 class="title-1">Liste des enseignants <span th:text="${classe.niveau}"></span></h3>
+                            <hr>
                             <button type="button" data-toggle="modal" data-target="#addModal" class="btn btn-primary">Ajouter&nbsp;<i class="zmdi zmdi-plus"></i></button>
                             <hr>
-                            <h3>Liste des professeurs/enseignants <span th:text="${classe.niveau}"></span></h3>
-                            <hr>
                             <div class="row"  >
-                                <table class="table table-bordered" id="add-row">
+                                <table class="table table-bordered table-responsive" id="add-row">
                                     <thead>
                                     <th>Profil</th>
                                     <th>Nom</th>

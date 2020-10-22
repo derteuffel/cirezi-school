@@ -69,7 +69,7 @@
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
 
-                            <h3>Planning et présence hebdomadaire &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h3>
+                            <h3 class="title-1">Planning et présence hebdomadaire &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h3>
                             <hr>
                             <div class="row"  >
                                 <div class="col-lg-12 my-2">
@@ -80,15 +80,16 @@
                                             <div class="container-fluid row">
 
                                                 <div class="col-md-7" >
-                                                    <h3>Planning de la semaine </h3>
+                                                    <h3 class="title-2">Planning de la semaine </h3>
                                                     <hr>
                                                     <div th:each=" plan : ${plannings}">
-                                                    <p class="text-left"><sapn th:text="'Le : '+${plan.dateJour}"></sapn>
-                                                        </br>
+                                                    <p class="text-left">
+                                                        <span th:text="'Le : '+${plan.dateJour}"></span>
+                                                        <br>
                                                         <span th:text="'Titre de la lecon : '+${plan.titre}"></span>
-                                                        </br>
+                                                        <br>
                                                         <span th:text="'Heure : '+${plan.heure}"></span>
-                                                        </br>
+                                                        <br>
                                                         <div class="row" th:each="status: ${plan.validations}">
                                                             <span th:if="${status}==true" class="text-success"><i class="fas fa-circle"></i></span>
                                                             <span th:unless="${status}==true" class="text-danger"><i class="fas fa-circle"></i></span>
@@ -98,7 +99,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-5">
-                                                    <h3>Liste de présence &nbsp;&nbsp; </h3>
+                                                    <h3 class="title-2">Liste de présence &nbsp;&nbsp; </h3>
                                                     <hr>
                                                     <p th:each="date : ${dates}">
                                                         <a class="btn btn-outline-primary my-2" th:href="@{/direction/presence/detail/}+${hebdo.id}" th:text="'Le : '+${date}" style="width: 100%"></a>

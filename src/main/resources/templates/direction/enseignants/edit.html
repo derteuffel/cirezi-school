@@ -56,7 +56,7 @@
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
 
-                            <h2>Modification d'un Professeur/enseignant</h2>
+                            <h3 class="title-1">Modification d'un enseignant</h3>
                             <div class="row"  >
                                 <form th:action="@{/direction/enseignant/update}" autocomplete="off" method="post" th:object="${teacher}" class="form-horizontal" enctype="multipart/form-data">
                                     <div class="card-body card-block">
@@ -67,7 +67,7 @@
                                             <div class="col-12 col-md-9">
                                                 <input type="text" id="text-prenom" th:field="*{prenom}" placeholder="Prenom" class="form-control">
                                                 <input type="hidden" id="text-id" th:field="*{id}" placeholder="Prenom" class="form-control">
-                                                <small class="form-text text-muted">Prénom de l'enseignant/professeur</small>
+                                                <small class="form-text text-muted">Prénom de l'enseignant</small>
                                             </div>
                                         </div>
                                         <div class="row form-group">
