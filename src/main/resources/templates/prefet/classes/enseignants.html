@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Direction</title>
+    <title>Prefet</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -38,7 +38,7 @@
 <body class="animsition">
 <div class="page-wrapper">
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header :: header}">
+    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
     </header>
     <!-- END HEADER DESKTOP -->
 
@@ -63,7 +63,7 @@
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_director :: sidebar_director}">
+                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
                     </div>
                     <div class="col-xl-6">
                         <!-- PAGE CONTENT-->
@@ -73,7 +73,7 @@
                             <button type="button" data-toggle="modal" data-target="#addModal" class="btn btn-primary">Ajouter&nbsp;<i class="zmdi zmdi-plus"></i></button>
                             <hr>
                             <div class="row"  >
-                                <table class="table table-bordered table-responsive-lg" id="add-row">
+                                <table class="table table-bordered table-responsive" id="add-row">
                                     <thead>
                                     <th>Profil</th>
                                     <th>Nom</th>
@@ -86,13 +86,7 @@
                                         <td><img class="rounded-circle" style="width: 90px;height: 90px" th:src="${enseignant?.avatar}" alt=""></td>
                                         <td th:text="${enseignant?.name}"></td>
                                         <td th:text="${enseignant?.telephone}"></td>
-                                        <td >
-                                            <ul th:each="item : ${enseignant.cour_enseigner}">
-                                                <li>
-                                                    <span  th:text="${item}"></span>
-                                                </li>
-                                            </ul>
-                                            </td>
+                                        <td ><span th:each="item : ${enseignant.cour_enseigner}" th:text="${item}"></span></td>
                                         <td>
                                             <button type="button" data-toggle="modal" data-target="#detailEnseignantModal" th:attr="data-target='#detailEnseignantModal'+${enseignant?.id}" class="text-success"><i class="fas fa-eye"></i></button>
                                             <!--button type="button" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${enseignant?.id}" class="text-danger"><i class="fas fa-trash"></i></button-->
@@ -158,11 +152,12 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                        <!-- a  class="btn btn-primary" th:href="@{/direction/enseignant/edit/}+${enseignant?.id}">Editer</a-->
+                                                        <a  class="btn btn-primary" th:href="@{/prefet/enseignant/edit/}+${enseignant?.id}">Editer</a>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+
                                     </tr>
                                     </tbody>
                                 </table>
@@ -187,7 +182,7 @@
     <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form th:action="@{/direction/classe/add/enseignant/}+${classe?.id}" autocomplete="off" method="get"  class="form-horizontal">
+                <form th:action="@{/prefet/classe/add/enseignant/}+${classe?.id}" autocomplete="off" method="get"  class="form-horizontal">
 
                     <div class="modal-body card-block">
                         <div class="row form-group">

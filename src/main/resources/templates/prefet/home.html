@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Direction</title>
+    <title>Prefet</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -39,7 +39,7 @@
 <body class="animsition">
 <div class="page-wrapper">
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header :: header}">
+    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
     </header>
     <!-- END HEADER DESKTOP -->
 
@@ -77,22 +77,22 @@
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_director :: sidebar_director}">
+                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
                     </div>
                     <div class="col-xl-9">
                         <div th:replace="~{../templates/fragments/messenger :: messenger}"></div>
                         <!-- PAGE CONTENT-->
                         <div class="page-content row">
                             <div class="col-md-6">
-                                <a th:href="@{/direction/enseignant/lists}">
+                                <a th:href="@{/prefet/enseignant/lists}">
                                     <div class="statistic__item statistic__item--primary" style="height: 258px">
-                                    <h2 class="numer">Ensemble des enseignants de l'école</h2>
-                                    <span class="desc text-white">espace de gestion des enseignants de votre école</span>
+                                    <h2 class="numer">Ensemble des enseignants/professeurs de l'école</h2>
+                                    <span class="desc text-white">espace de gestion des enseignants/professeurs de votre école</span>
                                 </div>
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <a th:href="@{/direction/classe/lists}">
+                                <a th:href="@{/prefet/classe/lists}">
                                     <div class="statistic__item statistic__item--primary" style="height: 258px">
                                     <h2 class="numer">Ensemble des classes</h2>
                                     <span class="desc text-white">espace de gestion des classes de votre école</span>
@@ -100,18 +100,18 @@
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <a th:href="@{/direction/eleve/lists}">
+                                <a th:href="@{/prefet/eleve/lists}">
                                     <div class="statistic__item statistic__item--primary" style="height: 258px">
-                                    <h2 class="numer">Ensemble des eleves de l'etablissement</h2>
-                                    <span class="desc text-white">Vous pouvez consulter l'ensemble de l'effectif des éleves de votre école</span>
+                                    <h2 class="numer">Ensemble des eleves/apprenants de l'etablissement</h2>
+                                    <span class="desc text-white">Vous pouvez consulter l'ensemble de l'effectif des éleves/apprenants de votre école</span>
                                 </div>
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <a th:href="@{/direction/parent/lists}">
+                                <a th:href="@{/prefet/parent/lists}">
                                     <div class="statistic__item statistic__item--primary" style="height: 258px">
-                                    <h2 class="numer">Parents/tuteur d'eleve</h2>
-                                    <span class="desc text-white">Consultez la liste de tout les parents/tuteurs d'éleves</span>
+                                    <h2 class="numer">Parents/tuteur d'eleve/apprenant</h2>
+                                    <span class="desc text-white">Consultez la liste de tout les parents/tuteurs d'éleves/apprenants</span>
                                 </div>
                                 </a>
                             </div>
@@ -133,7 +133,7 @@
     <div class="modal fade" id="addMessageModal" tabindex="-1" role="dialog" aria-labelledby="addMessageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form th:action="@{/direction/message/save}" autocomplete="off" method="post" th:object="${message}" enctype="multipart/form-data" class="form-horizontal">
+                <form th:action="@{/prefet/message/save}" autocomplete="off" method="post" th:object="${message}" enctype="multipart/form-data" class="form-horizontal">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addModalLabel">Nouveau méssage pour la gestion de l'école</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">

@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Direction</title>
+    <title>Prefet</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -38,9 +38,13 @@
 <body class="animsition">
 <div class="page-wrapper">
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header :: header}">
+    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
     </header>
     <!-- END HEADER DESKTOP -->
+
+    <!-- WELCOME-->
+    <section th:replace="~{../templates/fragments/home_welcome :: home_welcome}"></section>
+    <!-- END WELCOME-->
 
     <!-- PAGE CONTENT-->
     <div class="page-container3">
@@ -49,8 +53,17 @@
                 <!-- ALERT-->
                 <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
                     <i class="zmdi zmdi-check-circle"></i>
-                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecté successivement a votre compte</span>
                     <span th:unless="${success}" class="content">Vous etes connecté successivement a votre compte</span>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">
+                                <i class="zmdi zmdi-close-circle"></i>
+                            </span>
+                    </button>
+                </div>
+                <div th:if="${error}" class="alert au-alert-warning alert-dismissible fade show au-alert au-alert--70per" role="alert">
+                    <i class="zmdi zmdi-check-circle"></i>
+                    <span  class="content" th:text="${error}">Vous êtes connecté successivement à votre compte</span>
                     <button class="close" type="button" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">
                                 <i class="zmdi zmdi-close-circle"></i>
@@ -63,17 +76,12 @@
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_director :: sidebar_director}">
+                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
                     </div>
-                    <div class="col-xl-6">
+                    <div class="col-xl-9">
                         <!-- PAGE CONTENT-->
-                        <div class="page-content">
-                            <h3 class="title-1">Liste des enseignants <span th:text="${classe.niveau}"></span></h3>
-                            <hr>
-                            <button type="button" data-toggle="modal" data-target="#addModal" class="btn btn-primary">Ajouter&nbsp;<i class="zmdi zmdi-plus"></i></button>
-                            <hr>
-                            <div class="row"  >
-                                <table class="table table-bordered table-responsive-lg" id="add-row">
+                        <div class="page-content row">
+                                <table class="table table-bordered" id="add-row">
                                     <thead>
                                     <th>Profil</th>
                                     <th>Nom</th>
@@ -86,16 +94,9 @@
                                         <td><img class="rounded-circle" style="width: 90px;height: 90px" th:src="${enseignant?.avatar}" alt=""></td>
                                         <td th:text="${enseignant?.name}"></td>
                                         <td th:text="${enseignant?.telephone}"></td>
-                                        <td >
-                                            <ul th:each="item : ${enseignant.cour_enseigner}">
-                                                <li>
-                                                    <span  th:text="${item}"></span>
-                                                </li>
-                                            </ul>
-                                            </td>
+                                        <td ><span th:each="item : ${enseignant.cour_enseigner}" th:text="${item}"></span></td>
                                         <td>
                                             <button type="button" data-toggle="modal" data-target="#detailEnseignantModal" th:attr="data-target='#detailEnseignantModal'+${enseignant?.id}" class="text-success"><i class="fas fa-eye"></i></button>
-                                            <!--button type="button" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${enseignant?.id}" class="text-danger"><i class="fas fa-trash"></i></button-->
                                         </td>
                                         <div class="modal fade" th:id="detailEnseignantModal+${enseignant?.id}" tabindex="-1" role="dialog" aria-labelledby="detaiEnseignantModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-lg" role="document">
@@ -109,7 +110,7 @@
                                                     <div class="modal-body card-block">
                                                         <div class="row form-group">
                                                             <div class="col col-md-3">
-                                                                <label for="text-prenom" class=" form-control-label">Prenom</label>
+                                                                <label  class=" form-control-label">Prenom</label>
                                                             </div>
                                                             <div class="col-12 col-md-9">
                                                                 <small class="form-text text-muted" th:text="${enseignant?.prenom}">Prenom de l'enseignant</small>
@@ -117,7 +118,7 @@
                                                         </div>
                                                         <div class="row form-group">
                                                             <div class="col col-md-3">
-                                                                <label for="text-nom" class=" form-control-label">Nom</label>
+                                                                <label  class=" form-control-label">Nom</label>
                                                             </div>
                                                             <div class="col-12 col-md-9">
                                                                 <small class="form-text text-muted" th:text="${enseignant?.name}">Nom de l'enseignant</small>
@@ -125,7 +126,15 @@
                                                         </div>
                                                         <div class="row form-group">
                                                             <div class="col col-md-3">
-                                                                <label for="text-telephone" class=" form-control-label">Telephone</label>
+                                                                <label  class=" form-control-label">Postnom</label>
+                                                            </div>
+                                                            <div class="col-12 col-md-9">
+                                                                <small class="form-text text-muted" th:text="${enseignant?.postnom}">Postnom de l'enseignant</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row form-group">
+                                                            <div class="col col-md-3">
+                                                                <label  class=" form-control-label">Telephone</label>
                                                             </div>
                                                             <div class="col-12 col-md-9">
                                                                 <small class="form-text text-muted" th:text="${enseignant?.telephone}">Numero de telephone</small>
@@ -133,7 +142,7 @@
                                                         </div>
                                                         <div class="row form-group">
                                                             <div class="col col-md-3">
-                                                                <label for="text-email" class=" form-control-label">E-mail</label>
+                                                                <label  class=" form-control-label">E-mail</label>
                                                             </div>
                                                             <div class="col-12 col-md-9">
                                                                 <small class="form-text text-muted" th:text="${enseignant?.email}">Adresse email</small>
@@ -141,7 +150,7 @@
                                                         </div>
                                                         <div class="row form-group">
                                                             <div class="col col-md-3">
-                                                                <label for="text-whatsapp" class=" form-control-label">Whatsapp</label>
+                                                                <label  class=" form-control-label">Whatsapp</label>
                                                             </div>
                                                             <div class="col-12 col-md-9">
                                                                 <small class="form-text text-muted" th:text="${enseignant?.whatsapp}">Numero de telephone whatsapp</small>
@@ -149,16 +158,15 @@
                                                         </div>
                                                         <div class="row form-group">
                                                             <div class="col col-md-3">
-                                                                <label for="text-cours" class=" form-control-label">Cours enseigner</label>
+                                                                <label  class=" form-control-label">Cours enseigner</label>
                                                             </div>
                                                             <div class="col-12 col-md-9">
-                                                                <small th:each="item : ${enseignant?.cour_enseigner}" class="form-text text-muted" th:text="${item}">Cours enseigner</small>
+                                                                <small class="form-text text-muted" th:each="item:${enseignant?.cour_enseigner}" th:text="${item}">Cours enseigner</small>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                        <!-- a  class="btn btn-primary" th:href="@{/direction/enseignant/edit/}+${enseignant?.id}">Editer</a-->
                                                     </div>
                                                 </div>
                                             </div>
@@ -166,13 +174,8 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                            </div>
-
                         </div>
                         <!-- END PAGE CONTENT-->
-                    </div>
-                    <div th:replace="~{../templates/fragments/sidebar_classe :: sidebar_classe}">
-
                     </div>
                 </div>
                 <!-- COPYRIGHT-->
@@ -182,36 +185,8 @@
             </div>
         </section>
     </div>
-    <!-- END PAGE CONTENT  -->
-    <!-- modal medium -->
-    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form th:action="@{/direction/classe/add/enseignant/}+${classe?.id}" autocomplete="off" method="get"  class="form-horizontal">
 
-                    <div class="modal-body card-block">
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label  class=" form-control-label">enseignant</label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <select name="ids" multiple class="form-control">
-                                    <option value="">Choisir un enseignant</option>
-                                    <option th:each="teacher:${teachers}" th:value="${teacher.id}" th:text="${teacher.name}+' '+${teacher.prenom}">Choisir un enseignant</option>
-                                </select>
-                                <small class="form-text text-muted">Prénom de l'enseignant</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- end modal medium -->
+
 
 </div>
 
@@ -235,6 +210,9 @@
 <script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
 <script th:src="@{/vendor/select2/select2.min.js}">
 </script>
+
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
 <script >
     $(document).ready(function() {
         // Add Row
@@ -244,8 +222,6 @@
 
     });
 </script>
-<!-- Main JS-->
-<script th:src="@{/js/main.js}"></script>
 <script th:src="@{/js/datatables.min.js}"></script>
 
 </body>

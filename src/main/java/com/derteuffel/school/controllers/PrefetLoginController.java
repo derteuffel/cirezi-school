@@ -1,7 +1,6 @@
 package com.derteuffel.school.controllers;
 
 import com.derteuffel.school.entities.*;
-import com.derteuffel.school.enums.ENiveau;
 import com.derteuffel.school.enums.ERole;
 import com.derteuffel.school.enums.EType;
 import com.derteuffel.school.enums.EVisibilite;
@@ -31,8 +30,8 @@ import java.util.*;
  * Created by user on 23/03/2020.
  */
 @Controller
-@RequestMapping("/direction")
-public class DirectionLoginController {
+@RequestMapping("/prefet")
+public class PrefetLoginController {
 
     @Autowired
     private EcoleRepository ecoleRepository;
@@ -72,20 +71,98 @@ public class DirectionLoginController {
     private String location ;
     @GetMapping("/login")
     public String director() {
-        return "direction/login";
+        return "prefet/login";
     }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request){
         request.getSession().invalidate();
         System.out.println("je suis deconnectee");
-        return "redirect:/direction/login";
+        return "redirect:/prefet/login";
     }
     @ModelAttribute("compte")
     public CompteRegistrationDto compteRegistrationDto() {
         return new CompteRegistrationDto();
     }
 
+    @GetMapping("/registration")
+    public String registrationForm(Model model, RedirectAttributes redirectAttributes) {
+
+        List<Compte> comptes = compteRepository.findAll();
+        Role role = roleRepository.findByName(ERole.ROLE_DIRECTEUR.toString());
+        List<Compte> accessAccount = new ArrayList<>();
+
+        for (Compte compte : comptes){
+            if (compte.getRoles().contains(role)){
+                accessAccount.add(compte);
+            }
+        }
+
+        if (accessAccount.size() != 0){
+            redirectAttributes.addFlashAttribute("message","Desole il existe deja un directeur dans votre etablissement, veuillez le contacter pour vous enregistrer");
+            return "redirect:/";
+        }
+        return "prefet/registration";
+    }
+
+    @GetMapping("/registration/root")
+    public String registrationRoot(Model model) {
+        return "prefet/rootRegistration";
+    }
+
+
+    @PostMapping("/registration")
+    public String registrationDirectionSave(@ModelAttribute("compte") @Valid CompteRegistrationDto compteDto,
+                                            BindingResult result, RedirectAttributes redirectAttributes, Model model, @RequestParam("file") MultipartFile file) {
+
+        multipart.store(file);
+        Compte existAccount = compteService.findByUsername(compteDto.getUsername());
+        if (existAccount != null) {
+            result.rejectValue("username", null, "Il existe deja un compte avec ce nom d'utilisateur vueillez choisir un autre");
+            model.addAttribute("error", "Il existe deja un compte avec ce nom d'utilisateur vueillez choisir un autre");
+        }
+
+        if (result.hasErrors()) {
+            return "prefet/registration";
+        }
+
+            if (compteRepository.findAll().size() > 0) {
+                model.addAttribute("error", "Cet Etablissement a deja un dirigeant veuillez choisir celui que vous avez creer");
+                return "prefet/registration";
+            }
+            compteService.save(compteDto.getEmail(),compteDto.getPassword(), compteDto.getUsername(), "/upload-dir/"+file.getOriginalFilename());
+            Mail sender = new Mail();
+            sender.sender(
+                    "confirmation@yesbanana.org",
+                    "Enregistrement d'un directeur ou responsable",
+                    "Viens de s'enregistrer comme directeur du lycee cirezi de Bukavu");
+
+
+        redirectAttributes.addFlashAttribute("success", "Votre enregistrement a ete effectuer avec succes");
+        return "redirect:/prefet/login";
+    }
+
+
+    @PostMapping("/registration/root")
+    public String registrationRoot(@ModelAttribute("compte") @Valid CompteRegistrationDto compteDto,
+                                            BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+
+        Compte existAccount = compteService.findByUsername(compteDto.getUsername());
+        if (existAccount != null) {
+            result.rejectValue("username", null, "Il existe déjà un compte avec ce nom d'utilisateur veuillez choisir un autre");
+            redirectAttributes.addFlashAttribute("error", "Il existe deja un compte avec ce nom d'utilisateur vueillez choisir un autre");
+        }
+
+        if (result.hasErrors()) {
+            return "redirect:/prefet/registration/root";
+        }
+
+
+            compteService.saveRoot(compteDto, "/images/profile.jpeg");
+
+        redirectAttributes.addFlashAttribute("success", "Votre enregistrement a été effectué avec succès");
+        return "redirect:/";
+    }
 
     @GetMapping("/home")
     public String home(HttpServletRequest request) {
@@ -93,7 +170,7 @@ public class DirectionLoginController {
         System.out.println(principal.getName());
         Compte compte = compteService.findByUsername(principal.getName());
         request.getSession().setAttribute("compte", compte);
-        return "redirect:/direction/ecole/detail";
+        return "redirect:/prefet/ecole/detail";
     }
 
 
@@ -147,14 +224,14 @@ public class DirectionLoginController {
         model.addAttribute("teacher", new Enseignant());
         model.addAttribute("message",new Message());
         model.addAttribute("users",users);
-        return "direction/home";
+        return "prefet/home";
     }
 
     @GetMapping("/administration/lists")
     public String administrationLists(Model model){
         List<Compte> comptes = compteRepository.findAllByType(EType.ADMINISTRATION.toString());
         model.addAttribute("lists", comptes);
-        return "direction/administration/lists";
+        return "prefet/administration/lists";
     }
 
 
@@ -162,7 +239,7 @@ public class DirectionLoginController {
     public String administration(Model model){
         CompteRegistrationDto compte = new CompteRegistrationDto();
         model.addAttribute("compte", compte);
-        return "direction/administration/form";
+        return "prefet/administration/form";
     }
 
 
@@ -177,7 +254,7 @@ public class DirectionLoginController {
 
         if (compte1 != null | compte2!=null){
             redirectAttributes.addFlashAttribute("message", "There are existing account with the provided email or username");
-            return "redirect:/direction/administration/form";
+            return "redirect:/prefet/administration/form";
         }else {
             Compte compte3 = new Compte();
             compte3.setUsername(compte.getUsername());
@@ -196,7 +273,7 @@ public class DirectionLoginController {
             }
             compteRepository.save(compte3);
         }
-        return "redirect:/direction/home";
+        return "redirect:/prefet/home";
     }
 
 
@@ -221,7 +298,7 @@ public class DirectionLoginController {
         model.addAttribute("lists",enseignants);
         model.addAttribute("classes", salles);
 
-        return "direction/enseignants";
+        return "prefet/enseignants";
 
 
     }
@@ -249,7 +326,7 @@ public class DirectionLoginController {
             System.out.println("je contient cette enseignant");
             model.addAttribute("error", "il existe un enseignant déjà enregistrer avec cet adresse email");
             model.addAttribute("message",new Message());
-            return "direction/home";
+            return "prefet/home";
         }
 
         if (!(cour_enseigners.isEmpty())){
@@ -277,7 +354,7 @@ public class DirectionLoginController {
             }
         }else {
             redirectAttributes.addFlashAttribute("error","Il n'y as pas de classe enregistrer vous devez commencer par créer des salles de classe dans votre école");
-            return "redirect:/direction/enseignant/lists";
+            return "redirect:/prefet/enseignant/lists";
         }
         compteService.saveEnseignant(compte1, "/images/profile.jpeg", enseignant);
         Mail sender = new Mail();
@@ -294,7 +371,7 @@ public class DirectionLoginController {
                         "sur la plateforme de gestion écoles en ligne. Veuillez vous connecter pour manager son statut.");
 
         redirectAttributes.addFlashAttribute("success", "Vous avez enregistré avec succès ce nouvel enseignant : " + enseignant.getPrenom() + " " + enseignant.getName() + " " + enseignant.getPostnom());
-        return "redirect:/direction/enseignant/lists";
+        return "redirect:/prefet/enseignant/lists";
     }
 
 
@@ -308,7 +385,7 @@ public class DirectionLoginController {
         model.addAttribute("teacher", new Enseignant());
         model.addAttribute("lists", enseignants);
 
-        return "direction/enseignants/lists";
+        return "prefet/enseignants/lists";
     }
 
     @GetMapping("/bibliotheque/lists")
@@ -325,7 +402,7 @@ public class DirectionLoginController {
         }
         model.addAttribute("lists",alls);
 
-        return "direction/bibliotheques";
+        return "prefet/bibliotheques";
     }
 
 
@@ -349,7 +426,7 @@ public class DirectionLoginController {
         model.addAttribute("lists1", parents);
         model.addAttribute("parents", parents);
 
-        return "direction/parent/lists";
+        return "prefet/parent/lists";
     }
 
     @GetMapping("/parent/accounts/lists")
@@ -373,7 +450,7 @@ public class DirectionLoginController {
 
         model.addAttribute("lists1", accounts);
 
-        return "direction/parent/accounts";
+        return "prefet/parent/accounts";
     }
 
     @GetMapping("/eleve/lists")
@@ -386,7 +463,7 @@ public class DirectionLoginController {
 
         model.addAttribute("lists", eleves);
 
-        return "direction/eleve/lists";
+        return "prefet/eleve/lists";
     }
 
 
@@ -394,7 +471,7 @@ public class DirectionLoginController {
     public String enseignantEdit(@PathVariable Long id, Model model) {
         Enseignant enseignant = enseignantRepository.getOne(id);
         model.addAttribute("teacher", enseignant);
-        return "direction/enseignants/edit";
+        return "prefet/enseignants/edit";
     }
 
 
@@ -416,7 +493,7 @@ public class DirectionLoginController {
 
         enseignantRepository.save(enseignant);
 
-        return "redirect:/direction/enseignant/lists";
+        return "redirect:/prefet/enseignant/lists";
     }
 
 
@@ -427,7 +504,7 @@ public class DirectionLoginController {
         Salle salle = salleRepository.getOne(eleve.getSalle().getId());
         model.addAttribute("student", eleve);
         model.addAttribute("classe",salle);
-        return "direction/eleve/edit";
+        return "prefet/eleve/edit";
     }
 
 
@@ -437,7 +514,7 @@ public class DirectionLoginController {
         Principal principal = request.getUserPrincipal();
         eleve.setPays("Republique Democratique du Congo");
         eleveRepository.save(eleve);
-        return "redirect:/direction/eleve/lists";
+        return "redirect:/prefet/eleve/lists";
     }
 
     @GetMapping("/enseignant/delete/{id}")
@@ -452,7 +529,7 @@ public class DirectionLoginController {
             compteRepository.delete(compte);
         }
         enseignantRepository.deleteById(id);
-        return "redirect:/direction/enseignant/lists";
+        return "redirect:/prefet/enseignant/lists";
     }
 
     // ------ Enseignant management end -----///
@@ -465,7 +542,7 @@ public class DirectionLoginController {
         model.addAttribute("lists", salleRepository.findAll());
         model.addAttribute("enseignants", enseignants);
         model.addAttribute("salle", new Salle());
-        return "direction/classes/lists";
+        return "prefet/classes/lists";
     }
 
 
@@ -484,7 +561,7 @@ public class DirectionLoginController {
         salle.setNiveau(salle.getNiveau().toString()+" "+ suffix.toUpperCase());
         salleRepository.save(salle);
         redirectAttributes.addFlashAttribute("success", "Vous avez ajouté avec succès une nouvelle classe");
-        return "redirect:/direction/classe/lists";
+        return "redirect:/prefet/classe/lists";
     }
 
     @GetMapping("/update/classe/form/{id}")
@@ -501,7 +578,7 @@ public class DirectionLoginController {
         }
         model.addAttribute("classe",salle);
         model.addAttribute("enseignants",teachers);
-        return "direction/classes/update";
+        return "prefet/classes/update";
     }
 
     @GetMapping("/salle/detail/{id}")
@@ -523,7 +600,7 @@ public class DirectionLoginController {
         model.addAttribute("message", new Message());
         model.addAttribute("classe", salle);
         request.getSession().setAttribute("salle",salle);
-        return "direction/classes/detail";
+        return "prefet/classes/detail";
     }
 
     @GetMapping("/classe/add/enseignant/{id}")
@@ -531,21 +608,19 @@ public class DirectionLoginController {
 
         System.out.println(id);
         Salle salle = salleRepository.getOne(id);
-        for (Long number : ids){
+        for (Long number : ids) {
             Enseignant enseignant = enseignantRepository.getOne(number);
-            if (salle.getEnseignants().contains(enseignant)){
-                System.out.println("Already contain enseignant with : "+number);
-            }else {
+            if (salle.getEnseignants().contains(enseignant)) {
+                System.out.println("Already contain enseignant with : " + number);
+            } else {
                 salle.getEnseignants().add(enseignant);
                 enseignant.getSallesIds().add(salle.getId());
             }
             enseignantRepository.save(enseignant);
         }
-
-
         salleRepository.save(salle);
         redirectAttributes.addFlashAttribute("success", "Vous avez ajouté avec succès un nouvel enseignant a cette classe");
-        return "redirect:/direction/enseignant/classe/" + salle.getId();
+        return "redirect:/prefet/enseignant/classe/" + salle.getId();
 
     }
 
@@ -569,7 +644,7 @@ public class DirectionLoginController {
         model.addAttribute("teachers", teachers);
         model.addAttribute("lists", enseignants);
 
-        return "direction/classes/enseignants";
+        return "prefet/classes/enseignants";
     }
 
 
@@ -583,7 +658,7 @@ public class DirectionLoginController {
         model.addAttribute("classe", salleRepository.getOne(id));
         model.addAttribute("student", new Eleve());
         model.addAttribute("lists", eleves);
-        return "direction/classes/eleves";
+        return "prefet/classes/eleves";
     }
 
     @GetMapping("/create/{id}")
@@ -601,7 +676,7 @@ public class DirectionLoginController {
             compteService.saveParent(compteRegistrationDto,"/images/profile.jpeg",parent);
         eleve.setParent(parent);
         eleveRepository.save(eleve);
-        return "redirect:/direction/classe/eleves/"+eleve.getSalle().getId();
+        return "redirect:/prefet/classe/eleves/"+eleve.getSalle().getId();
     }
 
     @PostMapping("/eleves/save/{id}")
@@ -649,13 +724,13 @@ public class DirectionLoginController {
                             "sur la plateforme de gestion écoles en ligne. Veuillez vous connecter pour manager son statut.");
 
         redirectAttributes.addFlashAttribute("success","Vous avez ajouté avec succès un nouvel élève dans cette classe");
-        return "redirect:/direction/classe/eleves/"+salle.getId();
+        return "redirect:/prefet/classe/eleves/"+salle.getId();
     }
 
     @GetMapping("/eleve/delete/{id}/{salleId}")
     public String deleteEleve(@PathVariable Long id, @PathVariable Long salleId){
         eleveRepository.deleteById(id);
-        return "redirect:/direction/classe/eleve/"+salleId;
+        return "redirect:/prefet/classe/eleve/"+salleId;
     }
 
     //---- Eleve management end -----//
@@ -673,13 +748,13 @@ public class DirectionLoginController {
         model.addAttribute("classe", salleRepository.getOne(id));
 
         model.addAttribute("lists", parents);
-        return "direction/classes/parents";
+        return "prefet/classes/parents";
     }
 
 
     @GetMapping("/access-denied")
     public String access_denied() {
-        return "direction/access-denied";
+        return "prefet/access-denied";
     }
 
     @PostMapping("/message/save/{id}")
@@ -713,7 +788,7 @@ public class DirectionLoginController {
 
 
         }
-        return "redirect:/direction/salle/detail/" + salle.getId();
+        return "redirect:/prefet/salle/detail/" + salle.getId();
 
     }
 
@@ -733,13 +808,13 @@ public class DirectionLoginController {
         }
         model.addAttribute("lists", messages);
         model.addAttribute("message", new Message());
-        return "direction/messages";
+        return "prefet/messages";
     }
 
     @GetMapping("/message/delete/{id}")
     public String deleteMessage(@PathVariable Long id){
         messageRepository.deleteById(id);
-        return "redirect:/direction/home";
+        return "redirect:/prefet/home";
     }
 
     @PostMapping("/message/save")
@@ -771,7 +846,7 @@ public class DirectionLoginController {
         }
 
         messageRepository.save(message);
-        return "redirect:/direction/message/lists";
+        return "redirect:/prefet/message/lists";
     }
 
 
@@ -792,7 +867,7 @@ public class DirectionLoginController {
                 Collection<Hebdo> hebdos = hebdoRepository.findAllBySalle_Id(salle.getId(),Sort.by(Sort.Direction.DESC,"id"));
         model.addAttribute("classe",salle);
         model.addAttribute("lists",hebdos);
-        return "direction/classes/hebdos";
+        return "prefet/classes/hebdos";
     }
 
     public List<String> removeDuplicates(List<String> list)
@@ -836,7 +911,7 @@ public class DirectionLoginController {
         model.addAttribute("dates",removeDuplicates(dates));
         model.addAttribute("hebdo",hebdo);
         model.addAttribute("classe",salle);
-        return "direction/classes/hebdo";
+        return "prefet/classes/hebdo";
     }
 
     @GetMapping("/presence/detail/{id}")
@@ -851,7 +926,7 @@ public class DirectionLoginController {
         model.addAttribute("lists",eleves);
         model.addAttribute("hebdo",hebdo);
         model.addAttribute("classe",hebdo.getSalle());
-        return "direction/classes/presence";
+        return "prefet/classes/presence";
 
     }
 
@@ -868,7 +943,7 @@ public class DirectionLoginController {
         model.addAttribute("eleve",eleve);
         model.addAttribute("hebdo",hebdo);
         model.addAttribute("classe",hebdo.getSalle());
-        return "direction/classes/presenceDetail";
+        return "prefet/classes/presenceDetail";
 
     }
 
@@ -877,7 +952,7 @@ public class DirectionLoginController {
         Compte compte = compteRepository.getOne(id);
         model.addAttribute("compte",compte);
         model.addAttribute("compteDto", new CompteRegistrationDto());
-        return "direction/account";
+        return "prefet/account";
     }
 
     @PostMapping("/accounts/save")
@@ -909,7 +984,7 @@ public class DirectionLoginController {
                 compte.setPassword(passwordEncoder.encode(compteRegistrationDto.getPassword()));
             }else {
                 redirectAttributes.addFlashAttribute("error","l'ancien mot de passe n'est pas valide veuillez trouver le bon");
-                return "redirect:/direction/account/detail/"+compte.getId();
+                return "redirect:/prefet/account/detail/"+compte.getId();
             }
         }
 
@@ -917,7 +992,7 @@ public class DirectionLoginController {
 
         compteRepository.save(compte);
 
-        return "redirect:/direction/account/detail/"+compte.getId();
+        return "redirect:/prefet/account/detail/"+compte.getId();
 
     }
 

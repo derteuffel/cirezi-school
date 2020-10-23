@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Direction</title>
+    <title>Prefet</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -32,90 +32,81 @@
 
     <!-- Main CSS-->
     <link th:href="@{/css/theme.css}" rel="stylesheet" media="all">
-    <script th:src="@{/vendor/jquery-3.2.1.min.js}"></script>
 
 </head>
 
 <body class="animsition">
 <div class="page-wrapper">
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header :: header}">
+    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
     </header>
     <!-- END HEADER DESKTOP -->
-
-    <!-- WELCOME-->
-    <section th:replace="~{../templates/fragments/home_welcome :: home_welcome}"></section>
-    <!-- END WELCOME-->
 
     <!-- PAGE CONTENT-->
     <div class="page-container3">
         <section class="alert-wrap p-t-70 p-b-70">
             <div class="container">
-                <!-- ALERT-->
-                <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
-                    <i class="zmdi zmdi-check-circle"></i>
-                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
-                    <span th:unless="${success}" class="content">Vous etes connecter successivement a votre compte</span>
-                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">
-                                <i class="zmdi zmdi-close-circle"></i>
-                            </span>
-                    </button>
-                </div>
-                <div th:if="${error}" class="alert au-alert-warning alert-dismissible fade show au-alert au-alert--70per" role="alert">
-                    <i class="zmdi zmdi-check-circle"></i>
-                    <span  class="content" th:text="${error}">Vous etes connecter successivement a votre compte</span>
-                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">
-                                <i class="zmdi zmdi-close-circle"></i>
-                            </span>
-                    </button>
-                </div>
-                <!-- END ALERT-->
             </div>
         </section>
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_director :: sidebar_director}">
+                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
                     </div>
                     <div class="col-xl-9">
-                        <div th:replace="~{../templates/fragments/messenger :: messenger}"></div>
                         <!-- PAGE CONTENT-->
-                        <div class="page-content row">
-                            <div class="col-md-6">
-                                <a th:href="@{/direction/enseignant/lists}">
-                                    <div class="statistic__item statistic__item--primary" style="height: 258px">
-                                    <h2 class="numer">Ensemble des enseignants de l'école</h2>
-                                    <span class="desc text-white">espace de gestion des enseignants de votre école</span>
-                                </div>
-                                </a>
-                            </div>
-                            <div class="col-md-6">
-                                <a th:href="@{/direction/classe/lists}">
-                                    <div class="statistic__item statistic__item--primary" style="height: 258px">
-                                    <h2 class="numer">Ensemble des classes</h2>
-                                    <span class="desc text-white">espace de gestion des classes de votre école</span>
-                                </div>
-                                </a>
-                            </div>
-                            <div class="col-md-6">
-                                <a th:href="@{/direction/eleve/lists}">
-                                    <div class="statistic__item statistic__item--primary" style="height: 258px">
-                                    <h2 class="numer">Ensemble des eleves de l'etablissement</h2>
-                                    <span class="desc text-white">Vous pouvez consulter l'ensemble de l'effectif des éleves de votre école</span>
-                                </div>
-                                </a>
-                            </div>
-                            <div class="col-md-6">
-                                <a th:href="@{/direction/parent/lists}">
-                                    <div class="statistic__item statistic__item--primary" style="height: 258px">
-                                    <h2 class="numer">Parents/tuteur d'eleve</h2>
-                                    <span class="desc text-white">Consultez la liste de tout les parents/tuteurs d'éleves</span>
-                                </div>
-                                </a>
-                            </div>
+                        <div class="page-content">
+                            <div class="row">
+                                <h3 class="title-1">Messages</h3>
+                                <div class="page-content row container-fluid my-5" style="overflow: scroll" th:each="message : ${lists}">
+                                    <div class="col-lg-12 col-md-6" th:if="${session.compte.username}!= ${message.sender}">
+                                        <div class="au-card m-b-30 alert alert-secondary" >
+                                            <div class="au-card-inner">
+                                                <p class=" m-b-20"><span class="text-warning" th:text="${message.sender}"></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;publié le : <span class="text-primary" th:text="${message.date}"></span></p>
+                                                <hr>
+                                                <p><span th:text="${message.content}"></span></p>
+                                                <br>
+                                                <p>Fichier(s) associé(s)&nbsp; <a th:href="${message.fichier}">Telecharger le (s) fichier(s)</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-6" th:unless="${session.compte.username}!= ${message.sender}">
+                                        <div class="au-card m-b-30 alert alert-success" >
+                                            <div class="au-card-inner">
+                                                <p class=" m-b-20"><span class="text-warning" >Vous</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;publié le : <span class="text-primary" th:text="${message.date}"></span></p>
+                                                <hr>
+                                                <p><span th:text="${message.content}"></span></p>
+                                                <br>
+                                                <p>Fichier(s) associé(s)&nbsp; <a th:href="${message.fichier}">Telecherger le fichier</a></p>
+                                                <a href="#" class="btn pull-right" data-toggle="modal" data-target="#deleteModal"  th:attr="data-target='#deleteModal'+${message?.id}"><i class="fas fa-trash"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" th:id="deleteModal+${message?.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteModalLabel">Supprimer message</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body card-block">
+                                                    <p>Vous voulez vraiment supprimer ce message??</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                                    <a  class="btn btn-primary" th:href="@{/prefet/message/delete/}+${message?.id}">Supprimer</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
+
+
+                                </div>
+                                <!-- END PAGE CONTENT-->
+                            </div>
                         </div>
                         <!-- END PAGE CONTENT-->
                     </div>
@@ -127,7 +118,6 @@
             </div>
         </section>
     </div>
-    <!-- END PAGE CONTENT  -->
     <button type="button" data-toggle="modal" class="btn btn-success" data-target="#addMessageModal" style="position: fixed;left: 50px;bottom: 100px"><i class="zmdi zmdi-comment"></i>&nbsp;Nouveau message</button>
     <!-- modal medium -->
     <div class="modal fade" id="addMessageModal" tabindex="-1" role="dialog" aria-labelledby="addMessageModalLabel" aria-hidden="true">
@@ -135,7 +125,7 @@
             <div class="modal-content">
                 <form th:action="@{/direction/message/save}" autocomplete="off" method="post" th:object="${message}" enctype="multipart/form-data" class="form-horizontal">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addModalLabel">Nouveau méssage pour la gestion de l'école</h5>
+                        <h5 class="modal-title" id="addModalLabel">Nouveau message pour la gestion de la classe</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -143,23 +133,23 @@
                     <div class="modal-body card-block">
                         <div class="row form-group">
                             <div class="col col-md-3">
-                                <label for="text-content" class=" form-control-label">Corps du méssage</label>
+                                <label for="text-content" class=" form-control-label">Corps du message</label>
                             </div>
                             <div class="col-12 col-md-9">
                                 <textarea th:field="*{content}" id="text-content" class="form-control" rows="5" placeholder="Contenue"></textarea>
-                                <small class="form-text text-muted">Ajoutez votre méssage</small>
+                                <small class="form-text text-muted">Ajouter votre message</small>
                             </div>
                         </div>
                         <div class="row form-group">
                             <div class="col col-md-3">
-                                <label for="text-salle" class=" form-control-label">Visibilité du méssage</label>
+                                <label for="text-salle" class=" form-control-label">Visibilite du message</label>
                             </div>
                             <div class="col-12 col-md-9">
-                                <select th:field="*{visibilite}" th id="text-salle" class="form-control">
+                                <select th:field="*{visibilite}" id="text-salle" class="form-control">
                                     <option value="">Choisir</option>
                                     <option th:each=" item : ${T(com.derteuffel.school.enums.EVisibilite).values()}" th:value="${item}" th:text="${item}">Choisir</option>
                                 </select>
-                                <small class="form-text text-muted">Choisir la porté de votre méssage </small>
+                                <small class="form-text text-muted">Choisir la porte de votre message </small>
                             </div>
                         </div>
                         <div class="row form-group">
@@ -181,7 +171,6 @@
         </div>
     </div>
     <!-- END PAGE CONTENT  -->
-
 
 </div>
 
@@ -205,9 +194,7 @@
 <script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
 <script th:src="@{/vendor/select2/select2.min.js}">
 </script>
-<!-- voxeet js -->
-<div th:replace="~{../templates/fragments/voxeetScript :: voxeetScript}"></div>
-<!-- voxeet js -->
+
 <!-- Main JS-->
 <script th:src="@{/js/main.js}"></script>
 

@@ -92,10 +92,10 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-6 col-lg-4">
-                            <a th:href="@{/direction/login}" style="width: inherit" class="btn">
+                            <a th:href="@{/prefet/login}" style="width: inherit" class="btn">
                                 <div class="statistic__item statistic__item--green text-justify">
-                                <h2 class="number">Direction-</br>Responsable</h2>
-                                <span class="desc">Espace reserve uniquement aux </br>directeurs/responsables</br> des écoles/institutions</span>
+                                <h2 class="number">PREFET DES ETUDES-</br>Responsable</h2>
+                                <span class="desc">Espace reserve uniquement aux </br>Prefets/responsables</br> des écoles/institutions</span>
                                 <div class="icon">
                                     <img th:src="@{/images/director.png}">
                                 </div>
@@ -103,21 +103,22 @@
                             </a>
                         </div>
                         <div class="col-md-6 col-lg-4">
-                            <a th:href="@{/parent/login}" style="width: inherit" class="btn">
-                                <div class="statistic__item statistic__item--orange text-justify">
-                                <h2 class="number">Parent/Elèves</h2>
-                                <span class="desc">Espace reserve aux parents/tuteurs et </br>élèves/apprenants  pour des enseignements</span>
-                                <div class="icon">
-                                    <img th:src="@{/images/guardian.png}">
+                            <a th:href="@{/direction/login}" style="width: inherit" class="btn">
+                                <div class="statistic__item statistic__item--secondary text-justify">
+                                    <h2 class="number">DIRECTEUR DES <br>ETUDES</h2>
+                                    <span class="desc">Espace reserve uniquement aux </br>Directeurs des etudes</span>
+                                    <div class="icon">
+                                        <img th:src="@{/images/director.png}">
+                                    </div>
                                 </div>
-                            </div>
                             </a>
                         </div>
+
                         <div class="col-md-6 col-lg-4">
                             <a th:href="@{/enseignant/login}" style="width: inherit" class="btn">
                                 <div class="statistic__item statistic__item--blue text-justify">
-                                <h2 class="number">Enseignant/Professeur</h2>
-                                <span class="desc">Espace réservé uniquement aux </br>enseignants/professeurs  enregistrés dans</br> des écoles/institutions</span>
+                                <h2 class="number">ENSEIGNANTS</h2>
+                                <span class="desc">Espace réservé uniquement aux </br>enseignants  enregistrés dans</br> des écoles/institutions</span>
                                 <div class="icon">
                                     <img th:src="@{/images/teacher.png}">
                                 </div>
@@ -126,6 +127,17 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-6 col-lg-4">
+                            <a th:href="@{/parent/login}" style="width: inherit" class="btn">
+                                <div class="statistic__item statistic__item--orange text-justify">
+                                    <h2 class="number">PARENTS/ELEVES</h2>
+                                    <span class="desc">Espace reserve aux parents/tuteurs </br>et élèves  pour des enseignements</span>
+                                    <div class="icon">
+                                        <img th:src="@{/images/guardian.png}">
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                         <div class="col-md-6 col-lg-4">
                             <a th:href="@{/encadrements/login}" style="width: inherit" class="btn">
                                 <div class="statistic__item statistic__item--red text-justify">

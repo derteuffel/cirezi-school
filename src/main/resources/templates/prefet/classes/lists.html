@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Direction</title>
+    <title>Prefet</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -38,7 +38,7 @@
 <body class="animsition">
 <div class="page-wrapper">
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header :: header}">
+    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
     </header>
     <!-- END HEADER DESKTOP -->
 
@@ -63,19 +63,19 @@
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_director :: sidebar_director}">
+                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
                     </div>
                     <div class="col-xl-9">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
 
-                            <!--<button type="button" data-toggle="modal" data-target="#addSalleModal" class="btn btn-primary">Nouvelle classe&nbsp;<i class="zmdi zmdi-plus"></i></button>
-                            <hr>-->
+                            <button type="button" data-toggle="modal" data-target="#addSalleModal" class="btn btn-primary">Nouvelle classe&nbsp;<i class="zmdi zmdi-plus"></i></button>
+                            <hr>
                             <h3 class="title-1">Liste des Classes</h3>
                             <hr>
                             <div class="row"  >
                                 <div class="col-lg-5 col-md-6 m-2" th:each="salle : ${lists}">
-                                    <a class="btn" th:href="@{/direction/salle/detail/}+${salle?.id}" style="width: 100%">
+                                    <a class="btn" th:href="@{/prefet/salle/detail/}+${salle?.id}" style="width: 100%">
                                         <div class="alert alert-dark row" role="alert">
                                         <div class="text-left">
                                             <strong th:text="${salle?.niveau}">Nom : </strong> <br>
@@ -101,7 +101,7 @@
     <div class="modal fade" id="addSalleModal" tabindex="-1" role="dialog" aria-labelledby="addSalleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form th:action="@{/direction/classe/save}" autocomplete="off" method="post" th:object="${salle}" class="form-horizontal">
+                <form th:action="@{/prefet/classe/save}" autocomplete="off" method="post" th:object="${salle}" class="form-horizontal">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addModalLabel">Nouvelle salle de classe</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
