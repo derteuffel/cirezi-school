@@ -13,4 +13,5 @@ import java.util.Collection;
 public interface PlanningRepository extends JpaRepository<Planning,Long> {
 
     Collection<Planning> findAllByHebdo_Id(Long id);
+    Planning findByCoursAndDate(String cours, String date);
 }

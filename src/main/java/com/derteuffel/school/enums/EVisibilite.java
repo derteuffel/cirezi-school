@@ -8,5 +8,7 @@ public enum EVisibilite {
     PARENT,
     ENSEIGNANT,
     DIRECTION,
-    ENCADREUR
+    ENCADREUR,
+    PREFET,
+    SECRETAIRE
 }

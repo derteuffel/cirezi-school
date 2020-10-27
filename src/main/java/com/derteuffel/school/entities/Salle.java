@@ -35,4 +35,15 @@ public class Salle implements Serializable {
                     name = "enseignant_id", referencedColumnName = "id"))
     private Collection<Enseignant> enseignants;
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "salle_hebdo",
+            joinColumns = @JoinColumn(
+                    name = "salle_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "hebdo_id", referencedColumnName = "id"))
+    private Collection<Hebdo> hebdos;
+
+
+
 }

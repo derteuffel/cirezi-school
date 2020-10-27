@@ -230,6 +230,7 @@ public class PrefetLoginController {
     @GetMapping("/administration/lists")
     public String administrationLists(Model model){
         List<Compte> comptes = compteRepository.findAllByType(EType.ADMINISTRATION.toString());
+        comptes.addAll(compteRepository.findAllByType(EType.SECRETAIRE.toString()));
         model.addAttribute("lists", comptes);
         return "prefet/administration/lists";
     }
@@ -478,8 +479,12 @@ public class PrefetLoginController {
     @PostMapping("/enseignant/update")
     public String enseignantUpdate(Enseignant enseignant, @RequestParam("file") MultipartFile file, String cour_enseigners) {
 
-        multipart.store(file);
-        enseignant.setAvatar("/upload-dir/"+file.getOriginalFilename());
+        if (!file.isEmpty()) {
+            multipart.store(file);
+            enseignant.setAvatar("/upload-dir/" + file.getOriginalFilename());
+        }else {
+            enseignant.setAvatar(enseignant.getAvatar());
+        }
         if (!(cour_enseigners.isEmpty())){
             String[]cours= cour_enseigners.split(",");
             System.out.println(cours.length);
@@ -796,16 +801,8 @@ public class PrefetLoginController {
     public String messagesDirecteur(HttpServletRequest request, Model model){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Collection<Message> messages = messageRepository.findAllByVisibilite(EVisibilite.DIRECTION.toString(), Sort.by(Sort.Direction.DESC, "id"));
-        messages.addAll(messageRepository.findAllByVisibilite(EVisibilite.PUBLIC.toString(), Sort.by(Sort.Direction.DESC, "id")));
-        messages.addAll(messageRepository.findAllByVisibilite(EVisibilite.ENSEIGNANT.toString(), Sort.by(Sort.Direction.DESC, "id")));
-        messages.addAll(messageRepository.findAllByVisibilite(EVisibilite.PARENT.toString()));
-        Collection<Message> messages1 = messageRepository.findAllByCompte_Id(compte.getId());
-        for (Message message : messages1) {
-            if (!(messages.contains(message))) {
-                messages.add(message);
-            }
-        }
+        Collection<Message> messages = messageRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+
         model.addAttribute("lists", messages);
         model.addAttribute("message", new Message());
         return "prefet/messages";
@@ -864,7 +861,7 @@ public class PrefetLoginController {
 
         Salle salle = salleRepository.getOne(id);
 
-                Collection<Hebdo> hebdos = hebdoRepository.findAllBySalle_Id(salle.getId(),Sort.by(Sort.Direction.DESC,"id"));
+                Collection<Hebdo> hebdos = hebdoRepository.findAllBySalles_Id(salle.getId(),Sort.by(Sort.Direction.DESC,"id"));
         model.addAttribute("classe",salle);
         model.addAttribute("lists",hebdos);
         return "prefet/classes/hebdos";
@@ -893,7 +890,7 @@ public class PrefetLoginController {
         return newList;
     }
 
-    @GetMapping("/hebdo/detail/{id}")
+    /*@GetMapping("/hebdo/detail/{id}")
     public String detailHebdo(Model model, @PathVariable Long id){
 
         Hebdo hebdo = hebdoRepository.getOne(id);
@@ -945,7 +942,7 @@ public class PrefetLoginController {
         model.addAttribute("classe",hebdo.getSalle());
         return "prefet/classes/presenceDetail";
 
-    }
+    }*/
 
     @GetMapping("/account/detail/{id}")
     public String getAccount(@PathVariable Long id, Model model){

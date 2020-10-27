@@ -17,7 +17,11 @@
                         <i class="fas fa-users"></i>Enseignants
                     </a>
                 </li>
-                <li >
+                <li>
+                    <a th:href="@{/direction/eleve/lists}">
+                        <i class="fas fa-users"></i>Eleves</a>
+                </li>
+                <!-- <li >
                     <a  th:href="@{/direction/administration/lists}">
                         <i class="fas fa-users"></i>Administration
                     </a>
@@ -26,7 +30,7 @@
                     <a  th:href="@{/direction/administration/form}">
                         <i class="fas fa-plus-circle"></i>Ajouter Directeur etude
                     </a>
-                </li>
+                </li>-->
 
                 <li >
                     <a  th:href="@{/direction/parent/lists}">
@@ -39,9 +43,10 @@
                     </a>
                 </li>
                 <li>
-                    <a th:href="@{/direction/eleve/lists}">
-                        <i class="fas fa-users"></i>Eleves</a>
+                    <a th:href="@{/direction/programme/lists}">
+                        <i class="fas fa-bookmark"></i>Programme des cours</a>
                 </li>
+
                 <li>
                     <a th:href="@{/direction/message/lists}">
                         <i class="fas fa-comment"></i>Communications</a>

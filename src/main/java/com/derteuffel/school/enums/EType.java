@@ -5,5 +5,6 @@ public enum EType {
     ADMINISTRATION,
     ROOT,
     ENSEIGNANT,
-    ELEVE
+    ELEVE,
+    SECRETAIRE
 }

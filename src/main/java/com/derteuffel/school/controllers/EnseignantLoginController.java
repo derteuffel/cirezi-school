@@ -99,8 +99,13 @@ public class EnseignantLoginController {
         System.out.println(principal.getName());
         Compte compte = compteService.findByUsername(principal.getName());
         Enseignant enseignant = compte.getEnseignant();
-        Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignant.getId());
-        System.out.println(salles);
+        Collection<Salle> salles = new ArrayList<>();
+        if (enseignant != null) {
+             salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
+            System.out.println(salles);
+        }else {
+            salles.addAll(salleRepository.findAll());
+        }
         /*if (!(enseignant.getSallesIds().isEmpty())) {
             for (Long ids : enseignant.getSallesIds()) {
                 salles.add(salleRepository.getOne(ids));
@@ -120,7 +125,7 @@ public class EnseignantLoginController {
                   enseignants.add(comptes.get(i).getEnseignant());
               List<Role> roles = (List<Role>) comptes.get(i).getRoles();
               for(int j=0;j<roles.size();j++){
-                 if(roles.get(j).getName().equals("ROLE_DIRECTEUR") || roles.get(j).getName().equals("ROLE_ROOT")){
+                 if(roles.get(j).getName().equals("ROLE_PREFET") || roles.get(j).getName().equals("ROLE_ROOT")){
                      directeur.add(comptes.get(i));
                  }
               }
@@ -664,9 +669,15 @@ public class EnseignantLoginController {
 
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
+        Enseignant enseignant = enseignantRepository.findByEmail(compte.getEmail());
+        Collection<Salle> salles = new ArrayList<>();
+        if (enseignant != null){
+            salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
+        }else {
+            salles.addAll(salleRepository.findAll());
+        }
         Salle salle = salleRepository.getOne(id);
-        Collection<Hebdo> hebdos = hebdoRepository.findAllByCompte_IdAndSalle_Id(compte.getId(),salle.getId(), Sort.by(Sort.Direction.DESC,"id"));
+        Collection<Hebdo> hebdos = hebdoRepository.findAllBySalles_Id(salle.getId(), Sort.by(Sort.Direction.DESC,"id"));
         Collection<Presence> presences = new ArrayList<>();
         model.addAttribute("lists",hebdos);
         model.addAttribute("salles",salles);
@@ -698,11 +709,18 @@ public class EnseignantLoginController {
         return newList;
     }
 
-    @GetMapping("/hebdo/detail/{id}")
+   /* @GetMapping("/hebdo/detail/{id}")
     public String detailHebdo(Model model, @PathVariable Long id, HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
-        Collection<Salle> salles = salleRepository.findAllByEnseignants_Id(enseignantRepository.findByEmail(compte.getEmail()).getId());
+        Enseignant enseignant = enseignantRepository.findByEmail(compte.getEmail());
+        Collection<Salle> salles = new ArrayList<>();
+
+        if (enseignant != null){
+            salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
+        }else {
+            salles.addAll(salleRepository.findAll());
+        }
         Hebdo hebdo = hebdoRepository.getOne(id);
         Collection<Planning> plannings = planningRepository.findAllByHebdo_Id(hebdo.getId());
         Collection<Presence> presences = presenceRepository.findAllByHebdo_Id(hebdo.getId());
@@ -746,24 +764,12 @@ public class EnseignantLoginController {
             return "redirect:/enseignant/hebdo/detail/"+ hebdo.getId();
         }
         planning.setHebdo(hebdo);
-        ArrayList<Boolean> array = new ArrayList<>();
-        array.add(false);
-        array.add(false);
-        planning.setValidations(array);
         planningRepository.save(planning);
         redirectAttributes.addFlashAttribute("success", "vous avez ajouté une nouvelle journée avec succès");
         return "redirect:/enseignant/hebdo/detail/"+ hebdo.getId();
     }
 
-    @GetMapping("/activate/planning/{id}")
-    public String activatePlan(@PathVariable Long id, HttpServletRequest request){
-        Planning planning = planningRepository.getOne(id);
-        planning.getValidations().clear();
-        planning.getValidations().add(true);
-        planningRepository.save(planning);
-        Salle salle = (Salle)request.getSession().getAttribute("classe");
-        return "redirect:/enseignant/hebdo/detail/"+planning.getHebdo().getId();
-    }
+
 
     @GetMapping("/presence/add/{id}")
     public String presenceNew(Model model, @PathVariable Long id){
@@ -821,7 +827,7 @@ public class EnseignantLoginController {
         model.addAttribute("classe",presence.getHebdo().getSalle());
         model.addAttribute("hebdo",presence.getHebdo());
         return "enseignant/presenceDetail";
-    }
+    }*/
 
     @Autowired
    private BCryptPasswordEncoder passwordEncoder;

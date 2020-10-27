@@ -15,7 +15,7 @@
                 </li>
                 <li class=" has-sub">
                     <a class="js-arrow" href="#">
-                        <i class="fas fa-home"></i>Classes/Auditoires
+                        <i class="fas fa-home"></i>Classes
                         <span class="arrow">
                             <i class="fas fa-angle-down"></i>
                         </span>
@@ -29,12 +29,12 @@
 
                 <li th:if="${classe}!=null">
                     <a  th:href="@{/enseignant/eleves/lists/}+${classe.id}">
-                        <i class="fas fa-user"></i>Eleves/Apprenants
+                        <i class="fas fa-user"></i>Eleves
                     </a>
                 </li>
                 <li th:if="${classe}!=null">
                     <a th:href="@{/enseignant/parents/lists/}+${classe.id}">
-                        <i class="fas fa-users"></i>Parents/Tuteurs</a>
+                        <i class="fas fa-users"></i>Parents</a>
                 </li>
                 <li th:if="${classe}!=null">
                     <a th:href="@{/enseignant/cours/lists/}+${classe.id}">

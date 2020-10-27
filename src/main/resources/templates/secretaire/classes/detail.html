@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Secretaire</title>
+
+    <!-- Fontfaces CSS-->
+    <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-4.7/css/font-awesome.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-5/css/fontawesome-all.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/mdi-font/css/material-design-iconic-font.min.css}" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link th:href="@{/vendor/bootstrap-4.1/bootstrap.min.css}" rel="stylesheet" media="all">
+
+    <!-- Vendor CSS-->
+    <link th:href="@{/vendor/animsition/animsition.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/wow/animate.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/css-hamburgers/hamburgers.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/slick/slick.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/select2/select2.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/perfect-scrollbar/perfect-scrollbar.css}" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link th:href="@{/css/theme.css}" rel="stylesheet" media="all">
+
+</head>
+
+<body class="animsition">
+<div class="page-wrapper">
+    <!-- HEADER DESKTOP-->
+    <header th:replace="~{../templates/fragments/header_secretaire :: header_secretaire}">
+    </header>
+    <!-- END HEADER DESKTOP -->
+
+    <!-- PAGE CONTENT-->
+    <div class="page-container3">
+        <section class="alert-wrap p-t-70 p-b-70">
+            <div class="container">
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div th:replace="~{../templates/fragments/sidebar_secretaire :: sidebar_secretaire}">
+                    </div>
+                    <div class="col-xl-6">
+                        <!-- PAGE CONTENT-->
+                        <div class="page-content">
+                            <h3 class="title-1">CLASSE : <span style="text-transform: uppercase" th:text="${classe.niveau}"></span></h3>
+                            <hr>
+                            <p>Enseignant : <span class="text-primary" th:text="${classe.principal}"></span></p>
+                            <hr>
+                            <div>
+                                <h2>Messages</h2>
+                                <div class="page-content row container-fluid my-5" style="overflow: scroll" th:each="message : ${lists}">
+                                    <div class="col-lg-12 col-md-6" th:if="${session.compte.username}!= ${message.sender}">
+                                        <div class="au-card m-b-30 alert alert-secondary" >
+                                            <div class="au-card-inner">
+                                                <p class=" m-b-20"><span class="text-warning" th:text="${message.sender}"></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;publié le : <span class="text-primary" th:text="${message.date}"></span></p>
+                                                <hr>
+                                                <p><span th:text="${message.content}"></span></p>
+                                                <br>
+                                                <p>Fichier(s) associé(s)&nbsp; <a th:href="${message.fichier}">Telecharger le (s) fichier(s)</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-6" th:unless="${session.compte.username}!= ${message.sender}">
+                                        <div class="au-card m-b-30 alert alert-success" >
+                                            <div class="au-card-inner">
+                                                <p class=" m-b-20"><span class="text-warning" >Vous</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;publié le : <span class="text-primary" th:text="${message.date}"></span></p>
+                                                <hr>
+                                                <p><span th:text="${message.content}"></span></p>
+                                                <br>
+                                                <p>Fichier(s) associé(s)&nbsp; <a th:href="${message.fichier}">Telecherger le fichier</a></p>
+                                                <a href="#" class="btn pull-right" data-toggle="modal" data-target="#deleteModal"  th:attr="data-target='#deleteModal'+${message?.id}"><i class="fas fa-trash"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade" th:id="deleteModal+${message?.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteModalLabel">Supprimer message</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body card-block">
+                                                    <p>Vous voulez vraiment supprimer ce message??</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                                    <a  class="btn btn-primary" th:href="@{/secretaire/message/delete/}+${message?.id}">Supprimer</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                                <!-- END PAGE CONTENT-->
+                            </div>
+                        </div>
+                        <!-- END PAGE CONTENT-->
+                    </div>
+                    <div th:replace="~{../templates/fragments/sidebar_classe :: sidebar_classe}">
+
+                    </div>
+                </div>
+                <!-- COPYRIGHT-->
+                <section th:replace="~{../templates/fragments/footer :: footer}"></section>
+
+                <!-- END COPYRIGHT-->
+            </div>
+        </section>
+    </div>
+    <button type="button" data-toggle="modal" class="btn btn-success" data-target="#addMessageModal" style="position: fixed;left: 50px;bottom: 100px"><i class="zmdi zmdi-comment"></i>&nbsp;Nouveau message</button>
+    <!-- modal medium -->
+    <div class="modal fade" id="addMessageModal" tabindex="-1" role="dialog" aria-labelledby="addMessageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form th:action="@{/secretaire/message/save/}+${classe.id}" autocomplete="off" method="post" th:object="${message}" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">Nouveau message pour la gestion de la classe</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block">
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-content" class=" form-control-label">Corps du message</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <textarea th:field="*{content}" id="text-content" class="form-control" rows="5" placeholder="Contenue"></textarea>
+                                <small class="form-text text-muted">Ajouter votre message</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-salle" class=" form-control-label">Visibilite du message</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select th:field="*{visibilite}" id="text-salle" class="form-control">
+                                    <option value="">Choisir</option>
+                                    <option th:each=" item : ${T(com.derteuffel.school.enums.EVisibilite).values()}" th:value="${item}" th:text="${item}">Choisir</option>
+                                </select>
+                                <small class="form-text text-muted">Choisir la porte de votre message </small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-file" class=" form-control-label">Fichier numerique</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="file" id="text-file" name="file"  class="form-control-file">
+                                <small class="form-text text-muted">Charger un support numerique </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
+                        <button type="submit" class="btn btn-primary">Envoyer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- END PAGE CONTENT  -->
+
+</div>
+
+<!-- Jquery JS-->
+<script th:src="@{/vendor/jquery-3.2.1.min.js}"></script>
+<!-- Bootstrap JS-->
+<script th:src="@{/vendor/bootstrap-4.1/popper.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-4.1/bootstrap.min.js}"></script>
+<!-- Vendor JS       -->
+<script th:src="@{/vendor/slick/slick.min.js}">
+</script>
+<script th:src="@{/vendor/wow/wow.min.js}"></script>
+<script th:src="@{/vendor/animsition/animsition.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-progressbar/bootstrap-progressbar.min.js}">
+</script>
+<script th:src="@{/vendor/counter-up/jquery.waypoints.min.js}"></script>
+<script th:src="@{/vendor/counter-up/jquery.counterup.min.js}">
+</script>
+<script th:src="@{/vendor/circle-progress/circle-progress.min.js}"></script>
+<script th:src="@{/vendor/perfect-scrollbar/perfect-scrollbar.js}"></script>
+<script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
+<script th:src="@{/vendor/select2/select2.min.js}">
+</script>
+
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
+
+</body>
+
+</html>
+<!-- end document-->

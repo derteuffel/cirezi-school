@@ -322,7 +322,7 @@ public class ParentLoginController {
         Parent parent = compte.getParent();
         Salle salle = salleRepository.getOne(id);
 
-        Collection<Hebdo> hebdos = hebdoRepository.findAllBySalle_Id(salle.getId(),Sort.by(Sort.Direction.DESC,"id"));
+        Collection<Hebdo> hebdos = hebdoRepository.findAllBySalles_Id(salle.getId(),Sort.by(Sort.Direction.DESC,"id"));
         model.addAttribute("classe",salle);
         model.addAttribute("lists",hebdos);
         return "parent/hebdos";
@@ -351,7 +351,7 @@ public class ParentLoginController {
         return newList;
     }
 
-    @GetMapping("/hebdo/detail/{id}")
+   /* @GetMapping("/hebdo/detail/{id}")
     public String detailHebdo(Model model, @PathVariable Long id){
 
         Hebdo hebdo = hebdoRepository.getOne(id);
@@ -405,17 +405,9 @@ public class ParentLoginController {
         model.addAttribute("classe",hebdo.getSalle());
         return "parent/presenceDetail";
 
-    }
+    }*/
 
-    @GetMapping("/activate/planning/{id}")
-    public String activatePlan(@PathVariable Long id){
-        Planning planning = planningRepository.getOne(id);
-        planning.getValidations().add(true);
-        planningRepository.save(planning);
-        Hebdo hebdo = planning.getHebdo();
-        Salle salle = hebdo.getSalle();
-        return "redirect:/parent/hebdo/detail/"+hebdo.getId();
-    }
+
 
 
     @GetMapping("/access-denied")

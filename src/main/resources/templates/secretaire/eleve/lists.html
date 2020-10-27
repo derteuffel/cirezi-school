@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Secretaire</title>
+
+    <!-- Fontfaces CSS-->
+    <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-4.7/css/font-awesome.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-5/css/fontawesome-all.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/mdi-font/css/material-design-iconic-font.min.css}" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link th:href="@{/vendor/bootstrap-4.1/bootstrap.min.css}" rel="stylesheet" media="all">
+
+    <!-- Vendor CSS-->
+    <link th:href="@{/vendor/animsition/animsition.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/wow/animate.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/css-hamburgers/hamburgers.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/slick/slick.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/select2/select2.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/perfect-scrollbar/perfect-scrollbar.css}" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link th:href="@{/css/theme.css}" rel="stylesheet" media="all">
+
+</head>
+
+<body class="animsition">
+<div class="page-wrapper">
+    <!-- HEADER DESKTOP-->
+    <header th:replace="~{../templates/fragments/header_secretaire :: header_secretaire}">
+    </header>
+    <!-- END HEADER DESKTOP -->
+
+    <!-- PAGE CONTENT-->
+    <div class="page-container3">
+        <section class="alert-wrap p-t-70 p-b-70">
+            <div class="container">
+                <!-- ALERT-->
+                <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
+                    <i class="zmdi zmdi-check-circle"></i>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous êtes connecté successivement à votre compte</span>
+                    <span th:unless="${success}" class="content">Vous êtes connecté successivement à votre compte</span>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">
+                                <i class="zmdi zmdi-close-circle"></i>
+                            </span>
+                    </button>
+                </div>
+                <!-- END ALERT-->
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div th:replace="~{../templates/fragments/sidebar_secretaire :: sidebar_secretaire}">
+                    </div>
+                    <div class="col-xl-9">
+                        <!-- PAGE CONTENT-->
+                        <div class="page-content">
+
+                            <h3 class="title-1">Liste des élèves : <span th:text="${'Lycee cirezi de Bukavu'}"></span></h3>
+                            <hr>
+                            <div class="row"  >
+                                    <table class="table table-bordered" id="add-row">
+                                        <thead>
+                                        <th>Nom</th>
+                                        <th>Prenom</th>
+                                        <th>Age</th>
+                                        <th>ACTION</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="eleve : ${lists}">
+                                            <td th:text="${eleve?.name}"></td>
+                                            <td th:text="${eleve?.prenom}"></td>
+                                            <td th:text="${eleve?.age+' ans'}"></td>
+                                            <td>
+                                                <button type="button" data-toggle="modal" data-target="#detailEleveModal" th:attr="data-target='#detailEleveModal'+${eleve?.id}" class="text-success"><i class="fas fa-eye"></i></button>
+                                            </td>
+                                            <div class="modal fade" th:id="detailEleveModal+${eleve?.id}" tabindex="-1" role="dialog" aria-labelledby="detaiEleveModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="detailModalLabel">Detail élève</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body card-block">
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Prénom</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.prenom}">Prenom de l'enseignant</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Nom</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.name}">Nom de l'enseignant</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Pays</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.pays}">Postnom de l'enseignant</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Age</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.age+' ans'}">Postnom de l'enseignant</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Localisation</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.localisation}">Postnom de l'enseignant</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Nom complet tuteur</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.nomCompletTuteur}">Numero de telephone</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Téléphone tuteur</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.telephoneTuteur}">Numero de telephone</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">E-mail du tuteur</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.emailTuteur}">Adresse email</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Whatsapp du tuteur</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.whatsappTuteur}">Numero de telephone whatsapp</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Autre information</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.autreInformation}">Cours enseigner</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+
+                        </div>
+                        <!-- END PAGE CONTENT-->
+                    </div>
+                </div>
+                <!-- COPYRIGHT-->
+                <section th:replace="~{../templates/fragments/footer :: footer}"></section>
+
+                <!-- END COPYRIGHT-->
+            </div>
+        </section>
+    </div>
+    <!-- END PAGE CONTENT  -->
+
+</div>
+
+<!-- Jquery JS-->
+<script th:src="@{/vendor/jquery-3.2.1.min.js}"></script>
+<!-- Bootstrap JS-->
+<script th:src="@{/vendor/bootstrap-4.1/popper.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-4.1/bootstrap.min.js}"></script>
+<!-- Vendor JS       -->
+<script th:src="@{/vendor/slick/slick.min.js}">
+</script>
+<script th:src="@{/vendor/wow/wow.min.js}"></script>
+<script th:src="@{/vendor/animsition/animsition.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-progressbar/bootstrap-progressbar.min.js}">
+</script>
+<script th:src="@{/vendor/counter-up/jquery.waypoints.min.js}"></script>
+<script th:src="@{/vendor/counter-up/jquery.counterup.min.js}">
+</script>
+<script th:src="@{/vendor/circle-progress/circle-progress.min.js}"></script>
+<script th:src="@{/vendor/perfect-scrollbar/perfect-scrollbar.js}"></script>
+<script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
+<script th:src="@{/vendor/select2/select2.min.js}">
+</script>
+<script >
+    $(document).ready(function() {
+        // Add Row
+        $('#add-row').DataTable({
+            "pageLength": 10,
+        });
+
+    });
+</script>
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/datatables.min.js}"></script>
+
+
+</body>
+
+</html>
+<!-- end document-->

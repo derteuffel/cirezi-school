@@ -69,13 +69,12 @@
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
 
-                            <h2>Planning et présence hebdomadaire  &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h2>
+                            <h3 class="title-1">Planning et présence hebdomadaire  &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h3>
                             <hr>
                             <div class="row"  >
                                 <div class="col-lg-12 my-2">
                                         <div class="alert alert-light text-center" >
-                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span></p>
-                                            <p><strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
+                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span>&nbsp;&nbsp;<strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
                                             <hr>
                                             <div class="container-fluid row">
 
@@ -84,11 +83,11 @@
                                                     <hr>
                                                     <div th:each=" plan : ${plannings}">
                                                     <p class="text-left"><sapn th:text="'Le : '+${plan.dateJour}"></sapn>
-                                                        </br>
+                                                        <br>
                                                         <span th:text="'Titre de la lecon : '+${plan.titre}"></span>
-                                                        </br>
+                                                        <br>
                                                         <span th:text="'Heure : '+${plan.heure}"></span>
-                                                        </br>
+                                                        <br>
                                                         <a class="btn text-danger" th:if="${#lists.size(plan.validations)}!=0 and ${plan?.validations[0]}==false" th:href="@{/enseignant/activate/planning/}+${plan.id}" title="Valide ?"><i class="fas fa-circle"></i></a>
                                                         <span th:if="${#lists.size(plan.validations)}!=0 and ${plan?.validations[0]}==true" class="text-success"><i class="fas fa-circle"></i></span>
                                                     </p>

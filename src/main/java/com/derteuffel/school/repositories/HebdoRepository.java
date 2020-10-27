@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by user on 10/04/2020.
@@ -15,8 +14,8 @@ import java.util.List;
 public interface HebdoRepository extends JpaRepository<Hebdo, Long> {
 
 
-    Collection<Hebdo> findAllBySalle_Id(Long id,Sort sort);
+    Collection<Hebdo> findAllBySalles_Id(Long id,Sort sort);
     Collection<Hebdo> findAllByCompte_Id(Long id);
-    Collection<Hebdo> findAllByCompte_IdAndSalle_Id(Long compteId, Long salleId, Sort sort);
+    Collection<Hebdo> findAllByCompte_IdAndSalles_Id(Long compteId, Long salleId, Sort sort);
 
 }

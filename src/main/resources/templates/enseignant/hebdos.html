@@ -68,16 +68,14 @@
                     <div class="col-xl-9">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
-
+                            <h3 class="title-1">Planing hebdomadaire &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h3>
+                            <hr>
                             <button type="button" data-toggle="modal" data-target="#addHebdoModal" class="btn btn-primary">Nouvelle semaine&nbsp;<i class="zmdi zmdi-plus"></i></button>
                             <hr>
-                            <h2>Ensemble des semaines de travail &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h2>
-                            <hr>
                             <div class="row"  >
-                                <div class="col-lg-12 my-2" th:each="hebdo : ${lists}">
+                                <div class="col-lg-12 my-1" th:each="hebdo : ${lists}">
                                         <div class="alert alert-light text-center" >
-                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span></p>
-                                            <p><strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
+                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span>&nbsp;&nbsp;<strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
                                             <hr>
                                             <a th:href="@{/enseignant/hebdo/detail/}+${hebdo.id}">Voir plus</a>
                                         </div>
