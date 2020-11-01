@@ -30,6 +30,7 @@ public class ParentSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/upload-dir/**",
                         "/vendor/**",
                         "/fonts/**",
+                        "/home/**",
                         "/images/**",
                         "/static/**").permitAll()
                 .anyRequest().authenticated()

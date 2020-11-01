@@ -82,6 +82,38 @@ public class CompteSeviceImpl implements CompteService{
     }
 
     @Override
+    public Compte savePrefet(String email, String password, String username, String s) {
+        Compte compte = new Compte();
+
+        compte.setEmail(email);
+        compte.setPassword(passwordEncoder.encode(password));
+        compte.setUsername(username);
+        compte.setAvatar(s);
+        compte.setEncode(password);
+        compte.setStatus(false);
+
+        Role role = new Role();
+
+        if (compteRepository.findAll().size() <=1){
+            role.setName(ERole.ROLE_ROOT.toString());
+            compte.setType("root");
+        }else {
+            role.setName(ERole.ROLE_PREFET.toString());
+            compte.setType("prefet");
+        }
+
+        Role existRole = roleRepository.findByName(role.getName());
+        if (existRole != null){
+            compte.setRoles(Arrays.asList(existRole));
+        }else {
+            roleRepository.save(role);
+            compte.setRoles(Arrays.asList(role));
+        }
+        compteRepository.save(compte);
+        return compte;
+    }
+
+    @Override
     public Compte saveRoot(CompteRegistrationDto compteRegistrationDto, String s) {
         Compte compte = new Compte();
         compte.setEmail(compteRegistrationDto.getEmail());

@@ -61,6 +61,7 @@ public class AdminSecurityConfig extends WebSecurityConfigurerAdapter{
                         "/upload-dir/**",
                         "/vendor/**",
                         "/fonts/**",
+                        "/home/**",
                         "/images/**",
                         "/static/**");
     }

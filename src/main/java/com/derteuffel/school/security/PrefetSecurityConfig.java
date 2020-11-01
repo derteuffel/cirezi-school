@@ -74,7 +74,8 @@ public class PrefetSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/password/**",
                         "/chat**",
                         "/topic/**",
-                        "/app**"
+                        "/app**",
+                        "/home/**"
                         );
     }
 }

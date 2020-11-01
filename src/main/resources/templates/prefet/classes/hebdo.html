@@ -49,8 +49,8 @@
                 <!-- ALERT-->
                 <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
                     <i class="zmdi zmdi-check-circle"></i>
-                    <span th:if="${success}" class="content" th:text="${success}">Vous êtes connecté successivement à votre compte</span>
-                    <span th:unless="${success}" class="content">Vous êtes connecté successivement à votre compte</span>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
+                    <span th:unless="${success}" class="content">Vous ètes connecté successivement a votre compte</span>
                     <button class="close" type="button" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">
                                 <i class="zmdi zmdi-close-circle"></i>
@@ -65,47 +65,129 @@
                 <div class="row">
                     <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
                     </div>
-                    <div class="col-xl-6">
+                    <div class="col-xl-9">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
 
-                            <h3 class="title-1">Planning et présence hebdomadaire &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h3>
+                            <h3 class="title-1">Planning et présence hebdomadaire  &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h3>
                             <hr>
                             <div class="row"  >
                                 <div class="col-lg-12 my-2">
                                         <div class="alert alert-light text-center" >
-                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span></p>
-                                            <p><strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
+                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span>&nbsp;&nbsp;<strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
                                             <hr>
                                             <div class="container-fluid row">
 
-                                                <div class="col-md-7" >
-                                                    <h3 class="title-2">Planning de la semaine </h3>
+                                                <div class="col-md-12" >
+                                                    <h3>Ajouter un cours &nbsp;&nbsp; <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPlanningModal" th:attr="data-target='#addPlanningModal'+${hebdo?.id}" ><i class="fas fa-plus"></i></button></h3>
                                                     <hr>
-                                                    <div th:each=" plan : ${plannings}">
-                                                    <p class="text-left">
-                                                        <span th:text="'Le : '+${plan.dateJour}"></span>
+                                                    <a th:href="@{/prefet/classes/planning/lists/}+${hebdo.id+'/'+classe.id}">Voir le programme de la semaine <i class="fa fa-hand-right"></i></a>
+                                                    <!--<div th:each=" plan : ${plannings}">
+                                                    <p class="text-left"><sapn th:text="${plan.date}"></sapn>
                                                         <br>
-                                                        <span th:text="'Titre de la lecon : '+${plan.titre}"></span>
+                                                        <span th:text="'Cours de : '+${plan.cours}"></span>
                                                         <br>
-                                                        <span th:text="'Heure : '+${plan.heure}"></span>
+                                                        <span th:text="'Debut a : '+${plan.heureDebut}+' Fin a :'+${plan.heureFin}"></span>
                                                         <br>
-                                                        <div class="row" th:each="status: ${plan.validations}">
-                                                            <span th:if="${status}==true" class="text-success"><i class="fas fa-circle"></i></span>
-                                                            <span th:unless="${status}==true" class="text-danger"><i class="fas fa-circle"></i></span>
-                                                        </div>
-                                                    </p>
+                                                        <a class="btn text-danger" th:if="${#lists.size(plan.validations)}!=0 and ${plan?.validations[0]}==false" th:href="@{/enseignant/activate/planning/}+${plan.id}" title="Valide ?"><i class="fas fa-circle"></i></a>
+                                                        <span th:if="${#lists.size(plan.validations)}!=0 and ${plan?.validations[0]}==true" class="text-success"><i class="fas fa-circle"></i></span>
+                                                    </p> -->
                                                         <hr>
                                                     </div>
+                                                    <!-- modal medium -->
+                                                    <div class="modal fade" th:id="addPlanningModal+${hebdo?.id}" tabindex="-1" role="dialog" aria-labelledby="addPlanningModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg" role="document">
+                                                            <div class="modal-content">
+                                                                <form th:action="@{/prefet/planning/save/}+${hebdo?.id+'/'+classe.id}" autocomplete="off" method="post" th:object="${planning}" enctype="multipart/form-data" class="form-horizontal">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="addPlanningModalLabel">Nouveau cours</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body card-block">
+                                                                        <div class="row form-group">
+                                                                            <div class="col col-md-3">
+                                                                                <label for="text-jour-semaine" class=" form-control-label">Jour de la semaine</label>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-9">
+                                                                                <select name="jour_semaine" class="form-control" id="text-jour-semaine">
+                                                                                    <option value="">--Choisir un jour de la semaine--</option>
+                                                                                    <option th:each="item : ${T(com.derteuffel.school.enums.EJours).values()}" th:value="${item}" th:text="${item}"></option>
+                                                                                </select>
+                                                                                <small class="form-text text-muted">Intituler du jour de la Semaine</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row form-group">
+                                                                            <div class="col col-md-3">
+                                                                                <label for="text-date" class=" form-control-label">Date du jour</label>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-9">
+                                                                                <input type="date" id="text-date" name="date" placeholder="Date" class="form-control">
+                                                                                <small class="form-text text-muted">Date du jour</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row form-group">
+                                                                            <div class="col col-md-3">
+                                                                                <label for="text-heureDebut" class=" form-control-label">Heure de debut du cours</label>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-9">
+                                                                                <input type="time" id="text-heureDebut" th:field="*{heureDebut}" placeholder="Heure de debut" class="form-control">
+                                                                                <small class="form-text text-muted">Heure de debut de la lecon</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row form-group">
+                                                                            <div class="col col-md-3">
+                                                                                <label for="text-heureFin" class=" form-control-label">Heure de fin du cours</label>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-9">
+                                                                                <input type="time" id="text-heureFin" th:field="*{heureFin}" placeholder="Heure de fin" class="form-control">
+                                                                                <small class="form-text text-muted">Heure de fin de la lecon</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row form-group">
+                                                                            <div class="col col-md-3">
+                                                                                <label for="text-cours" class=" form-control-label">Intitule du cour</label>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-9">
+                                                                                <select th:field="*{cours}" class="form-control" id="text-cours">
+                                                                                    <option value="">--Choisir un code du cours--</option>
+                                                                                    <option th:each="item : ${T(com.derteuffel.school.enums.EMatiere).values()}" th:value="${item}" th:text="${item}"></option>
+                                                                                </select>
+                                                                                <small class="form-text text-muted">Intitule de la lecon</small>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row form-group">
+                                                                            <div class="col col-md-3">
+                                                                                <label for="text-enseignant" class=" form-control-label">Enseignant </label>
+                                                                            </div>
+                                                                            <div class="col-12 col-md-9">
+                                                                                <select name="enseignantId" class="form-control" id="text-enseignant">
+                                                                                    <option value="">--Choisir un enseignant--</option>
+                                                                                    <option th:each="item : ${enseignants}" th:value="${item.id}" th:text="${item.name+' '+item.prenom}"></option>
+                                                                                </select>
+                                                                                <small class="form-text text-muted">Nom et prenom de l'enseignant de cette matiere</small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
+                                                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- end modal medium -->
                                                 </div>
-                                                <div class="col-md-5">
-                                                    <h3 class="title-2">Liste de présence &nbsp;&nbsp; </h3>
+                                                <!--<div class="col-md-5">
+                                                    <h3>Liste de présence &nbsp;&nbsp; <a th:href="@{/direction/presence/add/}+${hebdo.id}" class="btn btn-primary" ><i class="fas fa-plus"></i></a></h3>
                                                     <hr>
                                                     <p th:each="date : ${dates}">
-                                                        <a class="btn btn-outline-primary my-2" th:href="@{/prefet/presence/detail/}+${hebdo.id}" th:text="'Le : '+${date}" style="width: 100%"></a>
+                                                        <a class="btn btn-outline-primary my-2" th:href="@{/direction/presence/add/}+${hebdo.id}" th:text="'Le : '+${date}" style="width: 100%"></a>
                                                         <hr>
                                                     </p>
-                                                </div>
+                                                </div>-->
                                             </div>
                                         </div>
                                 </div>
@@ -114,18 +196,16 @@
                         </div>
                         <!-- END PAGE CONTENT-->
                     </div>
-                    <div th:replace="~{../templates/fragments/sidebar_classe :: sidebar_classe}">
-
-                    </div>
                 </div>
                 <!-- COPYRIGHT-->
                 <section th:replace="~{../templates/fragments/footer :: footer}"></section>
 
                 <!-- END COPYRIGHT-->
-            </div>
         </section>
+
     </div>
     <!-- END PAGE CONTENT  -->
+
 
 </div>
 

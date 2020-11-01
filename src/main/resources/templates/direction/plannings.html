@@ -70,18 +70,8 @@
                         <div class="page-content">
                             <h3 class="title-1"><span th:text="${'Plannification general des cours'}"></span></h3>
                             <hr>
-                            <div class="row">
-                                <div class="col-md-6 col-xl-6">
-                                    <button type="button" data-toggle="modal" data-target="#addHebdoModal" class="btn btn-primary">Nouvelle semaine&nbsp;<i class="zmdi zmdi-plus"></i></button>
-                                    <br><br>
-                                    <a th:href="@{/direction/programme/hebdos}">Les semaines</a>
-                                </div>
-                                <div class="col-md-6 col-xl-6">
-                                    <button type="button" data-toggle="modal" data-target="#addCoursModal" class="btn btn-primary">Nouveau cours&nbsp;<i class="zmdi zmdi-plus"></i></button>
-                                    <br><br>
-                                    <a th:href="@{/direction/programme/lists}">Programmation generale</a>
-                                </div>
-                            </div>
+
+                            <a th:href="@{/direction/programme/hebdos}">Planning par semaines</a>
                             <hr>
                             <hr>
                             <div class="row"  >
@@ -142,131 +132,8 @@
 
     </div>
     <!-- END PAGE CONTENT  -->
-    <!-- modal medium -->
-    <div class="modal fade" id="addHebdoModal" tabindex="-1" role="dialog" aria-labelledby="addHebdoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form th:action="@{/direction/programme/hebdo/save}" autocomplete="off" method="post" th:object="${hebdo}" enctype="multipart/form-data" class="form-horizontal">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addModalLabel">Nouvelle semaine</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body card-block">
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label for="text-debut" class=" form-control-label">Debut de la semaine</label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <input type="date" id="text-debut" th:field="*{debut}" placeholder="Titre" class="form-control">
-                                <small class="form-text text-muted">Date debut</small>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label for="text-fin" class=" form-control-label">Fin de la semaine</label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <input type="date" id="text-fin" th:field="*{fin}" placeholder="Titre" class="form-control">
-                                <small class="form-text text-muted">Date fin</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
-                        <button type="submit" class="btn btn-primary">Créer</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- end modal medium -->
-    <!-- modal medium -->
-    <div class="modal fade" id="addCoursModal" tabindex="-1" role="dialog" aria-labelledby="addCoursModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <form th:action="@{/direction/programme/planning/save}" autocomplete="off" method="post" th:object="${planningHelpers}" enctype="multipart/form-data" class="form-horizontal">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addPlanningModalLabel">Nouveau cours</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body card-block">
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label for="text-jour-semaine" class=" form-control-label">Jour de la semaine</label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <select name="jour_semaine" class="form-control" id="text-jour-semaine">
-                                    <option value="">--Choisir un jour de la semaine--</option>
-                                    <option th:each="item : ${T(com.derteuffel.school.enums.EJours).values()}" th:value="${item}" th:text="${item}"></option>
-                                </select>
-                                <small class="form-text text-muted">Intituler du jour de la Semaine</small>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label for="text-date" class=" form-control-label">Date du jour</label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <input type="date" id="text-date" name="date" placeholder="Date" class="form-control">
-                                <small class="form-text text-muted">Date du jour</small>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label for="text-heureDebut" class=" form-control-label">Heure de debut du cours</label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <input type="time" id="text-heureDebut" th:field="*{heureDebut}" placeholder="Heure de debut" class="form-control">
-                                <small class="form-text text-muted">Heure de debut de la lecon</small>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label for="text-heureFin" class=" form-control-label">Heure de fin du cours</label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <input type="time" id="text-heureFin" th:field="*{heureFin}" placeholder="Heure de fin" class="form-control">
-                                <small class="form-text text-muted">Heure de fin de la lecon</small>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label for="text-cours" class=" form-control-label">Intitule du cour</label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <select th:field="*{cours}" class="form-control" id="text-cours">
-                                    <option value="">--Choisir un code du cours--</option>
-                                    <option th:each="item : ${T(com.derteuffel.school.enums.EMatiere).values()}" th:value="${item}" th:text="${item}"></option>
-                                </select>
-                                <small class="form-text text-muted">Intitule de la lecon</small>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label for="text-enseignant" class=" form-control-label">Enseignant </label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <select name="enseignantId" class="form-control" id="text-enseignant">
-                                    <option value="">--Choisir un enseignant--</option>
-                                    <option th:each="item : ${enseignants}" th:value="${item.id}" th:text="${item.name+' '+item.prenom}"></option>
-                                </select>
-                                <small class="form-text text-muted">Nom et prenom de l'enseignant de cette matiere</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
-                        <button type="submit" class="btn btn-primary">Enregistrer</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- end modal medium -->
+
+
 
 </div>
 

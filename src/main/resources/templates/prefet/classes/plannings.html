@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Enseignant</title>
+    <title>Prefet</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -38,7 +38,7 @@
 <body class="animsition">
 <div class="page-wrapper">
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header_enseignant :: header_enseignant}">
+    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
     </header>
     <!-- END HEADER DESKTOP -->
 
@@ -50,7 +50,7 @@
                 <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
                     <i class="zmdi zmdi-check-circle"></i>
                     <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
-                    <span th:unless="${success}" class="content">Vous ètes connecté successivement a votre compte</span>
+                    <span th:unless="${success}" class="content">Vous etes connecté successivement a votre compte</span>
                     <button class="close" type="button" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">
                                 <i class="zmdi zmdi-close-circle"></i>
@@ -63,25 +63,65 @@
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_enseignant :: sidebar_enseignant}">
+                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
                     </div>
-                    <div class="col-xl-9">
+                    <div class="col-xl-6">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
-                            <h3 class="title-1">Planing hebdomadaire &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h3>
+                            <h3 class="title-1"><span th:text="${classe?.niveau}"></span></h3>
                             <hr>
+                            <h5 class="title-1"><span th:text="${'Programme du : '+hebdo.debut+' au : '+hebdo.fin}"></span></h5>
+
                             <div class="row"  >
-                                <div class="col-lg-12 my-1" th:each="hebdo : ${lists}">
-                                        <div class="alert alert-light text-center" >
-                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span>&nbsp;&nbsp;<strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
-                                            <hr>
-                                            <a th:href="@{/enseignant/hebdo/detail/}+${hebdo.id+'/'+classe.id}">Voir plus</a>
-                                        </div>
-                                </div>
+                                    <table class="table table-bordered table-responsive" id="add-row">
+                                        <thead>
+                                        <th>Cours</th>
+                                        <th>Date</th>
+                                        <th>Heure debut</th>
+                                        <th>Heure fin</th>
+                                        <th>Enseignant</th>
+                                        <th>ACTION</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="item : ${lists}">
+                                            <td th:text="${item.cours}"></td>
+                                            <td th:text="${item.date}"></td>
+                                            <td th:text="${item.heureDebut}"></td>
+                                            <td th:text="${item.heureFin}"></td>
+                                            <td th:text="${item.enseignant.name+' '+item.enseignant.prenom}"></td>
+                                            <td>
+                                                <a th:href="@{/prefet/classes/planning/update/}+${item?.id+'/'+classe.id}" class="btn"><i class="fa fa-edit"></i></a>
+                                                <button type="button" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${eleve?.id}" class="text-danger"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                            <div class="modal fade" th:id="deleteModal+${item?.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteModalLabel">Supprimer Eleve</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body card-block">
+                                                            <p>Vous voulez vraiment supprimer cet eleve??</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                                            <a  class="btn btn-primary" th:href="@{/prefet/eleve/delete/}+${item?.id}">Supprimer</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                             </div>
 
                         </div>
                         <!-- END PAGE CONTENT-->
+                    </div>
+                    <div th:replace="~{../templates/fragments/sidebar_classe :: sidebar_classe}">
+
                     </div>
                 </div>
                 <!-- COPYRIGHT-->
@@ -115,9 +155,18 @@
 <script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
 <script th:src="@{/vendor/select2/select2.min.js}">
 </script>
+<script >
+    $(document).ready(function() {
+        // Add Row
+        $('#add-row').DataTable({
+            "pageLength": 10,
+        });
 
+    });
+</script>
 <!-- Main JS-->
 <script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/datatables.min.js}"></script>
 
 </body>
 

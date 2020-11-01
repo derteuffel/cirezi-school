@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Prefet</title>
+
+    <!-- Fontfaces CSS-->
+    <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-4.7/css/font-awesome.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-5/css/fontawesome-all.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/mdi-font/css/material-design-iconic-font.min.css}" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link th:href="@{/vendor/bootstrap-4.1/bootstrap.min.css}" rel="stylesheet" media="all">
+
+    <!-- Vendor CSS-->
+    <link th:href="@{/vendor/animsition/animsition.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/wow/animate.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/css-hamburgers/hamburgers.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/slick/slick.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/select2/select2.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/perfect-scrollbar/perfect-scrollbar.css}" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link th:href="@{/css/theme.css}" rel="stylesheet" media="all">
+
+</head>
+
+<body class="animsition">
+<div class="page-wrapper">
+    <!-- HEADER DESKTOP-->
+    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
+    </header>
+    <!-- END HEADER DESKTOP -->
+
+    <!-- PAGE CONTENT-->
+    <div class="page-container3">
+        <section class="alert-wrap p-t-70 p-b-70">
+            <div class="container">
+                <!-- ALERT-->
+                <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
+                    <i class="zmdi zmdi-check-circle"></i>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
+                    <span th:unless="${success}" class="content">Vous ètes connecté successivement a votre compte</span>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">
+                                <i class="zmdi zmdi-close-circle"></i>
+                            </span>
+                    </button>
+                </div>
+                <!-- END ALERT-->
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
+                    </div>
+                    <div class="col-xl-9">
+                        <!-- PAGE CONTENT-->
+                        <div class="page-content">
+
+                            <h3 class="title-1">Planning  hebdomadaire  &nbsp;&nbsp;<span th:text="${'generale'}"></span></h3>
+                            <hr>
+                            <div class="row"  >
+                                <div class="col-lg-12 my-2">
+                                        <div class="alert alert-light text-center" >
+                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span>&nbsp;&nbsp;<strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
+                                            <hr>
+                                            <button type="button" data-toggle="modal" data-target="#addCoursModal" class="btn btn-primary">Nouveau cours&nbsp;<i class="zmdi zmdi-plus"></i></button>
+                                            <hr>
+                                            <div class="container-fluid row">
+
+                                                <div class="col-md-12" >
+                                                    <table class="table table-bordered table-responsive-lg" id="add-row">
+                                                        <thead>
+                                                        <th>Cours</th>
+                                                        <th>Date</th>
+                                                        <th>Heure debut</th>
+                                                        <th>Heure fin</th>
+                                                        <th>Enseignant</th>
+                                                        <th>ACTION</th>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr th:each="item : ${plannings}">
+                                                            <td th:text="${item.cours}"></td>
+                                                            <td th:text="${item.date}"></td>
+                                                            <td th:text="${item.heureDebut}"></td>
+                                                            <td th:text="${item.heureFin}"></td>
+                                                            <td th:text="${item.enseignant.name+' '+item.enseignant.prenom}"></td>
+                                                            <td>
+                                                                <a th:href="@{/prefet/programme/planning/update/}+${item?.id}" class="btn"><i class="fa fa-edit"></i></a>
+                                                                <button type="button" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${eleve?.id}" class="text-danger"><i class="fas fa-trash"></i></button>
+                                                            </td>
+                                                            <div class="modal fade" th:id="deleteModal+${item?.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg" role="document">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="deleteModalLabel">Supprimer Eleve</h5>
+                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                <span aria-hidden="true">&times;</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body card-block">
+                                                                            <p>Vous voulez vraiment supprimer cet eleve??</p>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                                                            <a  class="btn btn-primary" th:href="@{/prefet/eleve/delete/}+${item?.id}">Supprimer</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- END PAGE CONTENT-->
+                    </div>
+                </div>
+                <!-- COPYRIGHT-->
+                <section th:replace="~{../templates/fragments/footer :: footer}"></section>
+
+                <!-- END COPYRIGHT-->
+        </section>
+    </div>
+    <!-- END PAGE CONTENT  -->
+    <!-- modal medium -->
+    <div class="modal fade" id="addCoursModal" tabindex="-1" role="dialog" aria-labelledby="addCoursModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form th:action="@{/prefet/programme/planning/save/}+${hebdo.id}" autocomplete="off" method="post" th:object="${planning}" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addPlanningModalLabel">Nouveau cours</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block">
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-jour-semaine" class=" form-control-label">Jour de la semaine</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select name="jour_semaine" class="form-control" id="text-jour-semaine">
+                                    <option value="">--Choisir un jour de la semaine--</option>
+                                    <option th:each="item : ${T(com.derteuffel.school.enums.EJours).values()}" th:value="${item}" th:text="${item}"></option>
+                                </select>
+                                <small class="form-text text-muted">Intituler du jour de la Semaine</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-date" class=" form-control-label">Date du jour</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="date" id="text-date" name="date" placeholder="Date" class="form-control">
+                                <small class="form-text text-muted">Date du jour</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-heureDebut" class=" form-control-label">Heure de debut du cours</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="time" id="text-heureDebut" th:field="*{heureDebut}" placeholder="Heure de debut" class="form-control">
+                                <small class="form-text text-muted">Heure de debut de la lecon</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-heureFin" class=" form-control-label">Heure de fin du cours</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="time" id="text-heureFin" th:field="*{heureFin}" placeholder="Heure de fin" class="form-control">
+                                <small class="form-text text-muted">Heure de fin de la lecon</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-cours" class=" form-control-label">Intitule du cour</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select th:field="*{cours}" class="form-control" id="text-cours">
+                                    <option value="">--Choisir un code du cours--</option>
+                                    <option th:each="item : ${T(com.derteuffel.school.enums.EMatiere).values()}" th:value="${item}" th:text="${item}"></option>
+                                </select>
+                                <small class="form-text text-muted">Intitule de la lecon</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-enseignant" class=" form-control-label">Enseignant </label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select name="enseignantId" class="form-control" id="text-enseignant">
+                                    <option value="">--Choisir un enseignant--</option>
+                                    <option th:each="item : ${enseignants}" th:value="${item.id}" th:text="${item.name+' '+item.prenom}"></option>
+                                </select>
+                                <small class="form-text text-muted">Nom et prenom de l'enseignant de cette matiere</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-classe" class=" form-control-label">Classe </label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select name="classe" class="form-control" id="text-classe">
+                                    <option value="">--Choisir une classe--</option>
+                                    <option th:each="item : ${salles}" th:value="${item.id}" th:text="${item.niveau}"></option>
+                                </select>
+                                <small class="form-text text-muted">Salle de classe concerner</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end modal medium -->
+
+</div>
+
+<!-- Jquery JS-->
+<script th:src="@{/vendor/jquery-3.2.1.min.js}"></script>
+<!-- Bootstrap JS-->
+<script th:src="@{/vendor/bootstrap-4.1/popper.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-4.1/bootstrap.min.js}"></script>
+<!-- Vendor JS       -->
+<script th:src="@{/vendor/slick/slick.min.js}">
+</script>
+<script th:src="@{/vendor/wow/wow.min.js}"></script>
+<script th:src="@{/vendor/animsition/animsition.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-progressbar/bootstrap-progressbar.min.js}">
+</script>
+<script th:src="@{/vendor/counter-up/jquery.waypoints.min.js}"></script>
+<script th:src="@{/vendor/counter-up/jquery.counterup.min.js}">
+</script>
+<script th:src="@{/vendor/circle-progress/circle-progress.min.js}"></script>
+<script th:src="@{/vendor/perfect-scrollbar/perfect-scrollbar.js}"></script>
+<script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
+<script th:src="@{/vendor/select2/select2.min.js}">
+</script>
+
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
+<script >
+    $(document).ready(function() {
+        // Add Row
+        $('#add-row').DataTable({
+            "pageLength": 10,
+        });
+
+    });
+</script>
+<!-- Main JS-->
+<script th:src="@{/js/datatables.min.js}"></script>
+
+</body>
+
+</html>
+<!-- end document-->

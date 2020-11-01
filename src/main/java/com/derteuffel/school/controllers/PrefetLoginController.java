@@ -5,6 +5,7 @@ import com.derteuffel.school.enums.ERole;
 import com.derteuffel.school.enums.EType;
 import com.derteuffel.school.enums.EVisibilite;
 import com.derteuffel.school.helpers.CompteRegistrationDto;
+import com.derteuffel.school.helpers.PlanningHelpers;
 import com.derteuffel.school.repositories.*;
 import com.derteuffel.school.services.CompteService;
 import com.derteuffel.school.services.Mail;
@@ -12,6 +13,7 @@ import com.derteuffel.school.services.Multipart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -89,7 +91,7 @@ public class PrefetLoginController {
     public String registrationForm(Model model, RedirectAttributes redirectAttributes) {
 
         List<Compte> comptes = compteRepository.findAll();
-        Role role = roleRepository.findByName(ERole.ROLE_DIRECTEUR.toString());
+        Role role = roleRepository.findByName(ERole.ROLE_PREFET.toString());
         List<Compte> accessAccount = new ArrayList<>();
 
         for (Compte compte : comptes){
@@ -99,7 +101,7 @@ public class PrefetLoginController {
         }
 
         if (accessAccount.size() != 0){
-            redirectAttributes.addFlashAttribute("message","Desole il existe deja un directeur dans votre etablissement, veuillez le contacter pour vous enregistrer");
+            redirectAttributes.addFlashAttribute("message","Desole il existe deja un prefet dans votre etablissement, veuillez le contacter pour vous enregistrer");
             return "redirect:/";
         }
         return "prefet/registration";
@@ -126,16 +128,22 @@ public class PrefetLoginController {
             return "prefet/registration";
         }
 
-            if (compteRepository.findAll().size() > 0) {
-                model.addAttribute("error", "Cet Etablissement a deja un dirigeant veuillez choisir celui que vous avez creer");
-                return "prefet/registration";
+        Role role =   roleRepository.findByName(ERole.ROLE_PREFET.toString());
+            if (compteRepository.findAll().size() > 1) {
+                for (Compte compte :compteRepository.findAll()){
+                    if (compte.getRoles().contains(role)){
+                        model.addAttribute("error", "Cet Etablissement a deja un dirigeant veuillez choisir celui que vous avez creer");
+                        return "prefet/registration";
+                    }
+                }
+
             }
-            compteService.save(compteDto.getEmail(),compteDto.getPassword(), compteDto.getUsername(), "/upload-dir/"+file.getOriginalFilename());
+            compteService.savePrefet(compteDto.getEmail(),compteDto.getPassword(), compteDto.getUsername(), "/upload-dir/"+file.getOriginalFilename());
             Mail sender = new Mail();
             sender.sender(
                     "confirmation@yesbanana.org",
                     "Enregistrement d'un directeur ou responsable",
-                    "Viens de s'enregistrer comme directeur du lycee cirezi de Bukavu");
+                    "Viens de s'enregistrer comme prefet des etudes du lycee cirezi de Bukavu");
 
 
         redirectAttributes.addFlashAttribute("success", "Votre enregistrement a ete effectuer avec succes");
@@ -229,8 +237,10 @@ public class PrefetLoginController {
 
     @GetMapping("/administration/lists")
     public String administrationLists(Model model){
-        List<Compte> comptes = compteRepository.findAllByType(EType.ADMINISTRATION.toString());
+        List<Compte> comptes = compteRepository.findAllByType(EType.DIRECTEUR_DISCIPLINE.toString());
         comptes.addAll(compteRepository.findAllByType(EType.SECRETAIRE.toString()));
+        comptes.addAll(compteRepository.findAllByType(EType.DIRECTEUR_ETUDE.toString()));
+        comptes.addAll(compteRepository.findAllByType(EType.PERCEPTEUR.toString()));
         model.addAttribute("lists", comptes);
         return "prefet/administration/lists";
     }
@@ -857,14 +867,43 @@ public class PrefetLoginController {
     private PresenceRepository presenceRepository;
 
     @GetMapping("/classe/hebdos/{id}")
-    public String presences(@PathVariable Long id, Model model){
+    public String plannings(@PathVariable Long id, Model model, HttpServletRequest request){
 
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        Enseignant enseignant = enseignantRepository.findByEmail(compte.getEmail());
+        Collection<Salle> salles = new ArrayList<>();
+        if (enseignant != null){
+            salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
+        }else {
+            salles.addAll(salleRepository.findAll());
+        }
         Salle salle = salleRepository.getOne(id);
-
-                Collection<Hebdo> hebdos = hebdoRepository.findAllBySalles_Id(salle.getId(),Sort.by(Sort.Direction.DESC,"id"));
-        model.addAttribute("classe",salle);
+        Collection<Hebdo> hebdos = hebdoRepository.findAllBySalles_Id(salle.getId(), Sort.by(Sort.Direction.DESC,"id"));
+        Collection<Presence> presences = new ArrayList<>();
         model.addAttribute("lists",hebdos);
+        model.addAttribute("salles",salles);
+        model.addAttribute("classe",salle);
+        model.addAttribute("hebdo",new Hebdo());
         return "prefet/classes/hebdos";
+    }
+    @GetMapping("/programme/hebdos")
+    public String plannings( Model model, HttpServletRequest request){
+
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        Enseignant enseignant = enseignantRepository.findByEmail(compte.getEmail());
+        Collection<Salle> salles = new ArrayList<>();
+        if (enseignant != null){
+            salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
+        }else {
+            salles.addAll(salleRepository.findAll());
+        }
+        Collection<Hebdo> hebdos = hebdoRepository.findAll();
+        model.addAttribute("lists",hebdos);
+        model.addAttribute("salles",salles);
+        model.addAttribute("hebdo",new Hebdo());
+        return "prefet/hebdos";
     }
 
     public List<String> removeDuplicates(List<String> list)
@@ -890,59 +929,285 @@ public class PrefetLoginController {
         return newList;
     }
 
-    /*@GetMapping("/hebdo/detail/{id}")
-    public String detailHebdo(Model model, @PathVariable Long id){
+    @GetMapping("/hebdo/detail/{id}/{salleId}")
+    public String detailHebdo(Model model, @PathVariable Long id, HttpServletRequest request, @PathVariable Long salleId){
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        Enseignant enseignant = enseignantRepository.findByEmail(compte.getEmail());
+        Collection<Enseignant> enseignants = enseignantRepository.findAll();
+        Collection<Salle> salles = new ArrayList<>();
 
+        if (enseignant != null){
+            salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
+        }else {
+            salles.addAll(salleRepository.findAll());
+        }
         Hebdo hebdo = hebdoRepository.getOne(id);
         Collection<Planning> plannings = planningRepository.findAllByHebdo_Id(hebdo.getId());
-        Collection<Presence> presences = presenceRepository.findAllByHebdo_Id(hebdo.getId());
-        ArrayList<String> dates = new ArrayList<>();
-        for (Presence presenceString : presences){
-            dates.add(presenceString.getDate());
-        }
 
-        Salle salle = hebdo.getSalle();
+
+        Salle salle = salleRepository.getOne(salleId);
 
 
         model.addAttribute("plannings",plannings);
-        model.addAttribute("dates",removeDuplicates(dates));
         model.addAttribute("hebdo",hebdo);
+        model.addAttribute("salles",salles);
+        model.addAttribute("enseignants", enseignants);
         model.addAttribute("classe",salle);
+        model.addAttribute("planning",new PlanningHelpers());
         return "prefet/classes/hebdo";
     }
 
-    @GetMapping("/presence/detail/{id}")
-    public String presenceNew(Model model, @PathVariable Long id, HttpServletRequest request){
-
+    @GetMapping("/programme/hebdo/detail/{id}")
+    public String detailHebdoPlanning(Model model, @PathVariable Long id, HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
+        Collection<Enseignant> enseignants = enseignantRepository.findAll();
+        Collection<Salle> salles = salleRepository.findAll();
+
         Hebdo hebdo = hebdoRepository.getOne(id);
-        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(hebdo.getSalle().getId());
+        Collection<Planning> plannings = planningRepository.findAllByHebdo_Id(hebdo.getId());
 
 
-        model.addAttribute("lists",eleves);
+
+        model.addAttribute("plannings",plannings);
         model.addAttribute("hebdo",hebdo);
-        model.addAttribute("classe",hebdo.getSalle());
-        return "prefet/classes/presence";
+        model.addAttribute("enseignants",enseignants);
+        model.addAttribute("planning",new PlanningHelpers());
+        model.addAttribute("salles",salles);
+
+        return "prefet/hebdo";
+    }
+
+    @PostMapping("/hebdo/save/{id}")
+    public String saveHebdo(Hebdo hebdo, RedirectAttributes redirectAttributes, HttpServletRequest request, @PathVariable Long id){
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        hebdo.setCompte(compte);
+        Salle salle = salleRepository.getOne(id);
+        Collection<Salle> salles = salleRepository.findAll();
+        hebdo.setSalles(salles);
+        hebdoRepository.save(hebdo);
+        redirectAttributes.addFlashAttribute("success", "vous avez ajouté une nouvelle semaine avec succès");
+        return "redirect:/prefet/hebdos/lists/"+ salle.getId();
+    }
+
+    @PostMapping("/programme/hebdo/save")
+    public String saveHebdo(Hebdo hebdo, RedirectAttributes redirectAttributes, HttpServletRequest request){
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        hebdo.setCompte(compte);
+        Collection<Salle> salles = salleRepository.findAll();
+        hebdo.setSalles(salles);
+        hebdoRepository.save(hebdo);
+        redirectAttributes.addFlashAttribute("success", "vous avez ajouté une nouvelle semaine avec succès");
+        return "redirect:/prefet/programme/hebdos";
+    }
+
+    @PostMapping("/planning/save/{id}/{salleId}")
+    public String saveplanning(PlanningHelpers helpers, RedirectAttributes redirectAttributes, HttpServletRequest request,
+                               @PathVariable Long id, String jour_semaine, Long enseignantId, @PathVariable Long salleId){
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Hebdo hebdo = hebdoRepository.getOne(id);
+        Planning planning = new Planning();
+        Enseignant enseignant = enseignantRepository.getOne(enseignantId);
+        Salle salle = salleRepository.getOne(salleId);
+        Planning planning1 = planningRepository.findByCoursAndDate(helpers.getCours(),jour_semaine+" le "+sdf.format(helpers.getDate()));
+        if (planning1!=null){
+            redirectAttributes.addFlashAttribute("error","Vous ne pouvez pas ajouter cette leçon deux (02) fois pour le meme jour");
+            return "redirect:/prefet/hebdo/detail/"+ hebdo.getId();
+        }
+        planning.setHebdo(hebdo);
+        planning.setDate(jour_semaine+" le "+sdf.format(helpers.getDate()));
+        planning.setCours(helpers.getCours());
+        planning.setEnseignant(enseignant);
+        planning.setHeureDebut(helpers.getHeureDebut());
+        planning.setHeureFin(helpers.getHeureFin());
+        planningRepository.save(planning);
+        redirectAttributes.addFlashAttribute("success", "vous avez ajouté une nouvelle journée avec succès");
+        return "redirect:/prefet/classes/planning/lists/"+ hebdo.getId()+"/"+salle.getId();
+    }
+
+    @PostMapping("/programme/planning/save/{id}")
+    public String savePlanning(PlanningHelpers helpers, RedirectAttributes redirectAttributes, HttpServletRequest request,
+                               @PathVariable Long id, String jour_semaine, Long enseignantId){
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Hebdo hebdo = hebdoRepository.getOne(id);
+        Planning planning = new Planning();
+        Enseignant enseignant = enseignantRepository.getOne(enseignantId);
+        Planning planning1 = planningRepository.findByCoursAndDate(helpers.getCours(),jour_semaine+" le "+sdf.format(helpers.getDate()));
+        if (planning1!=null){
+            redirectAttributes.addFlashAttribute("error","Vous ne pouvez pas ajouter cette leçon deux (02) fois pour le meme jour");
+            return "redirect:/prefet/programme/hebdo/detail/"+ hebdo.getId();
+        }
+        planning.setHebdo(hebdo);
+        planning.setDate(jour_semaine+" le "+sdf.format(helpers.getDate()));
+        planning.setCours(helpers.getCours());
+        planning.setEnseignant(enseignant);
+        planning.setHeureDebut(helpers.getHeureDebut());
+        planning.setHeureFin(helpers.getHeureFin());
+        planningRepository.save(planning);
+        redirectAttributes.addFlashAttribute("success", "vous avez ajouté une nouvelle journée avec succès");
+        return "redirect:/prefet/programme/hebdo/detail/"+ hebdo.getId();
+    }
+
+    @GetMapping("/classes/planning/lists/{id}/{salleId}")
+    public String planningHebdo(Model model, @PathVariable Long id, HttpServletRequest request, @PathVariable Long salleId){
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        Enseignant enseignant = enseignantRepository.findByEmail(compte.getEmail());
+        Collection<Enseignant> enseignants = enseignantRepository.findAll();
+        Collection<Salle> salles = new ArrayList<>();
+
+        if (enseignant != null){
+            salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
+        }else {
+            salles.addAll(salleRepository.findAll());
+        }
+        Hebdo hebdo = hebdoRepository.getOne(id);
+        Collection<Planning> plannings = planningRepository.findAllByHebdo_Id(hebdo.getId());
+
+
+        Salle salle = salleRepository.getOne(salleId);
+
+
+        model.addAttribute("lists",plannings);
+        model.addAttribute("hebdo",hebdo);
+        model.addAttribute("salles",salles);
+        model.addAttribute("enseignants", enseignants);
+        model.addAttribute("classe",salle);
+        return "prefet/classes/plannings";
+    }
+
+
+    @GetMapping("/classes/planning/update/{id}/{salleId}")
+    public String planningHebdoUpdate(@PathVariable Long id, Model model, HttpServletRequest request, @PathVariable Long salleId){
+
+        Planning planning = planningRepository.getOne(id);
+        Hebdo hebdo = planning.getHebdo();
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        Enseignant enseignant = enseignantRepository.findByEmail(compte.getEmail());
+        Collection<Enseignant> enseignants = enseignantRepository.findAll();
+        Collection<Salle> salles = new ArrayList<>();
+
+        if (enseignant != null){
+            salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
+        }else {
+            salles.addAll(salleRepository.findAll());
+        }
+
+        Salle salle = salleRepository.getOne(salleId);
+
+
+        model.addAttribute("hebdo",hebdo);
+        model.addAttribute("planning",planning);
+        model.addAttribute("salles",salles);
+        model.addAttribute("enseignants", enseignants);
+        model.addAttribute("classe",salle);
+        return "prefet/classes/planningsU";
+    }
+
+
+    @GetMapping("/programme/planning/update/{id}")
+    public String planningHebdoUpdate(@PathVariable Long id, Model model, HttpServletRequest request){
+
+        Planning planning = planningRepository.getOne(id);
+        Hebdo hebdo = planning.getHebdo();
+        Principal principal = request.getUserPrincipal();
+        Compte compte = compteService.findByUsername(principal.getName());
+        Enseignant enseignant = enseignantRepository.findByEmail(compte.getEmail());
+        Collection<Enseignant> enseignants = enseignantRepository.findAll();
+        Collection<Salle> salles = new ArrayList<>();
+
+        if (enseignant != null){
+            salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
+        }else {
+            salles.addAll(salleRepository.findAll());
+        }
+
+
+        model.addAttribute("hebdo",hebdo);
+        model.addAttribute("planning",planning);
+        model.addAttribute("salles",salles);
+        model.addAttribute("enseignants", enseignants);
+        return "prefet/planningsU";
+    }
+
+    @PostMapping("/classes/planning/update/{id}/{salleId}")
+    public String updatePlanning(Planning planning, RedirectAttributes redirectAttributes, String jour_semaine, @DateTimeFormat(pattern = "yyyy-MM-dd")Date date, Long enseignantId, @PathVariable Long id, @PathVariable Long salleId){
+
+        Planning planning1 = planningRepository.getOne(id);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (date != null){
+            planning1.setDate(jour_semaine+" le "+sdf.format(date));
+        }
+
+        if (enseignantId != null){
+            Enseignant enseignant = enseignantRepository.getOne(enseignantId);
+            planning1.setEnseignant(enseignant);
+        }
+
+
+
+        planning1.setHeureFin(planning.getHeureFin());
+        planning1.setHeureDebut(planning.getHeureDebut());
+        planning1.setCours(planning.getCours());
+        planningRepository.save(planning1);
+
+        redirectAttributes.addFlashAttribute("success","Planning modifier avec succes");
+        return "redirect:/prefet/classes/planning/lists/"+planning1.getHebdo().getId()+"/"+salleRepository.getOne(salleId).getId();
 
     }
 
-    @GetMapping("/presence/eleve/detail/{eleveId}/{id}")
-    public String presenceDetail(Model model, @PathVariable Long id,@PathVariable Long eleveId, HttpServletRequest request){
+    @PostMapping("/programme/planning/update/{id}")
+    public String updatePlanningHome(Planning planning, RedirectAttributes redirectAttributes, String jour_semaine,  @DateTimeFormat(pattern = "yyyy-MM-dd")Date date, Long enseignantId, @PathVariable Long id, Long classe){
 
-        Principal principal = request.getUserPrincipal();
-        Compte compte = compteService.findByUsername(principal.getName());
-        Hebdo hebdo = hebdoRepository.getOne(id);
-        Eleve eleve = eleveRepository.getOne(eleveId);
-        Collection<Presence> presences = presenceRepository.findAllByEleve_IdAndHebdo_Id(eleve.getId(),hebdo.getId());
+        Planning planning1 = planningRepository.getOne(id);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (date != null){
+            planning1.setDate(jour_semaine+" le "+sdf.format(date));
+        }
 
-        model.addAttribute("lists",presences);
-        model.addAttribute("eleve",eleve);
-        model.addAttribute("hebdo",hebdo);
-        model.addAttribute("classe",hebdo.getSalle());
-        return "prefet/classes/presenceDetail";
+        if (enseignantId != null){
+            Enseignant enseignant = enseignantRepository.getOne(enseignantId);
+            planning1.setEnseignant(enseignant);
+        }
 
-    }*/
+
+        planning1.setHeureFin(planning.getHeureFin());
+        planning1.setHeureDebut(planning.getHeureDebut());
+        planning1.setCours(planning.getCours());
+        planningRepository.save(planning1);
+
+        redirectAttributes.addFlashAttribute("success","Planning modifier avec succes");
+        return "redirect:/prefet/programme/lists/"+planning1.getHebdo().getId();
+
+    }
+
+
+    @GetMapping("/programme/lists")
+    public String getAllPlannings(Model model, HttpServletRequest request){
+        Collection<Planning> plannings = planningRepository.findAll();
+        Collection<Salle> salles = salleRepository.findAll();
+        Collection<Enseignant> enseignants = enseignantRepository.findAll();
+        PlanningHelpers planningHelpers = new PlanningHelpers();
+        Collection<Hebdo> hebdos = hebdoRepository.findAll();
+
+        model.addAttribute("lists", plannings);
+        model.addAttribute("enseignants", enseignants);
+        model.addAttribute("classes", salles);
+        model.addAttribute("hebdos", hebdos);
+        model.addAttribute("hebdo", new Hebdo());
+        model.addAttribute("planningHelpers", planningHelpers);
+
+        return "prefet/plannings";
+
+    }
 
     @GetMapping("/account/detail/{id}")
     public String getAccount(@PathVariable Long id, Model model){

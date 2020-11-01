@@ -78,70 +78,30 @@
                                             <hr>
                                             <div class="container-fluid row">
 
-                                                <div class="col-md-7" >
-                                                    <h3>Planning de la semaine &nbsp;&nbsp; <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPlanningModal" th:attr="data-target='#addPlanningModal'+${hebdo?.id}" ><i class="fas fa-plus"></i></button></h3>
-                                                    <hr>
-                                                    <div th:each=" plan : ${plannings}">
-                                                    <p class="text-left"><sapn th:text="'Le : '+${plan.dateJour}"></sapn>
+                                                <div class="col-md-12" >
+                                                    <a th:href="@{/enseignant/classes/planning/lists/}+${hebdo.id+'/'+classe.id}">Voir le programme de la semaine <i class="fa fa-hand-right"></i></a>
+                                                    <!--<div th:each=" plan : ${plannings}">
+                                                    <p class="text-left"><sapn th:text="${plan.date}"></sapn>
                                                         <br>
-                                                        <span th:text="'Titre de la lecon : '+${plan.titre}"></span>
+                                                        <span th:text="'Cours de : '+${plan.cours}"></span>
                                                         <br>
-                                                        <span th:text="'Heure : '+${plan.heure}"></span>
+                                                        <span th:text="'Debut a : '+${plan.heureDebut}+' Fin a :'+${plan.heureFin}"></span>
                                                         <br>
                                                         <a class="btn text-danger" th:if="${#lists.size(plan.validations)}!=0 and ${plan?.validations[0]}==false" th:href="@{/enseignant/activate/planning/}+${plan.id}" title="Valide ?"><i class="fas fa-circle"></i></a>
                                                         <span th:if="${#lists.size(plan.validations)}!=0 and ${plan?.validations[0]}==true" class="text-success"><i class="fas fa-circle"></i></span>
-                                                    </p>
+                                                    </p> -->
                                                         <hr>
                                                     </div>
-                                                    <!-- modal medium -->
-                                                    <div class="modal fade" th:id="addPlanningModal+${hebdo?.id}" tabindex="-1" role="dialog" aria-labelledby="addPlanningModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-                                                                <form th:action="@{/enseignant/planning/save/}+${hebdo?.id}" autocomplete="off" method="post" th:object="${planning}" enctype="multipart/form-data" class="form-horizontal">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title" id="addPlanningModalLabel">Nouvelle journée</h5>
-                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                            <span aria-hidden="true">&times;</span>
-                                                                        </button>
-                                                                    </div>
-                                                                    <div class="modal-body card-block">
-                                                                        <div class="row form-group">
-                                                                            <div class="col col-md-3">
-                                                                                <label for="text-titre" class=" form-control-label">Titre</label>
-                                                                            </div>
-                                                                            <div class="col-12 col-md-9">
-                                                                                <input type="text" id="text-titre" th:field="*{titre}" placeholder="Titre" class="form-control">
-                                                                                <small class="form-text text-muted">Titre de la lecon</small>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="row form-group">
-                                                                            <div class="col col-md-3">
-                                                                                <label for="text-heure" class=" form-control-label">Heure</label>
-                                                                            </div>
-                                                                            <div class="col-12 col-md-9">
-                                                                                <input type="time" id="text-heure" th:field="*{heure}" placeholder="Heure" class="form-control">
-                                                                                <small class="form-text text-muted">Heure de la lecon</small>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
-                                                                        <button type="submit" class="btn btn-primary">Créer</button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- end modal medium -->
+
                                                 </div>
-                                                <div class="col-md-5">
-                                                    <h3>Liste de présence &nbsp;&nbsp; <a th:href="@{/enseignant/presence/add/}+${hebdo.id}" class="btn btn-primary" ><i class="fas fa-plus"></i></a></h3>
+                                                <!--<div class="col-md-5">
+                                                    <h3>Liste de présence &nbsp;&nbsp; <a th:href="@{/direction/presence/add/}+${hebdo.id}" class="btn btn-primary" ><i class="fas fa-plus"></i></a></h3>
                                                     <hr>
                                                     <p th:each="date : ${dates}">
-                                                        <a class="btn btn-outline-primary my-2" th:href="@{/enseignant/presence/add/}+${hebdo.id}" th:text="'Le : '+${date}" style="width: 100%"></a>
+                                                        <a class="btn btn-outline-primary my-2" th:href="@{/direction/presence/add/}+${hebdo.id}" th:text="'Le : '+${date}" style="width: 100%"></a>
                                                         <hr>
                                                     </p>
-                                                </div>
+                                                </div>-->
                                             </div>
                                         </div>
                                 </div>

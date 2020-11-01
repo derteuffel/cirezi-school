@@ -2,7 +2,9 @@ package com.derteuffel.school.enums;
 
 public enum EType {
 
-    ADMINISTRATION,
+    DIRECTEUR_ETUDE,
+    DIRECTEUR_DISCIPLINE,
+    PERCEPTEUR,
     ROOT,
     ENSEIGNANT,
     ELEVE,

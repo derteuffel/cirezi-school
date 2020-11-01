@@ -76,7 +76,8 @@ public class DirectorSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/ecole/save",
                         "/chat**",
                         "/topic/**",
-                        "/app**"
+                        "/app**",
+                        "/home/**"
                         );
     }
 }

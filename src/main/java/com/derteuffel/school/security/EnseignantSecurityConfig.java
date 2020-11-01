@@ -64,6 +64,7 @@ public class EnseignantSecurityConfig extends WebSecurityConfigurerAdapter{
                         "/fonts/**",
                         "/upload-dir/**",
                         "/images/**",
+                        "/home/**",
                         "/static/**");
     }
 

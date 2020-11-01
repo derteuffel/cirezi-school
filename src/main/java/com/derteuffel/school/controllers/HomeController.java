@@ -69,9 +69,9 @@ public class HomeController {
     private StorageService storageService;
 
 
-    @GetMapping("/")
+    @GetMapping("/home/direction")
     public String home(){
-        return "index";
+        return "index1";
     }
 
 

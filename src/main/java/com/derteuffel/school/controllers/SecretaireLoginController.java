@@ -147,7 +147,7 @@ public class SecretaireLoginController {
         return "secretaire/home";
     }
 
-    @GetMapping("/administration/lists")
+   /* @GetMapping("/administration/lists")
     public String administrationLists(Model model){
         List<Compte> comptes = compteRepository.findAllByType(EType.ADMINISTRATION.toString());
         model.addAttribute("lists", comptes);
@@ -160,7 +160,7 @@ public class SecretaireLoginController {
         CompteRegistrationDto compte = new CompteRegistrationDto();
         model.addAttribute("compte", compte);
         return "secretaire/administration/form";
-    }
+    }*/
 
 
     @PostMapping("/administration/save")

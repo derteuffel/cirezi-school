@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Enseignant</title>
+    <title>Prefet</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -38,7 +38,7 @@
 <body class="animsition">
 <div class="page-wrapper">
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header_enseignant :: header_enseignant}">
+    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
     </header>
     <!-- END HEADER DESKTOP -->
 
@@ -63,19 +63,28 @@
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_enseignant :: sidebar_enseignant}">
+                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
                     </div>
                     <div class="col-xl-9">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
-                            <h3 class="title-1">Planing hebdomadaire &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h3>
+                            <h3 class="title-1">Planing hebdomadaire &nbsp;&nbsp;<span th:text="${'generale'}"></span></h3>
                             <hr>
-                            <div class="row"  >
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <a th:href="@{/prefet/programme/hebdos}">Retour</a>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" data-toggle="modal" data-target="#addHebdoModal" class="btn btn-primary">Nouvelle semaine&nbsp;<i class="zmdi zmdi-plus"></i></button>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row" style="overflow: scroll" >
                                 <div class="col-lg-12 my-1" th:each="hebdo : ${lists}">
                                         <div class="alert alert-light text-center" >
                                             <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span>&nbsp;&nbsp;<strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
                                             <hr>
-                                            <a th:href="@{/enseignant/hebdo/detail/}+${hebdo.id+'/'+classe.id}">Voir plus</a>
+                                            <a th:href="@{/prefet/programme/hebdo/detail/}+${hebdo.id}">Voir plus</a>
                                         </div>
                                 </div>
                             </div>
@@ -92,6 +101,46 @@
         </section>
     </div>
     <!-- END PAGE CONTENT  -->
+    <!-- modal medium -->
+    <div class="modal fade" id="addHebdoModal" tabindex="-1" role="dialog" aria-labelledby="addHebdoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form th:action="@{/prefet/programme/hebdo/save}" autocomplete="off" method="post" th:object="${hebdo}" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">Nouvelle semaine</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block">
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-debut" class=" form-control-label">Debut de la semaine</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="date" id="text-debut" th:field="*{debut}" placeholder="Titre" class="form-control">
+                                <small class="form-text text-muted">Date debut</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-fin" class=" form-control-label">Fin de la semaine</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="date" id="text-fin" th:field="*{fin}" placeholder="Titre" class="form-control">
+                                <small class="form-text text-muted">Date fin</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end modal medium -->
 
 </div>
 

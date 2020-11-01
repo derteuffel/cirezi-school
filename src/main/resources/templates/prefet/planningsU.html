@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Prefet</title>
+
+    <!-- Fontfaces CSS-->
+    <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-4.7/css/font-awesome.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-5/css/fontawesome-all.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/mdi-font/css/material-design-iconic-font.min.css}" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link th:href="@{/vendor/bootstrap-4.1/bootstrap.min.css}" rel="stylesheet" media="all">
+
+    <!-- Vendor CSS-->
+    <link th:href="@{/vendor/animsition/animsition.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/wow/animate.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/css-hamburgers/hamburgers.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/slick/slick.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/select2/select2.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/perfect-scrollbar/perfect-scrollbar.css}" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link th:href="@{/css/theme.css}" rel="stylesheet" media="all">
+
+</head>
+
+<body class="animsition">
+<div class="page-wrapper">
+    <!-- HEADER DESKTOP-->
+    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
+    </header>
+    <!-- END HEADER DESKTOP -->
+
+    <!-- PAGE CONTENT-->
+    <div class="page-container3">
+        <section class="alert-wrap p-t-70 p-b-70">
+            <div class="container">
+                <!-- ALERT-->
+                <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
+                    <i class="zmdi zmdi-check-circle"></i>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
+                    <span th:unless="${success}" class="content">Vous ètes connecté successivement a votre compte</span>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">
+                                <i class="zmdi zmdi-close-circle"></i>
+                            </span>
+                    </button>
+                </div>
+                <!-- END ALERT-->
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
+                    </div>
+                    <div class="col-xl-9">
+                        <!-- PAGE CONTENT-->
+                        <div class="page-content">
+
+                            <h3 class="title-1">Formulaire de modification d'un element</h3>
+                            <hr>
+                            <div class="row"  >
+                                    <div class="col-lg-12 my-2">
+                                        <div class="card-content">
+                                            <form th:action="@{/prefet/programme/planning/update/}+${planning?.id}" autocomplete="off" method="post" th:object="${planning}" enctype="multipart/form-data" class="form-horizontal">
+                                                        <div class="card-header">
+                                                            <h5 class="card-title">Modification d'un cours</h5>
+                                                        </div>
+                                                        <div class="card-body card-block">
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label for="text-jour-semaine" class=" form-control-label">Jour de la semaine</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <span th:text="${planning.date}"></span>
+                                                                    <select name="jour_semaine" class="form-control" id="text-jour-semaine">
+                                                                        <option value="">--Choisir un jour de la semaine--</option>
+                                                                        <option th:each="item : ${T(com.derteuffel.school.enums.EJours).values()}" th:value="${item}" th:text="${item}"></option>
+                                                                    </select>
+                                                                    <small class="form-text text-muted">Intituler du jour de la Semaine</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label for="text-date" class=" form-control-label">Date du jour</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <span th:text="${planning.date}"></span>
+                                                                    <input type="date" id="text-date" name="date" placeholder="Date" class="form-control">
+                                                                    <input type="text"  th:field="*{date}" style="display: none;" placeholder="Date" class="form-control">
+                                                                    <small class="form-text text-muted">Date du jour</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label for="text-heureDebut" class=" form-control-label">Heure de debut du cours</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <span th:text="${planning.heureDebut}"></span>
+                                                                    <input type="time" id="text-heureDebut" th:field="*{heureDebut}" placeholder="Heure de debut" class="form-control">
+                                                                    <small class="form-text text-muted">Heure de debut de la lecon</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label for="text-heureFin" class=" form-control-label">Heure de fin du cours</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <span th:text="${planning.heureFin}"></span>
+                                                                    <input type="time" id="text-heureFin" th:field="*{heureFin}" placeholder="Heure de fin" class="form-control">
+                                                                    <small class="form-text text-muted">Heure de fin de la lecon</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label for="text-cours" class=" form-control-label">Intitule du cour</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <select th:field="*{cours}" class="form-control" id="text-cours">
+                                                                        <option value="">--Choisir un code du cours--</option>
+                                                                        <option th:each="item : ${T(com.derteuffel.school.enums.EMatiere).values()}" th:value="${item}" th:text="${item}"></option>
+                                                                    </select>
+                                                                    <small class="form-text text-muted">Intitule de la lecon</small>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label for="text-enseignant" class=" form-control-label">Enseignant </label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <select name="enseignantId" class="form-control" id="text-enseignant">
+                                                                        <option value="">--Choisir un enseignant--</option>
+                                                                        <option th:each="item : ${enseignants}" th:value="${item.id}" th:text="${item.name+' '+item.prenom}"></option>
+                                                                    </select>
+                                                                    <small class="form-text text-muted">Nom et prenom de l'enseignant de cette matiere</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer">
+                                                            <a th:href="@{/prefet/classes/planning/lists/}+${hebdo.id}"  class="btn btn-secondary" >Retour</a>
+                                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                                        </div>
+                                                    </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- END PAGE CONTENT-->
+                    </div>
+                </div>
+                <!-- COPYRIGHT-->
+                <section th:replace="~{../templates/fragments/footer :: footer}"></section>
+
+                <!-- END COPYRIGHT-->
+            </div>
+        </section>
+    </div>
+    <!-- END PAGE CONTENT  -->
+
+
+</div>
+
+<!-- Jquery JS-->
+<script th:src="@{/vendor/jquery-3.2.1.min.js}"></script>
+<!-- Bootstrap JS-->
+<script th:src="@{/vendor/bootstrap-4.1/popper.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-4.1/bootstrap.min.js}"></script>
+<!-- Vendor JS       -->
+<script th:src="@{/vendor/slick/slick.min.js}">
+</script>
+<script th:src="@{/vendor/wow/wow.min.js}"></script>
+<script th:src="@{/vendor/animsition/animsition.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-progressbar/bootstrap-progressbar.min.js}">
+</script>
+<script th:src="@{/vendor/counter-up/jquery.waypoints.min.js}"></script>
+<script th:src="@{/vendor/counter-up/jquery.counterup.min.js}">
+</script>
+<script th:src="@{/vendor/circle-progress/circle-progress.min.js}"></script>
+<script th:src="@{/vendor/perfect-scrollbar/perfect-scrollbar.js}"></script>
+<script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
+<script th:src="@{/vendor/select2/select2.min.js}">
+</script>
+
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
+
+</body>
+
+</html>
+<!-- end document-->

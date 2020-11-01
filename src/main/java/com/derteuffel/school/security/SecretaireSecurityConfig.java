@@ -76,7 +76,8 @@ public class SecretaireSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/ecole/save",
                         "/chat**",
                         "/topic/**",
-                        "/app**"
+                        "/app**",
+                        "/home/**"
                         );
     }
 }

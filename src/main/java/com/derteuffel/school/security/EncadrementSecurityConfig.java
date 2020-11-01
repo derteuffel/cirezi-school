@@ -64,6 +64,7 @@ public class EncadrementSecurityConfig extends WebSecurityConfigurerAdapter{
                         "/upload-dir/**",
                         "/fonts/**",
                         "/images/**",
+                        "/home/**",
                         "/encadrements/registration**",
                         "/static/**");
     }

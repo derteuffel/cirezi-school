@@ -49,8 +49,8 @@
                 <!-- ALERT-->
                 <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
                     <i class="zmdi zmdi-check-circle"></i>
-                    <span th:if="${success}" class="content" th:text="${success}">Vous êtes connecté successivement à votre compte</span>
-                    <span th:unless="${success}" class="content">Vous êtes connecté successivement à votre compte</span>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
+                    <span th:unless="${success}" class="content">Vous ètes connecté successivement a votre compte</span>
                     <button class="close" type="button" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">
                                 <i class="zmdi zmdi-close-circle"></i>
@@ -65,28 +65,25 @@
                 <div class="row">
                     <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
                     </div>
-                    <div class="col-xl-6">
+                    <div class="col-xl-9">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
-
-                            <h3 class="title-1">Periodes de travail <span th:text="${classe.niveau}"></span></h3>
+                            <h3 class="title-1">Planing hebdomadaire &nbsp;&nbsp;<span th:text="${classe.niveau}"></span></h3>
+                            <hr>
+                            <button type="button" data-toggle="modal" data-target="#addHebdoModal" class="btn btn-primary">Nouvelle semaine&nbsp;<i class="zmdi zmdi-plus"></i></button>
                             <hr>
                             <div class="row"  >
-                                <div class="col-lg-12 my-2" th:each="hebdo : ${lists}">
+                                <div class="col-lg-12 my-1" th:each="hebdo : ${lists}">
                                         <div class="alert alert-light text-center" >
-                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span></p>
-                                            <p><strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
+                                            <p><strong>Semaine du : </strong><span  th:text="${hebdo?.debut}"></span>&nbsp;&nbsp;<strong>Au : </strong><span  th:text="${hebdo?.fin}"></span></p>
                                             <hr>
-                                            <a th:href="@{/prefet/hebdo/detail/}+${hebdo.id}">Voir plus</a>
+                                            <a th:href="@{/prefet/hebdo/detail/}+${hebdo.id+'/'+classe.id}">Voir plus</a>
                                         </div>
                                 </div>
                             </div>
 
                         </div>
                         <!-- END PAGE CONTENT-->
-                    </div>
-                    <div th:replace="~{../templates/fragments/sidebar_classe :: sidebar_classe}">
-
                     </div>
                 </div>
                 <!-- COPYRIGHT-->
@@ -97,6 +94,46 @@
         </section>
     </div>
     <!-- END PAGE CONTENT  -->
+    <!-- modal medium -->
+    <div class="modal fade" id="addHebdoModal" tabindex="-1" role="dialog" aria-labelledby="addHebdoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form th:action="@{/prefet/hebdo/save/}+${classe.id}" autocomplete="off" method="post" th:object="${hebdo}" enctype="multipart/form-data" class="form-horizontal">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">Nouvelle semaine</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block">
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-debut" class=" form-control-label">Debut de la semaine</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="date" id="text-debut" th:field="*{debut}" placeholder="Titre" class="form-control">
+                                <small class="form-text text-muted">Date debut</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-fin" class=" form-control-label">Fin de la semaine</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="date" id="text-fin" th:field="*{fin}" placeholder="Titre" class="form-control">
+                                <small class="form-text text-muted">Date fin</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end modal medium -->
 
 </div>
 
