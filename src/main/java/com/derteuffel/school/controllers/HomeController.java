@@ -96,6 +96,11 @@ public class HomeController {
         compteRepository.save(compte);
         return "index1";
     }
+
+    @GetMapping("/backside")
+    public String backside(HttpServletRequest request){
+        return "redirect:"+request.getSession().getAttribute("url");
+    }
     @GetMapping("/sendMail/{sender}/{conferenceId}")
     public String sendMail(@PathVariable String sender,@PathVariable String conferenceId,HttpServletRequest request) throws IOException {
         Compte compte = compteRepository.findByEnseignant_Id(Long.parseLong(sender));

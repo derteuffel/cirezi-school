@@ -3,49 +3,85 @@
     <div class="au-card au-card--bg-blue au-card-top-countries m-b-40">
         <div class="au-card-inner" th:each="role : ${session.compte.roles}">
             <div class="table-responsive">
-                <table class="table table-top-countries">
-                    <tbody>
-                    <tr th:if="${role.name} == 'ROLE_DIRECTION' or ${role.name} == 'ROLE_ROOT'">
+                <table class="table table-top-countries" >
+                    <tbody th:if="${role.name} == 'ROLE_DIRECTEUR' or ${role.name} == 'ROLE_ROOT'" >
+                    <tr >
                         <td>
                             <a  class="text-white" th:href="@{/direction/enseignant/classe/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Enseignants</a>
                         </td>
                     </tr>
-                    <tr th:if="${role.name} == 'ROLE_PREFET' or ${role.name} == 'ROLE_ROOT'">
-                        <td>
-                            <a  class="text-white" th:href="@{/prefet/enseignant/classe/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Enseignants</a>
-                        </td>
-                    </tr>
-                    <tr th:if="${role.name} == 'ROLE_DIRECTION' or ${role.name} == 'ROLE_ROOT'">
+                    <tr >
                         <td>
                             <a  class="text-white" th:href="@{/direction/classe/eleves/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Eleves</a>
                         </td>
                     </tr>
-                    <tr th:if="${role.name} == 'ROLE_PREFET' or ${role.name} == 'ROLE_ROOT'">
-                        <td>
-                            <a  class="text-white" th:href="@{/prefet/classe/eleves/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Eleves</a>
-                        </td>
-                    </tr>
-                    <tr th:if="${role.name} == 'ROLE_DIRECTION' or ${role.name} == 'ROLE_ROOT'">
+
+                    <tr >
                         <td>
                             <a  class="text-white" th:href="@{/direction/classe/parents/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Parents/Tuteurs</a>
                         </td>
                     </tr>
-                    <tr th:if="${role.name} == 'ROLE_PREFET' or ${role.name} == 'ROLE_ROOT'">
+
+                    <tr >
+                        <td><a  class="text-white" th:href="@{/direction/classe/hebdos/}+${classe?.id}"><i class="fa fa-calendar-check"></i>&nbsp;Planning hebdomadaire</a></td>
+                    </tr>
+                    <tr >
+                        <td><a  class="text-white" th:href="@{/direction/classe/matieres/lists/}+${classe?.id}"><i class="fa fa-tasks"></i>&nbsp;Gestion des notes</a></td>
+                    </tr>
+
+                    <tr >
+                        <td><a class="text-white" th:href="@{/direction/update/classe/form/}+${classe?.id}"><i class="fa fa-edit"></i>&nbsp;Editer la classe</a></td>
+                    </tr>
+                    </tbody>
+                    <tbody th:if="${role.name} == 'ROLE_PREFET' or ${role.name} == 'ROLE_ROOT'">
+
+                    <tr >
+                        <td>
+                            <a  class="text-white" th:href="@{/prefet/enseignant/classe/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Enseignants</a>
+                        </td>
+                    </tr>
+
+                    <tr >
+                        <td>
+                            <a  class="text-white" th:href="@{/prefet/classe/eleves/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Eleves</a>
+                        </td>
+                    </tr>
+
+                    <tr >
                         <td>
                             <a  class="text-white" th:href="@{/prefet/classe/parents/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Parents/Tuteurs</a>
                         </td>
                     </tr>
-                    <tr th:if="${role.name} == 'ROLE_DIRECTION' or ${role.name} == 'ROLE_ROOT'">
-                        <td><a  class="text-white" th:href="@{/direction/classe/hebdos/}+${classe?.id}"><i class="fa fa-calendar-check"></i>&nbsp;Planning hebdomadaire</a></td>
-                    </tr>
-                    <tr th:if="${role.name} == 'ROLE_PREFET' or ${role.name} == 'ROLE_ROOT'">
+
+                    <tr >
                         <td><a  class="text-white" th:href="@{/prefet/classe/hebdos/}+${classe?.id}"><i class="fa fa-calendar-check"></i>&nbsp;Planning hebdomadaire</a></td>
                     </tr>
-                    <tr th:if="${role.name} == 'ROLE_DIRECTION' or ${role.name} == 'ROLE_ROOT'">
-                        <td><a class="text-white" th:href="@{/direction/update/classe/form/}+${classe?.id}"><i class="fa fa-edit"></i>&nbsp;Editer la classe</a></td>
-                    </tr>
-                    <tr th:if="${role.name} == 'ROLE_PREFET' or ${role.name} == 'ROLE_ROOT'">
+
+                    <tr >
                         <td><a class="text-white" th:href="@{/prefet/update/classe/form/}+${classe?.id}"><i class="fa fa-edit"></i>&nbsp;Editer la classe</a></td>
+                    </tr>
+                    </tbody>
+                    <tbody th:if="${role.name} == 'ROLE_SECRETAIRE' or ${role.name} == 'ROLE_ROOT'">
+                    <tr >
+                        <td>
+                            <a  class="text-white" th:href="@{/secretaire/enseignant/classe/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Enseignants</a>
+                        </td>
+                    </tr>
+
+                    <tr >
+                        <td>
+                            <a  class="text-white" th:href="@{/secretaire/classe/eleves/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Eleves</a>
+                        </td>
+                    </tr>
+
+                    <tr >
+                        <td>
+                            <a  class="text-white" th:href="@{/secretaire/classe/parents/}+${classe?.id}"><i class="fa fa-users"></i>&nbsp;Parents/Tuteurs</a>
+                        </td>
+                    </tr>
+
+                    <tr >
+                        <td><a  class="text-white" th:href="@{/secretaire/classe/hebdos/}+${classe?.id}"><i class="fa fa-calendar-check"></i>&nbsp;Planning hebdomadaire</a></td>
                     </tr>
                     </tbody>
                 </table>

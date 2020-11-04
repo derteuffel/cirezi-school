@@ -2,6 +2,7 @@ package com.derteuffel.school.services;
 
 import com.derteuffel.school.entities.*;
 import com.derteuffel.school.enums.ERole;
+import com.derteuffel.school.enums.EType;
 import com.derteuffel.school.helpers.CompteRegistrationDto;
 import com.derteuffel.school.helpers.EncadrementRegistrationDto;
 import com.derteuffel.school.repositories.CompteRepository;
@@ -96,10 +97,10 @@ public class CompteSeviceImpl implements CompteService{
 
         if (compteRepository.findAll().size() <=1){
             role.setName(ERole.ROLE_ROOT.toString());
-            compte.setType("root");
+            compte.setType(EType.ROOT.toString());
         }else {
             role.setName(ERole.ROLE_PREFET.toString());
-            compte.setType("prefet");
+            compte.setType(EType.PREFET.toString());
         }
 
         Role existRole = roleRepository.findByName(role.getName());
@@ -123,6 +124,7 @@ public class CompteSeviceImpl implements CompteService{
         compte.setEncode(compteRegistrationDto.getPassword());
         compte.setCode(UUID.randomUUID().toString());
         compte.setStatus(false);
+        compte.setType(EType.ROOT.toString());
 
         Role role = new Role();
 
@@ -149,6 +151,7 @@ public class CompteSeviceImpl implements CompteService{
         compte.setEncode(compteRegistrationDto.getPassword());
         compte.setEnseignant(enseignant);
         compte.setStatus(false);
+        compte.setType(EType.ENSEIGNANT.toString());
 
         Role role = new Role();
 
@@ -175,6 +178,7 @@ public class CompteSeviceImpl implements CompteService{
         compte.setEncode(compteRegistrationDto.getPassword());
         compte.setParent(parent);
         compte.setStatus(false);
+        compte.setType(EType.PARENT.toString());
 
         Role existRole = roleRepository.findByName(ERole.ROLE_PARENT.toString());
         if (existRole != null){

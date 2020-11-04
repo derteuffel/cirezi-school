@@ -259,6 +259,7 @@ public class PrefetLoginController {
 
         System.out.println("je suis la!!!");
         Role role = roleRepository.findByName(ERole.ROLE_DIRECTEUR.toString());
+        Role roleSecretaire = roleRepository.findByName(ERole.ROLE_SECRETAIRE.toString());
         multipart.store(file);
         Compte compte1 = compteRepository.findByUsername(compte.getUsername());
         Compte compte2 = compteRepository.findByEmail(compte.getEmail());
@@ -276,9 +277,15 @@ public class PrefetLoginController {
             compte3.setAvatar("/upload-dir/"+file.getOriginalFilename());
             if (role!=null){
                 compte3.setRoles(Arrays.asList(role));
-            }else {
+            }else if (roleSecretaire!=null){
+                compte3.setRoles(Arrays.asList(roleSecretaire));
+            } else {
                 Role role1 = new Role();
-                role1.setName(ERole.ROLE_DIRECTEUR.toString());
+                if (compte.getType().equals(EType.SECRETAIRE.toString())){
+                    role1.setName(ERole.ROLE_SECRETAIRE.toString());
+                }else {
+                    role1.setName(ERole.ROLE_DIRECTEUR.toString());
+                }
                 roleRepository.save(role1);
                 compte3.setRoles(Arrays.asList(role1));
             }
@@ -878,6 +885,7 @@ public class PrefetLoginController {
         }else {
             salles.addAll(salleRepository.findAll());
         }
+        request.getSession().setAttribute("url",request.getHeader("referer"));
         Salle salle = salleRepository.getOne(id);
         Collection<Hebdo> hebdos = hebdoRepository.findAllBySalles_Id(salle.getId(), Sort.by(Sort.Direction.DESC,"id"));
         Collection<Presence> presences = new ArrayList<>();
@@ -899,6 +907,8 @@ public class PrefetLoginController {
         }else {
             salles.addAll(salleRepository.findAll());
         }
+        request.getSession().setAttribute("url",request.getHeader("referer"));
+
         Collection<Hebdo> hebdos = hebdoRepository.findAll();
         model.addAttribute("lists",hebdos);
         model.addAttribute("salles",salles);
@@ -936,6 +946,7 @@ public class PrefetLoginController {
         Enseignant enseignant = enseignantRepository.findByEmail(compte.getEmail());
         Collection<Enseignant> enseignants = enseignantRepository.findAll();
         Collection<Salle> salles = new ArrayList<>();
+        request.getSession().setAttribute("url",request.getHeader("referer"));
 
         if (enseignant != null){
             salles.addAll(salleRepository.findAllByEnseignants_Id(enseignant.getId()));
@@ -964,6 +975,8 @@ public class PrefetLoginController {
         Compte compte = compteService.findByUsername(principal.getName());
         Collection<Enseignant> enseignants = enseignantRepository.findAll();
         Collection<Salle> salles = salleRepository.findAll();
+        request.getSession().setAttribute("url",request.getHeader("referer"));
+
 
         Hebdo hebdo = hebdoRepository.getOne(id);
         Collection<Planning> plannings = planningRepository.findAllByHebdo_Id(hebdo.getId());
@@ -1192,6 +1205,7 @@ public class PrefetLoginController {
 
     @GetMapping("/programme/lists")
     public String getAllPlannings(Model model, HttpServletRequest request){
+        request.getSession().setAttribute("url",request.getHeader("referer"));
         Collection<Planning> plannings = planningRepository.findAll();
         Collection<Salle> salles = salleRepository.findAll();
         Collection<Enseignant> enseignants = enseignantRepository.findAll();
@@ -1207,6 +1221,15 @@ public class PrefetLoginController {
 
         return "prefet/plannings";
 
+    }
+
+
+    @GetMapping("/planning/delete/{id}")
+    public String deletePlanning(@PathVariable Long id, RedirectAttributes redirectAttributes, HttpServletRequest request ){
+        Planning planning = planningRepository.getOne(id);
+        planningRepository.delete(planning);
+        redirectAttributes.addFlashAttribute("message","Vous avez supprimer un cours");
+        return "redirect:/backside";
     }
 
     @GetMapping("/account/detail/{id}")

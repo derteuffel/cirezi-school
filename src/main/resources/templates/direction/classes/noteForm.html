@@ -70,51 +70,56 @@
                         <div class="page-content">
                             <h3 class="title-1"><span th:text="${classe?.niveau}"></span></h3>
                             <hr>
-                            <h5 class="title-1"><span th:text="${'Programme du : '+hebdo.debut+' au : '+hebdo.fin}"></span></h5>
+                            <h5 class="title-1"><span th:text="${'Formulaire d ajout des notes de : '+matiere.name}"></span></h5>
+                            <hr>
+                            <hr>
+                            <div class="card-content">
+                                <form th:action="@{/direction/classe/note/save/}+${matiere.id}" autocomplete="off" method="post" th:object="${saveNoteHelper}"  class="form-horizontal">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Formulaire d'ajout des notes</h5>
+                                    </div>
+                                    <div class="card-body card-block">
 
-                            <div class="row"  >
-                                    <table class="table table-bordered table-responsive" id="add-row">
-                                        <thead>
-                                        <th>Cours</th>
-                                        <th>Date</th>
-                                        <th>Heure debut</th>
-                                        <th>Heure fin</th>
-                                        <th>Enseignant</th>
-                                        <th>ACTION</th>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:each="item : ${lists}">
-                                            <td th:text="${item.cours}"></td>
-                                            <td th:text="${item.date}"></td>
-                                            <td th:text="${item.heureDebut}"></td>
-                                            <td th:text="${item.heureFin}"></td>
-                                            <td th:text="${item.enseignant.name+' '+item.enseignant.prenom}"></td>
-                                            <td>
-                                                <a th:href="@{/direction/classes/planning/update/}+${item?.id+'/'+classe.id}" class="btn"><i class="fa fa-edit"></i></a>
-                                                <button type="button" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${item?.id}" class="text-danger"><i class="fas fa-trash"></i></button>
-                                            </td>
-                                            <div class="modal fade" th:id="deleteModal+${item?.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-lg" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteModalLabel">Supprimer programme</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body card-block">
-                                                            <p>Vous voulez vraiment supprimer ce programme??</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                            <a  class="btn btn-primary" th:href="@{/direction/planning/delete/}+${item?.id}">Supprimer</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                        <div class="row form-group">
+                                            <div class="col col-md-3">
+                                                <label for="text-cours" class=" form-control-label">Periode d'evaluation</label>
                                             </div>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                            <div class="col-12 col-md-9">
+                                                <select th:field="*{periode}" class="form-control" id="text-cours">
+                                                    <option value="">--Choisir un code de la matiere--</option>
+                                                    <option th:each="item : ${T(com.derteuffel.school.enums.EPeriode).values()}" th:value="${item}" th:text="${item}"></option>
+                                                </select>
+                                                <small class="form-text text-muted">Intitule de la periode d'evaluation</small>
+                                            </div>
+                                        </div>
+                                        <div class="row form-group">
+                                            <div class="col col-md-3">
+                                                <label  class=" form-control-label">Notes de eleves </label>
+                                            </div>
+                                            <div class="col-12 col-md-9">
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                    <th>Noms</th>
+                                                    <th>Note des eleves</th>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr th:each="row,item : ${saveNoteHelper.noteHelpers}">
+                                                        <td th:text="${saveNoteHelper.noteHelpers[item.index].nomEleve}"></td>
+                                                        <td>
+                                                            <input type="hidden"  th:field="*{noteHelpers[__${item.index}__].eleveId}" />
+                                                            <input type="number"  th:field="*{noteHelpers[__${item.index}__].note}" class="form-control"/>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <a th:href="@{/direction/classes/matieres/detail/}+${matiere.id+'/'+classe.id}"  class="btn btn-secondary" >Retour</a>
+                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    </div>
+                                </form>
                             </div>
 
                         </div>
@@ -132,6 +137,13 @@
         </section>
     </div>
     <!-- END PAGE CONTENT  -->
+    <!-- modal medium -->
+    <div class="modal fade" th:id="addMatiereModal" tabindex="-1" role="dialog" aria-labelledby="addMatiereModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+
+        </div>
+    </div>
+    <!-- end modal medium -->
 
 </div>
 

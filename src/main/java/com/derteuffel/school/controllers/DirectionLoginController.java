@@ -4,9 +4,7 @@ import com.derteuffel.school.entities.*;
 import com.derteuffel.school.enums.ERole;
 import com.derteuffel.school.enums.EType;
 import com.derteuffel.school.enums.EVisibilite;
-import com.derteuffel.school.helpers.CompteRegistrationDto;
-import com.derteuffel.school.helpers.PlanningHelpers;
-import com.derteuffel.school.helpers.PresenceForm;
+import com.derteuffel.school.helpers.*;
 import com.derteuffel.school.repositories.*;
 import com.derteuffel.school.services.CompteService;
 import com.derteuffel.school.services.Mail;
@@ -52,6 +50,12 @@ public class DirectionLoginController {
 
     @Autowired
     private  RoleRepository roleRepository;
+
+    @Autowired
+    private MatiereRepository matiereRepository;
+
+    @Autowired
+    private NoteRepository noteRepository;
 
     @Autowired
     private EnseignantRepository enseignantRepository;
@@ -1190,6 +1194,110 @@ public class DirectionLoginController {
 
         return "redirect:/direction/account/detail/"+compte.getId();
 
+    }
+
+
+    @GetMapping("/classe/matieres/lists/{id}")
+    public String showMatieres(@PathVariable Long id, Model model, HttpServletRequest request){
+
+        request.getSession().setAttribute("url",request.getHeader("referer"));
+        Salle salle = salleRepository.getOne(id);
+        List<Matiere> matieres = matiereRepository.findAllBySalle_Id(salle.getId());
+        Collection<Enseignant> enseignants = salle.getEnseignants();
+        System.out.println(enseignants.size());
+        model.addAttribute("enseignants", enseignants);
+        model.addAttribute("matiere", new Matiere());
+        model.addAttribute("classe",salle);
+        model.addAttribute("lists",matieres);
+        return "direction/classes/matieres";
+    }
+
+
+    @PostMapping("/classe/matiere/save/{id}")
+    public String saveMatiere(Matiere matiere, RedirectAttributes redirectAttributes, @PathVariable Long id, Long enseignantId){
+        Salle salle = salleRepository.getOne(id);
+        Matiere matiere1 = matiereRepository.findByNameAndSalle_Id(matiere.getName(),salle.getId());
+        Enseignant enseignant = enseignantRepository.getOne(enseignantId);
+        if (matiere1 !=null){
+            redirectAttributes.addFlashAttribute("message", "Cette matiere existe deja pour cette classe");
+        }else {
+            matiere.setSalle(salle);
+            matiere.setEnseignant(enseignant);
+            matiereRepository.save(matiere);
+            redirectAttributes.addFlashAttribute("message","Vous avez ajouter une nouvelle matiere avec succes");
+        }
+
+        return "redirect:/direction/classe/matieres/lists/"+salle.getId();
+
+
+    }
+
+    @GetMapping("/classes/matieres/update/{id}")
+    public String updateMatieres(@PathVariable Long id, Model model){
+        Matiere matiere = matiereRepository.getOne(id);
+        Salle salle = matiere.getSalle();
+        Collection<Enseignant> enseignants = salle.getEnseignants();
+
+        model.addAttribute("enseignants", enseignants);
+        model.addAttribute("classe",salle);
+        model.addAttribute("matiere",matiere);
+        return "direction/classes/matiereU";
+    }
+
+    @PostMapping("/classe/matiere/update/{id}")
+    public String saveUpdateMatiere(Matiere matiere, RedirectAttributes redirectAttributes, Long enseignantId, @PathVariable Long id){
+        if (enseignantId != null){
+            Enseignant enseignant = enseignantRepository.getOne(enseignantId);
+            matiere.setEnseignant(enseignant);
+        }
+
+        matiereRepository.save(matiere);
+        redirectAttributes.addFlashAttribute("message", "Votre matiere a ete modifier avec succes");
+        return "redirect:/direction/classe/matieres/lists/"+id;
+    }
+
+    @GetMapping("/matiere/delete/{id}")
+    public String deleteMatiere(@PathVariable Long id, RedirectAttributes redirectAttributes){
+        Matiere matiere = matiereRepository.getOne(id);
+        matiereRepository.delete(matiere);
+        redirectAttributes.addFlashAttribute("message","Vous avez supprimer une matiere");
+        return "redirect:/backside";
+    }
+
+
+    @GetMapping("/classes/matieres/detail/{id}/{salleId}")
+    public String getNotes(@PathVariable Long id, @PathVariable Long salleId, Model model){
+        Matiere matiere = matiereRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+        List<Note> notes = noteRepository.findAllByMatiere_Id(matiere.getId());
+
+
+        model.addAttribute("matiere", matiere);
+        model.addAttribute("classe",salle);
+        model.addAttribute("lists",notes);
+        return "direction/classes/notes";
+    }
+
+    @GetMapping("/classes/note/form/{id}/{salleId}")
+    public String notesForm(Model model, @PathVariable Long id, @PathVariable Long salleId){
+        Matiere matiere = matiereRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salle.getId());
+        List<NoteHelper> noteHelpers = new ArrayList<>(eleves.size());
+        for (Eleve eleve : eleves){
+            NoteHelper noteHelper = new NoteHelper();
+            noteHelper.setEleveId(eleve.getId());
+            noteHelper.setNomEleve(eleve.getName()+" "+eleve.getPrenom()+" "+eleve.getPostnom());
+            noteHelpers.add(noteHelper);
+        }
+        SaveNoteHelper saveNoteHelper = new SaveNoteHelper();
+        saveNoteHelper.setNoteHelpers(noteHelpers);
+        System.out.println(eleves.size());
+        model.addAttribute("saveNoteHelper", saveNoteHelper);
+        model.addAttribute("matiere",matiere);
+        model.addAttribute("classe",salle);
+
+        return "direction/classes/noteForm";
     }
 
 
