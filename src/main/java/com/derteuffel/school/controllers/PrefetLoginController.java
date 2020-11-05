@@ -144,6 +144,11 @@ public class PrefetLoginController {
                     "confirmation@yesbanana.org",
                     "Enregistrement d'un directeur ou responsable",
                     "Viens de s'enregistrer comme prefet des etudes du lycee cirezi de Bukavu");
+            sender.sender(
+                    compteDto.getEmail(),
+                    "Enregistrement en tant que Prefet des etudes",
+                    "Vous venez de creer un compte en tant que prefet des etudes dans le lycee cirezi en ligne"
+            );
 
 
         redirectAttributes.addFlashAttribute("success", "Votre enregistrement a ete effectuer avec succes");

@@ -79,38 +79,12 @@
                                     <table class="table table-bordered table-responsive-lg" id="add-row">
                                         <thead>
                                         <th>Nom de l'eleve</th>
-                                        <th>Periode</th>
-                                        <th>Note</th>
-                                        <th>ACTION</th>
                                         </thead>
                                         <tbody>
                                         <tr th:each="item : ${lists}">
-                                            <td th:text="${item.eleve.name+' '+item.eleve.prenom+' '+item.eleve.postnom}"></td>
-                                            <td th:text="${item.periode}"></td>
-                                            <td th:text="${item.note}"></td>
                                             <td>
-                                                <a th:href="@{/direction/classes/note/update/}+${item?.id}" class="btn"><i class="fa fa-edit"></i></a>
-                                                <button type="button" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${item?.id}" class="text-danger"><i class="fas fa-trash"></i></button>
+                                                <a th:href="@{/direction/classes/eleve/note/detail/}+${item?.id+'/'+matiere.id}" class="btn" th:text="${item.name+' '+item.prenom+' '+item.postnom}"></a>
                                             </td>
-                                            <div class="modal fade" th:id="deleteModal+${item?.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-lg" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteModalLabel">Supprimer la note??</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body card-block">
-                                                            <p>Vous voulez vraiment supprimer cette note??</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                            <a  class="btn btn-primary" th:href="@{/direction/note/delete/}+${item?.id}">Supprimer</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </tr>
                                         </tbody>
                                     </table>

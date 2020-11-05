@@ -74,7 +74,7 @@
                     <div class="col-xl-9">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
-
+                                    <span class="text-danger" th:text="${message}"></span>
                             <!-- modal medium -->
                             <form th:action="@{/prefet/administration/save}" autocomplete="off" method="post" enctype="multipart/form-data" th:object="${compte}" class="form-horizontal">
                                         <div class="card-header">

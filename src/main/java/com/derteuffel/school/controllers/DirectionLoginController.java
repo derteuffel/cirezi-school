@@ -1270,12 +1270,26 @@ public class DirectionLoginController {
         Matiere matiere = matiereRepository.getOne(id);
         Salle salle = salleRepository.getOne(salleId);
         List<Note> notes = noteRepository.findAllByMatiere_Id(matiere.getId());
+        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salleId);
+        System.out.println(eleves.size());
 
 
         model.addAttribute("matiere", matiere);
         model.addAttribute("classe",salle);
-        model.addAttribute("lists",notes);
+        model.addAttribute("lists",eleves);
         return "direction/classes/notes";
+    }
+
+    @GetMapping("/classes/eleve/note/detail/{id}/{matiereId}")
+    public String noteDetail(@PathVariable Long id, @PathVariable Long matiereId, Model model){
+        Eleve eleve = eleveRepository.getOne(id);
+        Matiere matiere = matiereRepository.getOne(matiereId);
+        List<Note> notes = noteRepository.findAllByMatiere_IdAndEleve_Id(matiere.getId(),eleve.getId());
+        System.out.println(notes.size());
+        model.addAttribute("matiere",matiere);
+        model.addAttribute("classe",matiere.getSalle());
+        model.addAttribute("lists", notes);
+        return "direction/classes/note";
     }
 
     @GetMapping("/classes/note/form/{id}/{salleId}")
@@ -1298,6 +1312,26 @@ public class DirectionLoginController {
         model.addAttribute("classe",salle);
 
         return "direction/classes/noteForm";
+    }
+
+
+    @PostMapping("/classes/note/save/{id}/{salleId}")
+    public String saveNote(@ModelAttribute("saveNoteHelper") SaveNoteHelper saveNoteHelper, @PathVariable Long id, @PathVariable Long salleId){
+        Matiere matiere = matiereRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+        if (saveNoteHelper.getNoteHelpers()!= null && saveNoteHelper.getNoteHelpers().size() != 0){
+            for (NoteHelper noteHelper : saveNoteHelper.getNoteHelpers()){
+                System.out.println(noteHelper.getEleveId()+"  "+noteHelper.getNomEleve()+"  "+noteHelper.getNote());
+                System.out.println("-----------------------------------------------");
+                Note note = new Note();
+                note.setNote(noteHelper.getNote());
+                note.setEleve(eleveRepository.getOne(noteHelper.getEleveId()));
+                note.setMatiere(matiere);
+                note.setPeriode(saveNoteHelper.getPeriode());
+                noteRepository.save(note);
+            }
+        }
+        return "redirect:/direction/classes/matieres/detail/"+matiere.getId()+"/"+salle.getId();
     }
 
 

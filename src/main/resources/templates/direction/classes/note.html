@@ -70,56 +70,29 @@
                         <div class="page-content">
                             <h3 class="title-1"><span th:text="${classe?.niveau}"></span></h3>
                             <hr>
-                            <h5 class="title-1"><span th:text="${'Formulaire d ajout des notes de : '+matiere.name}"></span></h5>
+                            <h5 class="title-1"><span th:text="${'Liste des notes de : '+matiere.name}"></span></h5>
                             <hr>
-                            <hr>
-                            <div class="card-content">
-                                <form th:action="@{/direction/classes/note/save/}+${matiere.id+'/'+classe.id}" autocomplete="off" method="post" th:object="${saveNoteHelper}"  class="form-horizontal">
-                                    <div class="card-header">
-                                        <h5 class="card-title">Formulaire d'ajout des notes</h5>
-                                    </div>
-                                    <div class="card-body card-block">
 
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-cours" class=" form-control-label">Periode d'evaluation</label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                <select th:field="*{periode}" class="form-control" id="text-cours">
-                                                    <option value="">--Choisir un code de la matiere--</option>
-                                                    <option th:each="item : ${T(com.derteuffel.school.enums.EPeriode).values()}" th:value="${item}" th:text="${item}"></option>
-                                                </select>
-                                                <small class="form-text text-muted">Intitule de la periode d'evaluation</small>
-                                            </div>
-                                        </div>
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label  class=" form-control-label">Notes de eleves </label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                <table class="table table-bordered">
-                                                    <thead>
-                                                    <th>Noms</th>
-                                                    <th>Note des eleves</th>
-                                                    </thead>
-                                                    <tbody>
-                                                    <tr th:each="row,item : ${saveNoteHelper.noteHelpers}">
-                                                        <td th:text="${saveNoteHelper.noteHelpers[item.index].nomEleve}"></td>
-                                                        <td>
-                                                            <input type="hidden"  th:field="*{noteHelpers[__${item.index}__].eleveId}" />
-                                                            <input type="number"  th:field="*{noteHelpers[__${item.index}__].note}" class="form-control"/>
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer">
-                                        <a th:href="@{/direction/classes/matieres/detail/}+${matiere.id+'/'+classe.id}"  class="btn btn-secondary" >Retour</a>
-                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
-                                    </div>
-                                </form>
+
+                            <div class="row"  >
+                                    <table class="table table-bordered table-responsive-lg" id="add-row">
+                                        <thead>
+                                        <th>Periode</th>
+                                        <th>Note</th>
+                                        <th>Date d'ajout</th>
+                                        <th>Action</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="item : ${lists}">
+                                            <td th:text="${item.periode}"></td>
+                                            <td th:text="${item.note}"></td>
+                                            <td th:text="${item.dateAjout}"></td>
+                                            <td>
+                                                <a th:href="@{/direction/classes/eleve/note/update/}+${item?.id+'/'+matiere.id}" class="btn" ><i class="fa fa-edit"></i></a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                             </div>
 
                         </div>
@@ -137,13 +110,6 @@
         </section>
     </div>
     <!-- END PAGE CONTENT  -->
-    <!-- modal medium -->
-    <div class="modal fade" th:id="addMatiereModal" tabindex="-1" role="dialog" aria-labelledby="addMatiereModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-
-        </div>
-    </div>
-    <!-- end modal medium -->
 
 </div>
 
