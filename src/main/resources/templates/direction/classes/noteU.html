@@ -70,30 +70,41 @@
                         <div class="page-content">
                             <h3 class="title-1"><span th:text="${classe?.niveau}"></span></h3>
                             <hr>
-                            <h5 class="title-1"><span th:text="${'Liste des notes de : '+matiere.name}"></span></h5>
+                            <h5 class="title-1"><span th:text="${'Modification de note de : '+matiere.name}"></span></h5>
                             <hr>
+                            <form th:action="@{/direction/classes/note/update/}+${matiere.id+'/'+eleve.id}" autocomplete="off" method="post" th:object="${note}"  class="form-horizontal">
+                                <div class="card-header">
+                                    <h5 class="card-title">Formulaire de modification</h5>
+                                </div>
+                                <div class="card-body card-block">
 
-
-                            <div class="row"  >
-                                    <table class="table table-bordered table-responsive-lg" id="add-row">
-                                        <thead>
-                                        <th>Periode</th>
-                                        <th>Note</th>
-                                        <th>Date d'ajout</th>
-                                        <th>Action</th>
-                                        </thead>
-                                        <tbody>
-                                        <tr th:each="item : ${lists}">
-                                            <td th:text="${item.periode}"></td>
-                                            <td th:text="${item.note}"></td>
-                                            <td th:text="${item.dateAjout}"></td>
-                                            <td>
-                                                <a th:href="@{/direction/classes/eleve/note/update/}+${eleve?.id+'/'+matiere.id+'/'+item.id}" class="btn" ><i class="fa fa-edit"></i></a>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-cours" class=" form-control-label">Periode d'evaluation</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <select th:field="*{periode}" class="form-control" id="text-cours">
+                                                <option value="">--Choisir un code de la matiere--</option>
+                                                <option th:each="item : ${T(com.derteuffel.school.enums.EPeriode).values()}" th:value="${item}" th:text="${item}"></option>
+                                            </select>
+                                            <small class="form-text text-muted">Intitule de la periode d'evaluation</small>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label  class=" form-control-label">Note </label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <input type="number"  th:field="*{note}" class="form-control"/>
+                                            <input type="hidden"  th:field="*{id}" class="form-control"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a th:href="@{/direction/classes/eleve/note/detail/}+${eleve.id+'/'+matiere.id}"  class="btn btn-secondary" >Retour</a>
+                                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                </div>
+                            </form>
 
                         </div>
                         <!-- END PAGE CONTENT-->

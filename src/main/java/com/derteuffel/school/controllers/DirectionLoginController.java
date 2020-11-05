@@ -883,13 +883,15 @@ public class DirectionLoginController {
         return "redirect:/direction/programme/hebdos";
     }
 
-    @PostMapping("/planning/save/{id}")
+    @PostMapping("/planning/save/{id}/{salleId}")
     public String saveplanning(PlanningHelpers helpers, RedirectAttributes redirectAttributes, HttpServletRequest request,
-                               @PathVariable Long id, String jour_semaine, Long enseignantId){
+                               @PathVariable Long id, String jour_semaine, Long enseignantId, @PathVariable Long salleId){
         Principal principal = request.getUserPrincipal();
         Compte compte = compteService.findByUsername(principal.getName());
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         Hebdo hebdo = hebdoRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+
         Planning planning = new Planning();
         Enseignant enseignant = enseignantRepository.getOne(enseignantId);
         Planning planning1 = planningRepository.findByCoursAndDate(helpers.getCours(),jour_semaine+" le "+sdf.format(helpers.getDate()));
@@ -905,7 +907,7 @@ public class DirectionLoginController {
         planning.setHeureFin(helpers.getHeureFin());
         planningRepository.save(planning);
         redirectAttributes.addFlashAttribute("success", "vous avez ajouté une nouvelle journée avec succès");
-        return "redirect:/direction/classes/planning/lists/"+ hebdo.getId();
+        return "redirect:/direction/classes/planning/lists/"+ hebdo.getId()+"/"+salle.getId();
     }
 
     @PostMapping("/programme/planning/save/{id}")
@@ -1287,9 +1289,37 @@ public class DirectionLoginController {
         List<Note> notes = noteRepository.findAllByMatiere_IdAndEleve_Id(matiere.getId(),eleve.getId());
         System.out.println(notes.size());
         model.addAttribute("matiere",matiere);
+        model.addAttribute("eleve", eleve);
         model.addAttribute("classe",matiere.getSalle());
         model.addAttribute("lists", notes);
         return "direction/classes/note";
+    }
+
+    @GetMapping("/classes/eleve/note/update/{id}/{matiereId}/{noteId}")
+    public String noteUpdate(@PathVariable Long id, @PathVariable Long matiereId, Model model, @PathVariable Long noteId){
+        Eleve eleve = eleveRepository.getOne(id);
+        Matiere matiere = matiereRepository.getOne(matiereId);
+        Note note = noteRepository.getOne(noteId);
+        model.addAttribute("matiere",matiere);
+        model.addAttribute("classe",matiere.getSalle());
+        model.addAttribute("note",note);
+
+        model.addAttribute("eleve", eleve);
+        return "direction/classes/noteU";
+    }
+
+
+    @PostMapping("/classes/note/update/{id}/{eleveId}")
+    public String noteUpdateSave(Note note, @PathVariable Long id, @PathVariable Long eleveId, RedirectAttributes redirectAttributes){
+        Matiere matiere = matiereRepository.getOne(id);
+        Eleve eleve = eleveRepository.getOne(eleveId);
+        Note note1 = noteRepository.getOne(note.getId());
+        note1.setPeriode(note.getPeriode());
+        note1.setNote(note.getNote());
+        noteRepository.save(note1);
+        redirectAttributes.addFlashAttribute("message","Vous avez modifier avec succes votre note");
+        return "redirect:/direction/classes/eleve/note/detail/"+eleve.getId()+"/"+matiere.getId();
+
     }
 
     @GetMapping("/classes/note/form/{id}/{salleId}")
