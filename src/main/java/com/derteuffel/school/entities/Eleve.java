@@ -30,6 +30,7 @@ public class Eleve implements Serializable{
     private String localisation;
     private String autreInformation;
     private String pays;
+    private String categorie;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Salle salle;

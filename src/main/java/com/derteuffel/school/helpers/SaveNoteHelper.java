@@ -5,9 +5,18 @@ import java.util.List;
 public class SaveNoteHelper {
 
     private String periode;
+    private int noteMax;
 
     List<NoteHelper> noteHelpers;
 
+
+    public int getNoteMax() {
+        return noteMax;
+    }
+
+    public void setNoteMax(int noteMax) {
+        this.noteMax = noteMax;
+    }
 
     public String getPeriode() {
         return periode;

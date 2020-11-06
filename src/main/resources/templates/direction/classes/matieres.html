@@ -72,7 +72,14 @@
                             <hr>
                             <h5 class="title-1"><span th:text="${'Liste des matieres de la classe : '}"></span></h5>
                             <hr>
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addMatiereModal" th:attr="data-target='#addMatiereModal'" >Nouvelle Matiere&nbsp;<i class="fas fa-plus"></i></button>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addMatiereModal" th:attr="data-target='#addMatiereModal'" >Nouvelle Matiere&nbsp;<i class="fas fa-plus"></i></button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a th:href="@{/direction/classes/recapitulatif/eleves/lists/}+${classe.id}" th:text="${'Voir le recapitulatif de chaque eleve'}"><i class="fa fa-long-arrow-right"></i></a>
+                                </div>
+                            </div>
                             <hr>
 
                             <div class="row"  >

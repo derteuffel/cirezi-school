@@ -1271,7 +1271,6 @@ public class DirectionLoginController {
     public String getNotes(@PathVariable Long id, @PathVariable Long salleId, Model model){
         Matiere matiere = matiereRepository.getOne(id);
         Salle salle = salleRepository.getOne(salleId);
-        List<Note> notes = noteRepository.findAllByMatiere_Id(matiere.getId());
         Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salleId);
         System.out.println(eleves.size());
 
@@ -1280,6 +1279,31 @@ public class DirectionLoginController {
         model.addAttribute("classe",salle);
         model.addAttribute("lists",eleves);
         return "direction/classes/notes";
+    }
+
+    @GetMapping("/classes/recapitulatif/eleves/lists/{id}")
+    public String recapitulatifEleves(@PathVariable Long id, Model model){
+        Salle salle = salleRepository.getOne(id);
+        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salle.getId());
+        System.out.println(eleves.size());
+
+        model.addAttribute("classe", salle);
+        model.addAttribute("lists",eleves);
+        return "direction/classes/recapitulatifEleves";
+    }
+
+
+
+    @GetMapping("/classes/recapitulatif/eleves/note/detail/{id}/{salleId}")
+    public String recapitulatifDetail(@PathVariable Long id, @PathVariable Long salleId, Model model){
+
+        Eleve eleve = eleveRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+        model.addAttribute("classe", salle);
+        List<Note> notes = noteRepository.findAllByEleve_Id(eleve.getId());
+        model.addAttribute("lists", notes);
+        model.addAttribute("eleve", eleve);
+        return "direction/classes/recapitulatifDetail";
     }
 
     @GetMapping("/classes/eleve/note/detail/{id}/{matiereId}")
@@ -1346,15 +1370,24 @@ public class DirectionLoginController {
 
 
     @PostMapping("/classes/note/save/{id}/{salleId}")
-    public String saveNote(@ModelAttribute("saveNoteHelper") SaveNoteHelper saveNoteHelper, @PathVariable Long id, @PathVariable Long salleId){
+    public String saveNote(@ModelAttribute("saveNoteHelper") SaveNoteHelper saveNoteHelper, @PathVariable Long id,
+                           @PathVariable Long salleId, Model model){
         Matiere matiere = matiereRepository.getOne(id);
         Salle salle = salleRepository.getOne(salleId);
         if (saveNoteHelper.getNoteHelpers()!= null && saveNoteHelper.getNoteHelpers().size() != 0){
             for (NoteHelper noteHelper : saveNoteHelper.getNoteHelpers()){
                 System.out.println(noteHelper.getEleveId()+"  "+noteHelper.getNomEleve()+"  "+noteHelper.getNote());
                 System.out.println("-----------------------------------------------");
+                if (saveNoteHelper.getNoteMax() < noteHelper.getNote()){
+                    model.addAttribute("message", "Vous avez entrer une note superieur au maximum de cette matiere, merci de bien vouloir revoir vos notes entrer");
+                    model.addAttribute("saveNoteHelper",saveNoteHelper);
+                    model.addAttribute("matiere",matiere);
+                    model.addAttribute("classe",salle);
+                    return "direction/classes/noteForm";
+                }
                 Note note = new Note();
                 note.setNote(noteHelper.getNote());
+                note.setNoteMax(saveNoteHelper.getNoteMax());
                 note.setEleve(eleveRepository.getOne(noteHelper.getEleveId()));
                 note.setMatiere(matiere);
                 note.setPeriode(saveNoteHelper.getPeriode());

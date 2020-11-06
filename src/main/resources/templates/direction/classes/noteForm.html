@@ -72,7 +72,7 @@
                             <hr>
                             <h5 class="title-1"><span th:text="${'Formulaire d ajout des notes de : '+matiere.name}"></span></h5>
                             <hr>
-                            <hr>
+                            <span th:text="${message}" class="text-danger"></span>
                             <div class="card-content">
                                 <form th:action="@{/direction/classes/note/save/}+${matiere.id+'/'+classe.id}" autocomplete="off" method="post" th:object="${saveNoteHelper}"  class="form-horizontal">
                                     <div class="card-header">
@@ -86,10 +86,19 @@
                                             </div>
                                             <div class="col-12 col-md-9">
                                                 <select th:field="*{periode}" class="form-control" id="text-cours">
-                                                    <option value="">--Choisir un code de la matiere--</option>
+                                                    <option value="">--Choisir une periode--</option>
                                                     <option th:each="item : ${T(com.derteuffel.school.enums.EPeriode).values()}" th:value="${item}" th:text="${item}"></option>
                                                 </select>
                                                 <small class="form-text text-muted">Intitule de la periode d'evaluation</small>
+                                            </div>
+                                        </div>
+                                        <div class="row form-group">
+                                            <div class="col col-md-3">
+                                                <label for="text-noteMax" class=" form-control-label">Maximum</label>
+                                            </div>
+                                            <div class="col-12 col-md-9">
+                                                <input type="number" class="form-control" id="text-noteMax" th:field="*{noteMax}" placeholder="Note Maximal de la matiere">
+                                                <small class="form-text text-muted">Note Maximale possible de la matiere</small>
                                             </div>
                                         </div>
                                         <div class="row form-group">

@@ -70,54 +70,22 @@
                         <div class="page-content">
                             <h3 class="title-1"><span th:text="${classe?.niveau}"></span></h3>
                             <hr>
-                            <div class="card-content">
-                                <form th:action="@{/direction/classe/matiere/update/}+${classe.id}" autocomplete="off" method="post" th:object="${matiere}"  class="form-horizontal">
-                                    <div class="card-header">
-                                        <h5 class="card-title" >Modifier matiere</h5>
+                            <h5 class="title-1"><span th:text="${'Recapitulatif des notes de la classe '}"></span></h5>
+                            <hr>
 
-                                    </div>
-                                    <div class="card-body card-block">
-
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-cours" class=" form-control-label">Intitule de la matiere</label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                <select th:field="*{name}" class="form-control" id="text-cours">
-                                                    <option value="">--Choisir un code de la matiere--</option>
-                                                    <option th:each="item : ${T(com.derteuffel.school.enums.EMatiere).values()}" th:value="${item}" th:text="${item}"></option>
-                                                </select>
-                                                <small class="form-text text-muted">Intitule de la lecon</small>
-                                                <input type="hidden" th:href="*{id}">
-                                            </div>
-                                        </div>
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-enseignant" class=" form-control-label">Enseignant </label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                <select name="enseignantId" class="form-control" id="text-enseignant">
-                                                    <option value="">--Choisir un enseignant--</option>
-                                                    <option th:each="item : ${enseignants}" th:value="${item.id}" th:text="${item.name+' '+item.prenom}"></option>
-                                                </select>
-                                                <small class="form-text text-muted">Nom et prenom de l'enseignant de cette matiere</small>
-                                            </div>
-                                        </div>
-                                       <!-- <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-noteMax" class=" form-control-label">Maximum</label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                <input type="number" class="form-control" id="text-noteMax" th:field="*{noteMax}" placeholder="Note Maximal de la matiere">
-                                                <small class="form-text text-muted">Note Maximale possible de la matiere</small>
-                                            </div>
-                                        </div>-->
-                                    </div>
-                                    <div class="modal-footer">
-                                        <a th:href="@{/direction/classe/matieres/lists/}+${classe.id}"  class="btn btn-secondary" >Retour</a>
-                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
-                                    </div>
-                                </form>
+                            <div class="row"  >
+                                    <table class="table table-bordered table-responsive-lg" id="add-row">
+                                        <thead>
+                                        <th>Nom de l'eleve</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="item : ${lists}">
+                                            <td>
+                                                <a th:href="@{/direction/classes/recapitulatif/eleves/note/detail/}+${item?.id+'/'+classe.id}" class="btn" th:text="${item.name+' '+item.prenom+' '+item.postnom}"></a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
                             </div>
 
                         </div>
@@ -135,7 +103,6 @@
         </section>
     </div>
     <!-- END PAGE CONTENT  -->
-
 
 </div>
 

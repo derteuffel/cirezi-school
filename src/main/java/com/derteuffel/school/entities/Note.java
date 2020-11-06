@@ -16,6 +16,7 @@ public class Note implements Serializable{
     private Long id;
     private String periode;
     private int note;
+    private int noteMax;
     private Date dateAjout = new Date();
 
     @ManyToOne
@@ -27,9 +28,27 @@ public class Note implements Serializable{
     public Note() {
     }
 
-    public Note(String periode, int note) {
+    public Note(String periode, int note, int noteMax, Date dateAjout) {
         this.periode = periode;
         this.note = note;
+        this.noteMax = noteMax;
+        this.dateAjout = dateAjout;
+    }
+
+    public int getNoteMax() {
+        return noteMax;
+    }
+
+    public void setNoteMax(int noteMax) {
+        this.noteMax = noteMax;
+    }
+
+    public Date getDateAjout() {
+        return dateAjout;
+    }
+
+    public void setDateAjout(Date dateAjout) {
+        this.dateAjout = dateAjout;
     }
 
     public Long getId() {

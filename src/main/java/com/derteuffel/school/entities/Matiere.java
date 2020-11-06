@@ -15,6 +15,7 @@ public class Matiere implements Serializable{
     @GeneratedValue
     private Long id;
     private String name;
+    private int noteMax;
     @ManyToOne
     private Enseignant enseignant;
     @ManyToOne
@@ -26,8 +27,9 @@ public class Matiere implements Serializable{
     public Matiere() {
     }
 
-    public Matiere(String name) {
+    public Matiere(String name, int noteMax) {
         this.name = name;
+        this.noteMax = noteMax;
     }
 
     public Long getId() {
@@ -69,4 +71,13 @@ public class Matiere implements Serializable{
     public void setNotes(List<Note> notes) {
         this.notes = notes;
     }
+
+    public int getNoteMax() {
+        return noteMax;
+    }
+
+    public void setNoteMax(int noteMax) {
+        this.noteMax = noteMax;
+    }
+
 }
