@@ -14,5 +14,6 @@ public interface EleveRepository extends JpaRepository<Eleve, Long> {
 
     Collection<Eleve> findAllBySalle_Id(Long id);
     Collection<Eleve> findAllByParent_Id(Long id);
+    Collection<Eleve> findAllByCategorieAndSalle_Id(String categorie, Long id);
     Collection<Eleve> findAllBySalle_IdAndParent_Id(Long id, Long number);
 }

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Secretaire</title>
+
+    <!-- Fontfaces CSS-->
+    <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-4.7/css/font-awesome.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-5/css/fontawesome-all.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/mdi-font/css/material-design-iconic-font.min.css}" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link th:href="@{/vendor/bootstrap-4.1/bootstrap.min.css}" rel="stylesheet" media="all">
+
+    <!-- Vendor CSS-->
+    <link th:href="@{/vendor/animsition/animsition.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/wow/animate.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/css-hamburgers/hamburgers.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/slick/slick.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/select2/select2.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/perfect-scrollbar/perfect-scrollbar.css}" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link th:href="@{/css/theme.css}" rel="stylesheet" media="all">
+    <!-- Jquery JS-->
+    <script th:src="@{/vendor/jquery-3.2.1.min.js}"></script>
+
+</head>
+
+<body class="animsition">
+<div class="page-wrapper" id="body">
+    <div th:replace="~{../templates/fragments/video_container :: video_container}"></div>
+    <!-- HEADER DESKTOP-->
+    <header th:replace="~{../templates/fragments/header_secretaire :: header_secretaire}">
+    </header>
+    <!-- END HEADER DESKTOP -->
+
+    <!-- PAGE CONTENT-->
+    <div class="page-container3">
+
+        <section class="alert-wrap p-t-70 p-b-70">
+            <div class="container">
+                <!-- ALERT-->
+                <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
+                    <i class="zmdi zmdi-check-circle"></i>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous êtes connecté successivement à votre compte</span>
+                    <span th:unless="${success}" class="content">Vous êtes connecté successivement à votre compte</span>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">
+                                <i class="zmdi zmdi-close-circle"></i>
+                            </span>
+                    </button>
+                </div>
+                <!-- END ALERT-->
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div th:replace="~{../templates/fragments/sidebar_secretaire :: sidebar_secretaire}">
+                    </div>
+                    <div class="col-xl-9">
+                        <!-- PAGE CONTENT-->
+                        <div class="page-content">
+                            <button type="button" id="startCall" data-toggle="modal" data-target="#contacts" class="btn btn-success">Passer un appel&nbsp;<i class="zmdi zmdi-phone"></i></button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#choice">
+
+                                <span aria-hidden="true">
+                                <i class="zmdi zmdi-phone-ring"></i>
+                            </span>
+                                Joindre un appel
+                            </button>
+                            <div th:replace="~{../templates/fragments/audio_container :: audio_container}"></div>
+                            <hr>
+
+                            <h3 class="title-1">Liste des tuteurs/parents d'élève : <span th:text="${'Lycee Cirezi  Bukavu'}"></span></h3>
+                            <hr>
+                            <div class="row"  >
+                                    <table class="table table-bordered" id="add-row">
+                                        <thead>
+                                        <th>Nom</th>
+                                        <th>Telephone</th>
+                                        <th>E-mail</th>
+                                        <th>Whatsapp</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="parent : ${lists1}">
+                                            <td><span th:text="${parent?.nomComplet}"></span></td>
+                                            <td><span th:text="${parent?.telephone}"></span></td>
+                                            <td><span th:text="${parent?.email}"></span></td>
+                                            <td><span th:text="${parent?.whatsapp}"></span></td>
+                                        </tbody>
+                                    </table>
+                            </div>
+
+                        </div>
+                        <!-- END PAGE CONTENT-->
+                    </div>
+                </div>
+                <!-- COPYRIGHT-->
+                <section th:replace="~{../templates/fragments/footer :: footer}"></section>
+
+                <!-- END COPYRIGHT-->
+            </div>
+        </section>
+    </div>
+    <!-- END PAGE CONTENT  -->
+
+    <div th:replace="~{../templates/fragments/contacts :: contacts}"></div>
+    <div th:replace="~{../templates/fragments/choice :: choice}">
+
+        <div class="modal fade" th:id="planningModal" tabindex="-1" role="dialog"  aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Contacts</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block" >
+                        <ul class="text-left list-group" th:each="enseignant : ${lists1}">
+                            <li class="     -group-item mb-2 d-flex flex-row justify-content-between">
+                                <div>
+                                    <span th:text="${enseignant?.name}"></span>
+
+                                </div>
+                                <div>
+                                    &nbsp;<input class="callInputPlanning" th:value="${enseignant?.email}" type="hidden" />
+                                    <button type="button"  class="btn btn-primary crewCallPlanning">&nbsp;<i class="zmdi zmdi-check"></i></button>
+                                    <button type="button"  class="btn btn-primary removeCallPlanning">&nbsp;<i class="zmdi zmdi-close"></i></button>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="form-group">
+                            <label for="datePlanning">Date de la reunion</label>
+                            <input class="form-control" placeholder="" type="date" id="datePlanning"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button id="planifier" type="button" class="btn btn-primary" data-dismiss="modal">Planifier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Jquery JS-->
+<script th:src="@{/vendor/jquery-3.2.1.min.js}"></script>
+<!-- Bootstrap JS-->
+<script th:src="@{/vendor/bootstrap-4.1/popper.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-4.1/bootstrap.min.js}"></script>
+<!-- Vendor JS       -->
+<script th:src="@{/vendor/slick/slick.min.js}">
+</script>
+<script th:src="@{/vendor/wow/wow.min.js}"></script>
+<script th:src="@{/vendor/animsition/animsition.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-progressbar/bootstrap-progressbar.min.js}">
+</script>
+<script th:src="@{/vendor/counter-up/jquery.waypoints.min.js}"></script>
+<script th:src="@{/vendor/counter-up/jquery.counterup.min.js}">
+</script>
+<script th:src="@{/vendor/circle-progress/circle-progress.min.js}"></script>
+<script th:src="@{/vendor/perfect-scrollbar/perfect-scrollbar.js}"></script>
+<script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
+<script th:src="@{/vendor/select2/select2.min.js}">
+</script>
+<script >
+    $(document).ready(function() {
+        // Add Row
+        $('#add-row').DataTable({
+            "pageLength": 10,
+        });
+
+    });
+</script>
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
+<!-- voxeet js -->
+<div th:replace="~{../templates/fragments/voxeetScript :: voxeetScript}"></div>
+<!-- voxeet js -->
+<script th:src="@{/js/datatables.min.js}"></script>
+
+</body>
+
+</html>
+<!-- end document-->

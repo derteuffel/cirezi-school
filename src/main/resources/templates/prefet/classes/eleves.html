@@ -244,7 +244,7 @@
                             </div>
                             <div class="col-12 col-md-9">
                                 <input type="text" id="text-prenom" th:field="*{prenom}" placeholder="Prénom" class="form-control">
-                                <small class="form-text text-muted">Prénom de l'élève/apprenant</small>
+                                <small class="form-text text-muted">Prénom de l'élève</small>
                             </div>
                         </div>
                         <div class="row form-group">
@@ -253,7 +253,7 @@
                             </div>
                             <div class="col-12 col-md-9">
                                 <input type="text" id="text-nom" th:field="*{name}" placeholder="Nom" class="form-control">
-                                <small class="form-text text-muted">Nom de l'élève/apprenant</small>
+                                <small class="form-text text-muted">Nom de l'élève</small>
                             </div>
                         </div>
 
@@ -300,6 +300,21 @@
                             <div class="col-12 col-md-9">
                                 <input type="number" id="text-age" th:field="*{age}" placeholder="age" class="form-control">
                                 <small class="form-text text-muted">Age de l'élève</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-category" class=" form-control-label">Categorie</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select th:field="*{categorie}" id="text-category" class="form-control">
+                                    <option value="">--Choisir une categorie--</option>
+                                    <option value="A">A 150$</option>
+                                    <option value="B">B 200$</option>
+                                    <option value="C">C 250$</option>
+                                    <option value="D">D 300$</option>
+                                </select>
+                                <small class="form-text text-muted">Categorie de l'élève</small>
                             </div>
                         </div>
                         <div class="row form-group">

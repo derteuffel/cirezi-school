@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Secretaire</title>
+
+    <!-- Fontfaces CSS-->
+    <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-4.7/css/font-awesome.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-5/css/fontawesome-all.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/mdi-font/css/material-design-iconic-font.min.css}" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link th:href="@{/vendor/bootstrap-4.1/bootstrap.min.css}" rel="stylesheet" media="all">
+
+    <!-- Vendor CSS-->
+    <link th:href="@{/vendor/animsition/animsition.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/wow/animate.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/css-hamburgers/hamburgers.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/slick/slick.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/select2/select2.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/perfect-scrollbar/perfect-scrollbar.css}" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link th:href="@{/css/theme.css}" rel="stylesheet" media="all">
+
+</head>
+
+<body class="animsition">
+<div class="page-wrapper">
+    <!-- HEADER DESKTOP-->
+    <header th:replace="~{../templates/fragments/header_secretaire :: header_secretaire}">
+    </header>
+    <!-- END HEADER DESKTOP -->
+
+    <!-- WELCOME-->
+    <section th:replace="~{../templates/fragments/home_welcome :: home_welcome}"></section>
+    <!-- END WELCOME-->
+
+    <!-- PAGE CONTENT-->
+    <div class="page-container3">
+        <section class="alert-wrap p-t-70 p-b-70">
+            <div class="container">
+                <!-- ALERT-->
+                <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
+                    <i class="zmdi zmdi-check-circle"></i>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
+                    <span th:unless="${success}" class="content">Vous etes connecter successivement a votre compte</span>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">
+                                <i class="zmdi zmdi-close-circle"></i>
+                            </span>
+                    </button>
+                </div>
+                <div th:if="${error}" class="alert au-alert-warning alert-dismissible fade show au-alert au-alert--70per" role="alert">
+                    <i class="zmdi zmdi-check-circle"></i>
+                    <span  class="content" th:text="${error}">Vous etes connecter successivement a votre compte</span>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">
+                                <i class="zmdi zmdi-close-circle"></i>
+                            </span>
+                    </button>
+                </div>
+                <!-- END ALERT-->
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div th:replace="~{../templates/fragments/sidebar_secretaire :: sidebar_secretaire}">
+                    </div>
+                    <div class="col-xl-9">
+                        <!-- PAGE CONTENT-->
+                        <form th:action="@{/secretaire/accounts/save}" th:object="${compteDto}" method="post" enctype="multipart/form-data">
+                        <div class="page-content row">
+
+                                <table class="table table-bordered">
+                                <tbody>
+                                <tr>
+                                    <td>Profile</td>
+                                    <td ><img th:src="${compte.avatar}" style="width: 80px;height: 80px" alt=""></td>
+                                    <td id="inputAvatar" style="display: none"><input type="file" class="form-control-file"  name="file" ></td>
+                                    <td  style="display: none"><input type="text" class="form-control-file"  name="avatar" th:value="${compte.avatar}" ></td>
+                                </tr>
+                                <tr>
+                                  <td>Nom d'utilisateur</td>
+                                  <td ><span th:text="${compte.username}"></span></td>
+                                    <td id="inputUsername" style="display: none"><input type="text" class="form-control"  th:field="*{username}" th:value="${compte.username}"></td>
+                                </tr>
+                                <tr>
+                                    <td>E-mail</td>
+                                    <td ><span th:text="${compte.email}"></span></td>
+                                    <td id="inputEmail" style="display: none"><input type="email" class="form-control"  th:field="*{email}" ></td>
+                                </tr>
+                                <tr>
+                                    <td>Ecole</td>
+                                    <td th:text="${compte.ecole.name}"></td>
+                                </tr>
+                                <tr>
+                                    <td><span>Modifier le mot de passe</span>&nbsp;&nbsp;<button type="button" id="changePassword"><i class="fas fa-edit"></i></button> <span class="text-danger" th:text="${error}"></span></td>
+                                    <td id="inputHoldPasswor" style="display: none"><input type="password"   class="form-control" placeholder="Ancien mot de passe" name="holdPassword"></td>
+                                    <td id="inputPassword" style="display: none"><input type="password" class="form-control"   placeholder="Nouveau mot de passe" th:field="*{password}" ></td>
+                                    <td style="display: none"><input type="hidden" class="form-control"   name="id" th:value="${compte.id}" ></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button type="reset" id="reset" class="btn btn-warning" style="display: none">Annuler</button>
+                                        <button type="button" id="update" class="btn btn-primary" style="display: none">Editer mon compte</button>
+                                    </td>
+                                    <td><button type="submit" class="btn btn-success" id="submit">Enregistrer</button></td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <!-- END PAGE CONTENT-->
+                        </form>
+                    </div>
+                </div>
+                <!-- COPYRIGHT-->
+                <section th:replace="~{../templates/fragments/footer :: footer}"></section>
+
+                <!-- END COPYRIGHT-->
+            </div>
+        </section>
+    </div>
+
+</div>
+
+<!-- Jquery JS-->
+<script th:src="@{/vendor/jquery-3.2.1.min.js}"></script>
+<!-- Bootstrap JS-->
+<script th:src="@{/vendor/bootstrap-4.1/popper.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-4.1/bootstrap.min.js}"></script>
+<!-- Vendor JS       -->
+<script th:src="@{/vendor/slick/slick.min.js}">
+</script>
+<script th:src="@{/vendor/wow/wow.min.js}"></script>
+<script th:src="@{/vendor/animsition/animsition.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-progressbar/bootstrap-progressbar.min.js}">
+</script>
+<script th:src="@{/vendor/counter-up/jquery.waypoints.min.js}"></script>
+<script th:src="@{/vendor/counter-up/jquery.counterup.min.js}">
+</script>
+<script th:src="@{/vendor/circle-progress/circle-progress.min.js}"></script>
+<script th:src="@{/vendor/perfect-scrollbar/perfect-scrollbar.js}"></script>
+<script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
+<script th:src="@{/vendor/select2/select2.min.js}">
+</script>
+
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/accounts.js}"></script>
+
+</body>
+
+</html>
+<!-- end document-->

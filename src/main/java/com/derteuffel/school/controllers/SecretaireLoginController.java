@@ -554,7 +554,8 @@ public class SecretaireLoginController {
         return "secretaire/classes/eleves";
     }
 
-  
+    @Autowired
+    private PaiementRepository paiementRepository;
 
     @PostMapping("/eleves/save/{id}")
     public String save(Eleve eleve, @PathVariable Long id, RedirectAttributes redirectAttributes, HttpServletRequest request){
@@ -566,6 +567,8 @@ public class SecretaireLoginController {
         eleve.setPays("Republique Democratique du Congo");
         Mail sender = new Mail();
         CompteRegistrationDto compteRegistrationDto = new CompteRegistrationDto();
+        Paiement paiement = new Paiement();
+        paiement.setCategory(eleve.getCategorie());
 
         if (existParent != null){
             eleve.setParent(existParent);
@@ -591,6 +594,8 @@ public class SecretaireLoginController {
 
         }
             eleveRepository.save(eleve);
+        paiement.setEleve(eleve);
+        paiementRepository.save(paiement);
 
 
             sender.sender(

@@ -235,7 +235,7 @@
             <div class="modal-content">
                 <form th:action="@{/secretaire/eleves/save/}+${classe.id}" autocomplete="off" method="post" th:object="${student}" class="form-horizontal">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addModalLabel">Nouvel élève/apprenant</h5>
+                        <h5 class="modal-title" id="addModalLabel">Nouvel élève</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -247,7 +247,7 @@
                             </div>
                             <div class="col-12 col-md-9">
                                 <input type="text" id="text-prenom" th:field="*{prenom}" placeholder="Prénom" class="form-control">
-                                <small class="form-text text-muted">Prénom de l'élève/apprenant</small>
+                                <small class="form-text text-muted">Prénom de l'élève</small>
                             </div>
                         </div>
                         <div class="row form-group">
@@ -256,7 +256,7 @@
                             </div>
                             <div class="col-12 col-md-9">
                                 <input type="text" id="text-nom" th:field="*{name}" placeholder="Nom" class="form-control">
-                                <small class="form-text text-muted">Nom de l'élève/apprenant</small>
+                                <small class="form-text text-muted">Nom de l'élève</small>
                             </div>
                         </div>
 
@@ -302,7 +302,31 @@
                             </div>
                             <div class="col-12 col-md-9">
                                 <input type="number" id="text-age" th:field="*{age}" placeholder="age" class="form-control">
-                                <small class="form-text text-muted">Age de l'élève/apprenant</small>
+                                <small class="form-text text-muted">Age de l'élève</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-category" class=" form-control-label">Categorie</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select th:field="*{categorie}" id="text-category" class="form-control">
+                                    <option value="">--Choisir une categorie--</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                </select>
+                                <small class="form-text text-muted">Categorie de l'élève</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-montant" class=" form-control-label">Montant total</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="number" id="text-montant" name="montant" placeholder="Montant" class="form-control">
+                                <small class="form-text text-muted">Montant total</small>
                             </div>
                         </div>
                         <div class="row form-group">

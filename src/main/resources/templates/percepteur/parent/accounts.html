@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Prefet</title>
+    <title>Secretaire</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -39,8 +39,9 @@
 
 <body class="animsition">
 <div class="page-wrapper" id="body">
+    <div th:replace="~{../templates/fragments/video_container :: video_container}"></div>
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header_prefet :: header_prefet}">
+    <header th:replace="~{../templates/fragments/header_secretaire :: header_secretaire}">
     </header>
     <!-- END HEADER DESKTOP -->
 
@@ -66,75 +67,41 @@
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_prefet :: sidebar_prefet}">
+                    <div th:replace="~{../templates/fragments/sidebar_secretaire :: sidebar_secretaire}">
                     </div>
                     <div class="col-xl-9">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
-                            <h3 class="title-1">Liste des administrateurs : <span th:text="${'Lycee Cirezi  Bukavu'}"></span></h3>
+                            <button type="button" id="startCall" data-toggle="modal" data-target="#contacts" class="btn btn-success">Passer un appel&nbsp;<i class="zmdi zmdi-phone"></i></button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#choice">
+
+                                <span aria-hidden="true">
+                                <i class="zmdi zmdi-phone-ring"></i>
+                            </span>
+                                Joindre un appel
+                            </button>
+                            <div th:replace="~{../templates/fragments/audio_container :: audio_container}"></div>
+                            <hr>
+
+                            <h3 class="title-1">Liste des tuteurs/parents d'élève : <span th:text="${'Lycee Cirezi  Bukavu'}"></span></h3>
                             <hr>
                             <div class="row"  >
-                                    <table class="table table-bordered table-responsive" id="add-row">
+                                    <table class="table table-bordered" id="add-row">
                                         <thead>
-                                        <th>Photo de profil</th>
+                                        <th>Nom du tuteur/parent</th>
                                         <th>Nom d'utilisateur</th>
                                         <th>Email</th>
-                                        <th>Mot de passe</th>
-                                        <th>Role</th>
-                                        <th>Changer de role</th>
+                                        <th>Password</th>
                                         </thead>
                                         <tbody>
-                                        <tr th:each="item : ${lists}">
-                                            <td><img th:src="${item.avatar}" style="width: 90px; height: 90px" /></td>
-                                            <td><span th:text="${item.username}"></span></td>
-                                            <td><span th:text="${item.email}"></span></td>
+                                        <tr th:each="account : ${lists1}">
+                                            <td><span th:text="${account?.parent.nomComplet}"></span></td>
+                                            <td><span th:text="${account?.username}"></span></td>
+                                            <td><span th:text="${account?.email}"></span></td>
                                             <td>
-                                                <span  th:text="${item.encode}"></span>
+                                                <span th:if="${account.encode}== null" th:text="'1234567890'"></span>
+                                                <span th:unless="${account.encode}== null" th:text="${account.encode}"></span>
                                             </td>
-                                            <td>
-                                                <ul th:each="role : ${item.roles}">
-                                                    <li>
-                                                        <span  th:text="${role.name}"></span>
-                                                    </li>
-                                                </ul>
-                                            </td>
-                                        <td>
-                                            <button type="button" data-toggle="modal" data-target="#changeRoleModal" th:attr="data-target='#changeRoleModal'+${item?.id}" ><i class="fa fa-edit"></i></button>
-                                        </td>
-                                            <div class="modal fade" th:id="changeRoleModal+${item?.id}" tabindex="-1" role="dialog" aria-labelledby="changeRoleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-lg" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="changeRoleModalLabel">Modifier le Role du staff</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body card-block">
-                                                            <form th:action="@{/prefet/administration/change/role/}+${item.id}" method="get" class="form-horizontal">
-                                                            <div class="row form-group">
-                                                                <div class="col col-md-3">
-                                                                    <label for="text-prenom" class=" form-control-label">Intitule du role</label>
-                                                                </div>
-                                                                <div class="col-12 col-md-9">
-                                                                    <select name="name" id="text-prenom" class="form-control">
-                                                                        <option value="">--Choisir un role--</option>
-                                                                        <option th:each="role : ${T(com.derteuffel.school.enums.ERole).values()}" th:value="${role}" th:text="${role}"></option>
-                                                                    </select>
-                                                                    <small class="form-text text-muted" >Nouveau role </small>
-                                                                </div>
-                                                            </div>
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                                    <button type="submit"  class="btn btn-primary" >Enregistrer</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -152,6 +119,45 @@
     </div>
     <!-- END PAGE CONTENT  -->
 
+    <div th:replace="~{../templates/fragments/contacts :: contacts}"></div>
+    <div th:replace="~{../templates/fragments/choice :: choice}">
+
+        <div class="modal fade" th:id="planningModal" tabindex="-1" role="dialog"  aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Contacts</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block" >
+                        <ul class="text-left list-group" th:each="enseignant : ${lists1}">
+                            <li class="     -group-item mb-2 d-flex flex-row justify-content-between">
+                                <div>
+                                    <span th:text="${enseignant?.name}"></span>
+
+                                </div>
+                                <div>
+                                    &nbsp;<input class="callInputPlanning" th:value="${enseignant?.email}" type="hidden" />
+                                    <button type="button"  class="btn btn-primary crewCallPlanning">&nbsp;<i class="zmdi zmdi-check"></i></button>
+                                    <button type="button"  class="btn btn-primary removeCallPlanning">&nbsp;<i class="zmdi zmdi-close"></i></button>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="form-group">
+                            <label for="datePlanning">Date de la reunion</label>
+                            <input class="form-control" placeholder="" type="date" id="datePlanning"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button id="planifier" type="button" class="btn btn-primary" data-dismiss="modal">Planifier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Jquery JS-->

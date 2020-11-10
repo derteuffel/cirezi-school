@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Directeur</title>
+    <title>Secretaire</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -38,7 +38,7 @@
 <body class="animsition">
 <div class="page-wrapper">
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header_direction :: header_direction}">
+    <header th:replace="~{../templates/fragments/header_secretaire :: header_secretaire}">
     </header>
     <!-- END HEADER DESKTOP -->
 
@@ -50,7 +50,7 @@
                 <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
                     <i class="zmdi zmdi-check-circle"></i>
                     <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
-                    <span th:unless="${success}" class="content">Vous ètes connecté successivement a votre compte</span>
+                    <span th:unless="${success}" class="content">Vous etes connecté successivement a votre compte</span>
                     <button class="close" type="button" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">
                                 <i class="zmdi zmdi-close-circle"></i>
@@ -63,34 +63,39 @@
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_direction :: sidebar_direction}">
+                    <div th:replace="~{../templates/fragments/sidebar_secretaire :: sidebar_secretaire}">
                     </div>
                     <div class="col-xl-6">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
-
-                            <h3 class="title-1">Liste des éleves : <span th:text="${classe?.niveau}"></span></h3>
+                            <h3 class="title-1">Liste des élèves <span th:text="${classe.niveau}"></span></h3>
+                            <hr>
+                            <button  type="button" data-toggle="modal" data-target="#addEleveModal" class="btn btn-primary">Nouvel eleve&nbsp;<i class="zmdi zmdi-plus"></i></button>
                             <hr>
                             <div class="row"  >
-                                    <table class="table table-bordered table-responsive-lg" id="add-row">
+                                <div class="col-lg-12">
+                                    <table class="table table-bordered" id="add-row">
                                         <thead>
                                         <th>Nom</th>
-                                        <th>Téléphone du tuteur</th>
+                                        <th>Prenom</th>
+                                        <th>Age</th>
                                         <th>ACTION</th>
                                         </thead>
                                         <tbody>
                                         <tr th:each="eleve : ${lists}">
                                             <td th:text="${eleve?.name}"></td>
-                                            <td th:text="${eleve?.telephoneTuteur}"></td>
+                                            <td th:text="${eleve?.prenom}"></td>
+                                            <td th:text="${eleve?.age+' ans '}"></td>
                                             <td>
                                                 <button type="button" data-toggle="modal" data-target="#detailEleveModal" th:attr="data-target='#detailEleveModal'+${eleve?.id}" class="text-success"><i class="fas fa-eye"></i></button>
-                                                <!--a href="#" class="btn pull-right" data-toggle="modal" data-target="#deleteModal"  th:attr="data-target='#deleteModal'+${eleve?.id}"><i class="fas fa-trash"></i></a-->
+                                                <button type="button" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${eleve?.id}" class="text-danger"><i class="fas fa-trash"></i></button>
+                                                <!--a th:href="@{/direction/create/}+${eleve?.id}" class="btn"><i class="fa fa-edit"></i></a-->
                                             </td>
-                                            <div class="modal fade" th:id="detailEleveModal+${eleve?.id}" tabindex="-1" role="dialog" aria-labelledby="detailEleveModalLabel" aria-hidden="true">
+                                            <div class="modal fade" th:id="detailEleveModal+${eleve?.id}" tabindex="-1" role="dialog" aria-labelledby="detaiEleveModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title" id="detailModalLabel">Detail élève</h5>
+                                                            <h5 class="modal-title" id="detailModalLabel">Detail élève/apprenant</h5>
                                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
@@ -112,13 +117,20 @@
                                                                     <small class="form-text text-muted" th:text="${eleve?.name}">Nom de l'enseignant</small>
                                                                 </div>
                                                             </div>
-
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Pays</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.pays}">Postnom de l'enseignant</small>
+                                                                </div>
+                                                            </div>
                                                             <div class="row form-group">
                                                                 <div class="col col-md-3">
                                                                     <label  class=" form-control-label">Age</label>
                                                                 </div>
                                                                 <div class="col-12 col-md-9">
-                                                                    <small class="form-text text-muted" th:text="${eleve?.age}">Postnom de l'enseignant</small>
+                                                                    <small class="form-text text-muted" th:text="${eleve?.age+' ans'}">Postnom de l'enseignant</small>
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
@@ -172,7 +184,6 @@
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                            <!--a th:href="@{/enseignant/eleves/update/}+${eleve?.id}" class="btn btn-primary" >Editer</a-->
                                                         </div>
                                                     </div>
                                                 </div>
@@ -181,17 +192,17 @@
                                                 <div class="modal-dialog modal-lg" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteModalLabel">Supprimer élève</h5>
+                                                            <h5 class="modal-title" id="deleteModalLabel">Supprimer Eleve</h5>
                                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
                                                         </div>
                                                         <div class="modal-body card-block">
-                                                            <p>Vous voulez vraiment supprimer cet élève??</p>
+                                                            <p>Vous voulez vraiment supprimer cet eleve??</p>
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                            <a  class="btn btn-primary" th:href="@{/direction/eleve/delete/}+${eleve?.id}+'/'+${classe.id}">Supprimer</a>
+                                                            <a  class="btn btn-primary" th:href="@{/secretaire/eleve/delete/}+${eleve?.id}+'/'+${eleve.salle.id}">Supprimer</a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -200,23 +211,128 @@
                                         </tbody>
                                     </table>
                                 </div>
+
                             </div>
 
                         </div>
                         <!-- END PAGE CONTENT-->
+                    </div>
                     <div th:replace="~{../templates/fragments/sidebar_classe :: sidebar_classe}">
 
                     </div>
-                    </div>
-
+                </div>
                 <!-- COPYRIGHT-->
                 <section th:replace="~{../templates/fragments/footer :: footer}"></section>
-            </div>
+
                 <!-- END COPYRIGHT-->
+            </div>
         </section>
     </div>
     <!-- END PAGE CONTENT  -->
+    <!-- modal medium -->
+    <div class="modal fade" id="addEleveModal" tabindex="-1" role="dialog" aria-labelledby="addEleveModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form th:action="@{/secretaire/eleves/save/}+${classe.id}" autocomplete="off" method="post" th:object="${student}" class="form-horizontal">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">Nouvel élève/apprenant</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block">
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-prenom" class=" form-control-label">Prénom</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="text" id="text-prenom" th:field="*{prenom}" placeholder="Prénom" class="form-control">
+                                <small class="form-text text-muted">Prénom de l'élève/apprenant</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-nom" class=" form-control-label">Nom</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="text" id="text-nom" th:field="*{name}" placeholder="Nom" class="form-control">
+                                <small class="form-text text-muted">Nom de l'élève/apprenant</small>
+                            </div>
+                        </div>
 
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-nomCompletTuteur" class=" form-control-label">Nom complet du parent/tuteur</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="text" id="text-nomCompletTuteur" th:field="*{nomCompletTuteur}" placeholder="Nom complet" class="form-control">
+                                <small class="form-text text-muted">Nom complet de parent/tuteur</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-telephone" class=" form-control-label">Telephone du parent/tuteur</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="text" id="text-telephone" th:field="*{telephoneTuteur}" placeholder="Telephone" class="form-control">
+                                <small class="form-text text-muted">Numero de téléphone</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-email" class=" form-control-label">E-mail du parent ou tuteur</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="email" id="text-email" th:field="*{emailTuteur}" placeholder="E-mail" class="form-control">
+                                <small class="form-text text-muted">Adresse email</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-whatsapp" class=" form-control-label">Whatsapp du parent ou tuteur</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="text" id="text-whatsapp" th:field="*{whatsappTuteur}" placeholder="Whatsapp" class="form-control">
+                                <small class="form-text text-muted">Numero de téléphone whatsapp</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-age" class=" form-control-label">Age</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="number" id="text-age" th:field="*{age}" placeholder="age" class="form-control">
+                                <small class="form-text text-muted">Age de l'élève/apprenant</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-localisation" class=" form-control-label">Localisation</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="text" id="text-localisation" th:field="*{localisation}" placeholder="(Ville, quartier)" class="form-control">
+                                <small class="form-text text-muted">Localisation de l'élève/apprenant</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-autre" class=" form-control-label">Autres informations</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <textarea th:field="*{autreInformation}" id="text-autre" class="form-control" rows="5" placeholder="Autre information"></textarea>
+                                <small class="form-text text-muted">Autre information sur l'élève/apprenant</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end modal medium -->
 
 </div>
 
@@ -240,9 +356,6 @@
 <script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
 <script th:src="@{/vendor/select2/select2.min.js}">
 </script>
-
-<!-- Main JS-->
-<script th:src="@{/js/main.js}"></script>
 <script >
     $(document).ready(function() {
         // Add Row
@@ -252,6 +365,8 @@
 
     });
 </script>
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
 <script th:src="@{/js/datatables.min.js}"></script>
 
 </body>

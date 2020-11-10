@@ -1,0 +1,60 @@
+<div th:fragment="addMontantModal" class="modal fade" id="addMontantModal" tabindex="-1" role="dialog" aria-labelledby="addMontantModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form th:action="@{/percepteur/add/montant}" class="form-horizontal" method="get">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMontantModalLabel">Ajouter un montant pour une classe</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body card-block">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label  class=" form-control-label">Choisir un niveau</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <select name="niveau" class="form-control">
+                                <option value="">--Choisir un niveau ici--</option>
+                                <option th:each="item : ${T(com.derteuffel.school.enums.ENiveau).values()}" th:value="${item}" th:text="${item}"></option>
+                            </select>
+                            <small class="form-text text-muted" >Ce niveau represente les classes applicable par ce montant</small>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label  class=" form-control-label">Montant</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <select name="montant" class="form-control">
+                                <option value="">--Choisir un montant ici--</option>
+                                <option th:if="${montants}!=null" th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
+                                <option th:unless="${montants}!=null" th:each="item : ${session.montants}" th:value="${item}" th:text="${item+' $'}"></option>
+                            </select>
+                            <small class="form-text text-muted" >Montant a appliquer a ce niveau</small>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="text-category" class=" form-control-label">Categorie</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <select name="categorie" id="text-category" class="form-control">
+                                <option value="">--Choisir une categorie--</option>
+                                <option value="A">A </option>
+                                <option value="B">B </option>
+                                <option value="C">C </option>
+                                <option value="D">D </option>
+                            </select>
+                            <small class="form-text text-muted">Categorie de l'élève</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button  class="btn btn-primary" type="submit">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

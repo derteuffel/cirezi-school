@@ -5,7 +5,9 @@ import com.derteuffel.school.enums.ERole;
 import com.derteuffel.school.enums.EType;
 import com.derteuffel.school.enums.EVisibilite;
 import com.derteuffel.school.helpers.CompteRegistrationDto;
+import com.derteuffel.school.helpers.NoteHelper;
 import com.derteuffel.school.helpers.PlanningHelpers;
+import com.derteuffel.school.helpers.SaveNoteHelper;
 import com.derteuffel.school.repositories.*;
 import com.derteuffel.school.services.CompteService;
 import com.derteuffel.school.services.Mail;
@@ -48,6 +50,12 @@ public class PrefetLoginController {
 
     @Autowired
     private SalleRepository salleRepository;
+
+    @Autowired
+    private MatiereRepository matiereRepository;
+
+    @Autowired
+    private NoteRepository noteRepository;
 
     @Autowired
     private  RoleRepository roleRepository;
@@ -258,6 +266,25 @@ public class PrefetLoginController {
         return "prefet/administration/form";
     }
 
+    @GetMapping("/administration/change/role/{id}")
+    public String changeRole(String name, RedirectAttributes redirectAttributes, @PathVariable Long id){
+        Compte compte = compteRepository.getOne(id);
+        Role role = roleRepository.findByName(name.toString());
+        System.out.println(name);
+        compte.getRoles().clear();
+        if (role != null){
+            compte.getRoles().add(role);
+        }else {
+            Role role1 = new Role();
+            role1.setName(name.toString());
+            roleRepository.save(role1);
+            compte.getRoles().add(role1);
+        }
+        compteRepository.save(compte);
+        redirectAttributes.addFlashAttribute("message","Le role a ete changer avec succes");
+        return "redirect:/prefet/administration/lists";
+    }
+
 
     @PostMapping("/administration/save")
     public String administrationSave(CompteRegistrationDto compte, RedirectAttributes redirectAttributes, @RequestParam("file") MultipartFile file){
@@ -265,6 +292,7 @@ public class PrefetLoginController {
         System.out.println("je suis la!!!");
         Role role = roleRepository.findByName(ERole.ROLE_DIRECTEUR.toString());
         Role roleSecretaire = roleRepository.findByName(ERole.ROLE_SECRETAIRE.toString());
+        Role rolePercepteur = roleRepository.findByName(ERole.ROLE_PERCEPTEUR.toString());
         multipart.store(file);
         Compte compte1 = compteRepository.findByUsername(compte.getUsername());
         Compte compte2 = compteRepository.findByEmail(compte.getEmail());
@@ -284,12 +312,16 @@ public class PrefetLoginController {
                 compte3.setRoles(Arrays.asList(role));
             }else if (roleSecretaire!=null){
                 compte3.setRoles(Arrays.asList(roleSecretaire));
-            } else {
+            } else if (rolePercepteur != null) {
+                compte3.setRoles(Arrays.asList(rolePercepteur));
+            }else {
                 Role role1 = new Role();
                 if (compte.getType().equals(EType.SECRETAIRE.toString())){
                     role1.setName(ERole.ROLE_SECRETAIRE.toString());
-                }else {
+                }else if (compte.getType().equals(EType.DIRECTEUR_ETUDE.toString())){
                     role1.setName(ERole.ROLE_DIRECTEUR.toString());
+                }else {
+                    role1.setName(ERole.ROLE_PERCEPTEUR.toString());
                 }
                 roleRepository.save(role1);
                 compte3.setRoles(Arrays.asList(role1));
@@ -688,24 +720,9 @@ public class PrefetLoginController {
         return "prefet/classes/eleves";
     }
 
-    @GetMapping("/create/{id}")
-    public String createParent(@PathVariable Long id){
-        Eleve eleve = eleveRepository.getOne(id);
-        Parent parent = new Parent();
-        parent.setEmail(eleve.getPrenom().toLowerCase()+"@yesbanana.org");
-        parent.setNomComplet(eleve.getName()+" "+eleve.getPrenom());
-        parentRepository.save(parent);
-            CompteRegistrationDto compteRegistrationDto = new CompteRegistrationDto();
-            compteRegistrationDto.setPassword("1234567890");
-            compteRegistrationDto.setUsername(eleve.getName()+"_"+eleve.getPrenom());
-            compteRegistrationDto.setEmail(parent.getEmail());
 
-            compteService.saveParent(compteRegistrationDto,"/images/profile.jpeg",parent);
-        eleve.setParent(parent);
-        eleveRepository.save(eleve);
-        return "redirect:/prefet/classe/eleves/"+eleve.getSalle().getId();
-    }
-
+    @Autowired
+    private PaiementRepository paiementRepository;
     @PostMapping("/eleves/save/{id}")
     public String save(Eleve eleve, @PathVariable Long id, RedirectAttributes redirectAttributes, HttpServletRequest request){
 
@@ -716,6 +733,10 @@ public class PrefetLoginController {
         eleve.setPays("Republique Democratique du Congo");
         Mail sender = new Mail();
         CompteRegistrationDto compteRegistrationDto = new CompteRegistrationDto();
+
+        Paiement paiement = new Paiement();
+        paiement.setCategory(eleve.getCategorie());
+
 
         if (existParent != null){
             eleve.setParent(existParent);
@@ -741,6 +762,8 @@ public class PrefetLoginController {
 
         }
             eleveRepository.save(eleve);
+        paiement.setEleve(eleve);
+        paiementRepository.save(paiement);
 
 
             sender.sender(
@@ -1284,6 +1307,204 @@ public class PrefetLoginController {
 
         return "redirect:/prefet/account/detail/"+compte.getId();
 
+    }
+
+    @GetMapping("/classe/matieres/lists/{id}")
+    public String showMatieres(@PathVariable Long id, Model model, HttpServletRequest request){
+
+        request.getSession().setAttribute("url",request.getHeader("referer"));
+        Salle salle = salleRepository.getOne(id);
+        List<Matiere> matieres = matiereRepository.findAllBySalle_Id(salle.getId());
+        Collection<Enseignant> enseignants = salle.getEnseignants();
+        System.out.println(enseignants.size());
+        model.addAttribute("enseignants", enseignants);
+        model.addAttribute("matiere", new Matiere());
+        model.addAttribute("classe",salle);
+        model.addAttribute("lists",matieres);
+        return "prefet/classes/matieres";
+    }
+
+
+    @PostMapping("/classe/matiere/save/{id}")
+    public String saveMatiere(Matiere matiere, RedirectAttributes redirectAttributes, @PathVariable Long id, Long enseignantId){
+        Salle salle = salleRepository.getOne(id);
+        Matiere matiere1 = matiereRepository.findByNameAndSalle_Id(matiere.getName(),salle.getId());
+        Enseignant enseignant = enseignantRepository.getOne(enseignantId);
+        if (matiere1 !=null){
+            redirectAttributes.addFlashAttribute("message", "Cette matiere existe deja pour cette classe");
+        }else {
+            matiere.setSalle(salle);
+            matiere.setEnseignant(enseignant);
+            matiereRepository.save(matiere);
+            redirectAttributes.addFlashAttribute("message","Vous avez ajouter une nouvelle matiere avec succes");
+        }
+
+        return "redirect:/prefet/classe/matieres/lists/"+salle.getId();
+
+
+    }
+
+    @GetMapping("/classes/matieres/update/{id}")
+    public String updateMatieres(@PathVariable Long id, Model model){
+        Matiere matiere = matiereRepository.getOne(id);
+        Salle salle = matiere.getSalle();
+        Collection<Enseignant> enseignants = salle.getEnseignants();
+
+        model.addAttribute("enseignants", enseignants);
+        model.addAttribute("classe",salle);
+        model.addAttribute("matiere",matiere);
+        return "prefet/classes/matiereU";
+    }
+
+    @PostMapping("/classe/matiere/update/{id}")
+    public String saveUpdateMatiere(Matiere matiere, RedirectAttributes redirectAttributes, Long enseignantId, @PathVariable Long id){
+        if (enseignantId != null){
+            Enseignant enseignant = enseignantRepository.getOne(enseignantId);
+            matiere.setEnseignant(enseignant);
+        }
+
+        matiereRepository.save(matiere);
+        redirectAttributes.addFlashAttribute("message", "Votre matiere a ete modifier avec succes");
+        return "redirect:/prefet/classe/matieres/lists/"+id;
+    }
+
+    @GetMapping("/matiere/delete/{id}")
+    public String deleteMatiere(@PathVariable Long id, RedirectAttributes redirectAttributes){
+        Matiere matiere = matiereRepository.getOne(id);
+        matiereRepository.delete(matiere);
+        redirectAttributes.addFlashAttribute("message","Vous avez supprimer une matiere");
+        return "redirect:/backside";
+    }
+
+
+    @GetMapping("/classes/matieres/detail/{id}/{salleId}")
+    public String getNotes(@PathVariable Long id, @PathVariable Long salleId, Model model){
+        Matiere matiere = matiereRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salleId);
+        System.out.println(eleves.size());
+
+
+        model.addAttribute("matiere", matiere);
+        model.addAttribute("classe",salle);
+        model.addAttribute("lists",eleves);
+        return "prefet/classes/notes";
+    }
+
+    @GetMapping("/classes/recapitulatif/eleves/lists/{id}")
+    public String recapitulatifEleves(@PathVariable Long id, Model model){
+        Salle salle = salleRepository.getOne(id);
+        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salle.getId());
+        System.out.println(eleves.size());
+
+        model.addAttribute("classe", salle);
+        model.addAttribute("lists",eleves);
+        return "prefet/classes/recapitulatifEleves";
+    }
+
+
+
+    @GetMapping("/classes/recapitulatif/eleves/note/detail/{id}/{salleId}")
+    public String recapitulatifDetail(@PathVariable Long id, @PathVariable Long salleId, Model model){
+
+        Eleve eleve = eleveRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+        model.addAttribute("classe", salle);
+        List<Note> notes = noteRepository.findAllByEleve_Id(eleve.getId());
+        model.addAttribute("lists", notes);
+        model.addAttribute("eleve", eleve);
+        return "prefet/classes/recapitulatifDetail";
+    }
+
+    @GetMapping("/classes/eleve/note/detail/{id}/{matiereId}")
+    public String noteDetail(@PathVariable Long id, @PathVariable Long matiereId, Model model){
+        Eleve eleve = eleveRepository.getOne(id);
+        Matiere matiere = matiereRepository.getOne(matiereId);
+        List<Note> notes = noteRepository.findAllByMatiere_IdAndEleve_Id(matiere.getId(),eleve.getId());
+        System.out.println(notes.size());
+        model.addAttribute("matiere",matiere);
+        model.addAttribute("eleve", eleve);
+        model.addAttribute("classe",matiere.getSalle());
+        model.addAttribute("lists", notes);
+        return "prefet/classes/note";
+    }
+
+    @GetMapping("/classes/eleve/note/update/{id}/{matiereId}/{noteId}")
+    public String noteUpdate(@PathVariable Long id, @PathVariable Long matiereId, Model model, @PathVariable Long noteId){
+        Eleve eleve = eleveRepository.getOne(id);
+        Matiere matiere = matiereRepository.getOne(matiereId);
+        Note note = noteRepository.getOne(noteId);
+        model.addAttribute("matiere",matiere);
+        model.addAttribute("classe",matiere.getSalle());
+        model.addAttribute("note",note);
+
+        model.addAttribute("eleve", eleve);
+        return "prefet/classes/noteU";
+    }
+
+
+    @PostMapping("/classes/note/update/{id}/{eleveId}")
+    public String noteUpdateSave(Note note, @PathVariable Long id, @PathVariable Long eleveId, RedirectAttributes redirectAttributes){
+        Matiere matiere = matiereRepository.getOne(id);
+        Eleve eleve = eleveRepository.getOne(eleveId);
+        Note note1 = noteRepository.getOne(note.getId());
+        note1.setPeriode(note.getPeriode());
+        note1.setNote(note.getNote());
+        noteRepository.save(note1);
+        redirectAttributes.addFlashAttribute("message","Vous avez modifier avec succes votre note");
+        return "redirect:/prefet/classes/eleve/note/detail/"+eleve.getId()+"/"+matiere.getId();
+
+    }
+
+    @GetMapping("/classes/note/form/{id}/{salleId}")
+    public String notesForm(Model model, @PathVariable Long id, @PathVariable Long salleId){
+        Matiere matiere = matiereRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salle.getId());
+        List<NoteHelper> noteHelpers = new ArrayList<>(eleves.size());
+        for (Eleve eleve : eleves){
+            NoteHelper noteHelper = new NoteHelper();
+            noteHelper.setEleveId(eleve.getId());
+            noteHelper.setNomEleve(eleve.getName()+" "+eleve.getPrenom()+" "+eleve.getPostnom());
+            noteHelpers.add(noteHelper);
+        }
+        SaveNoteHelper saveNoteHelper = new SaveNoteHelper();
+        saveNoteHelper.setNoteHelpers(noteHelpers);
+        System.out.println(eleves.size());
+        model.addAttribute("saveNoteHelper", saveNoteHelper);
+        model.addAttribute("matiere",matiere);
+        model.addAttribute("classe",salle);
+
+        return "prefet/classes/noteForm";
+    }
+
+
+    @PostMapping("/classes/note/save/{id}/{salleId}")
+    public String saveNote(@ModelAttribute("saveNoteHelper") SaveNoteHelper saveNoteHelper, @PathVariable Long id,
+                           @PathVariable Long salleId, Model model){
+        Matiere matiere = matiereRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+        if (saveNoteHelper.getNoteHelpers()!= null && saveNoteHelper.getNoteHelpers().size() != 0){
+            for (NoteHelper noteHelper : saveNoteHelper.getNoteHelpers()){
+                System.out.println(noteHelper.getEleveId()+"  "+noteHelper.getNomEleve()+"  "+noteHelper.getNote());
+                System.out.println("-----------------------------------------------");
+                if (saveNoteHelper.getNoteMax() < noteHelper.getNote()){
+                    model.addAttribute("message", "Vous avez entrer une note superieur au maximum de cette matiere, merci de bien vouloir revoir vos notes entrer");
+                    model.addAttribute("saveNoteHelper",saveNoteHelper);
+                    model.addAttribute("matiere",matiere);
+                    model.addAttribute("classe",salle);
+                    return "prefet/classes/noteForm";
+                }
+                Note note = new Note();
+                note.setNote(noteHelper.getNote());
+                note.setNoteMax(saveNoteHelper.getNoteMax());
+                note.setEleve(eleveRepository.getOne(noteHelper.getEleveId()));
+                note.setMatiere(matiere);
+                note.setPeriode(saveNoteHelper.getPeriode());
+                noteRepository.save(note);
+            }
+        }
+        return "redirect:/prefet/classes/matieres/detail/"+matiere.getId()+"/"+salle.getId();
     }
 
 

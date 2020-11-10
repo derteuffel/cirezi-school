@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Directeur</title>
+    <title>Secretaire</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -38,7 +38,7 @@
 <body class="animsition">
 <div class="page-wrapper">
     <!-- HEADER DESKTOP-->
-    <header th:replace="~{../templates/fragments/header_direction :: header_direction}">
+    <header th:replace="~{../templates/fragments/header_secretaire :: header_secretaire}">
     </header>
     <!-- END HEADER DESKTOP -->
 
@@ -49,8 +49,8 @@
                 <!-- ALERT-->
                 <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
                     <i class="zmdi zmdi-check-circle"></i>
-                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecter successivement a votre compte</span>
-                    <span th:unless="${success}" class="content">Vous ètes connecté successivement a votre compte</span>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous êtes connecté successivement à votre compte</span>
+                    <span th:unless="${success}" class="content">Vous êtes connecté successivement à votre compte</span>
                     <button class="close" type="button" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">
                                 <i class="zmdi zmdi-close-circle"></i>
@@ -63,30 +63,31 @@
         <section>
             <div class="container">
                 <div class="row">
-                    <div th:replace="~{../templates/fragments/sidebar_direction :: sidebar_direction}">
+                    <div th:replace="~{../templates/fragments/sidebar_secretaire :: sidebar_secretaire}">
                     </div>
-                    <div class="col-xl-6">
+                    <div class="col-xl-9">
                         <!-- PAGE CONTENT-->
                         <div class="page-content">
 
-                            <h3 class="title-1">Liste des éleves : <span th:text="${classe?.niveau}"></span></h3>
+                            <h3 class="title-1">Liste des élèves : <span th:text="${'Lycee cirezi de Bukavu'}"></span></h3>
                             <hr>
                             <div class="row"  >
-                                    <table class="table table-bordered table-responsive-lg" id="add-row">
+                                    <table class="table table-bordered" id="add-row">
                                         <thead>
                                         <th>Nom</th>
-                                        <th>Téléphone du tuteur</th>
+                                        <th>Prenom</th>
+                                        <th>Age</th>
                                         <th>ACTION</th>
                                         </thead>
                                         <tbody>
                                         <tr th:each="eleve : ${lists}">
                                             <td th:text="${eleve?.name}"></td>
-                                            <td th:text="${eleve?.telephoneTuteur}"></td>
+                                            <td th:text="${eleve?.prenom}"></td>
+                                            <td th:text="${eleve?.age+' ans'}"></td>
                                             <td>
                                                 <button type="button" data-toggle="modal" data-target="#detailEleveModal" th:attr="data-target='#detailEleveModal'+${eleve?.id}" class="text-success"><i class="fas fa-eye"></i></button>
-                                                <!--a href="#" class="btn pull-right" data-toggle="modal" data-target="#deleteModal"  th:attr="data-target='#deleteModal'+${eleve?.id}"><i class="fas fa-trash"></i></a-->
                                             </td>
-                                            <div class="modal fade" th:id="detailEleveModal+${eleve?.id}" tabindex="-1" role="dialog" aria-labelledby="detailEleveModalLabel" aria-hidden="true">
+                                            <div class="modal fade" th:id="detailEleveModal+${eleve?.id}" tabindex="-1" role="dialog" aria-labelledby="detaiEleveModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -112,13 +113,20 @@
                                                                     <small class="form-text text-muted" th:text="${eleve?.name}">Nom de l'enseignant</small>
                                                                 </div>
                                                             </div>
-
+                                                            <div class="row form-group">
+                                                                <div class="col col-md-3">
+                                                                    <label  class=" form-control-label">Pays</label>
+                                                                </div>
+                                                                <div class="col-12 col-md-9">
+                                                                    <small class="form-text text-muted" th:text="${eleve?.pays}">Postnom de l'enseignant</small>
+                                                                </div>
+                                                            </div>
                                                             <div class="row form-group">
                                                                 <div class="col col-md-3">
                                                                     <label  class=" form-control-label">Age</label>
                                                                 </div>
                                                                 <div class="col-12 col-md-9">
-                                                                    <small class="form-text text-muted" th:text="${eleve?.age}">Postnom de l'enseignant</small>
+                                                                    <small class="form-text text-muted" th:text="${eleve?.age+' ans'}">Postnom de l'enseignant</small>
                                                                 </div>
                                                             </div>
                                                             <div class="row form-group">
@@ -172,26 +180,6 @@
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                            <!--a th:href="@{/enseignant/eleves/update/}+${eleve?.id}" class="btn btn-primary" >Editer</a-->
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal fade" th:id="deleteModal+${eleve?.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-lg" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteModalLabel">Supprimer élève</h5>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body card-block">
-                                                            <p>Vous voulez vraiment supprimer cet élève??</p>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                            <a  class="btn btn-primary" th:href="@{/direction/eleve/delete/}+${eleve?.id}+'/'+${classe.id}">Supprimer</a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -199,24 +187,20 @@
                                         </tr>
                                         </tbody>
                                     </table>
-                                </div>
                             </div>
 
                         </div>
                         <!-- END PAGE CONTENT-->
-                    <div th:replace="~{../templates/fragments/sidebar_classe :: sidebar_classe}">
-
                     </div>
-                    </div>
-
+                </div>
                 <!-- COPYRIGHT-->
                 <section th:replace="~{../templates/fragments/footer :: footer}"></section>
-            </div>
+
                 <!-- END COPYRIGHT-->
+            </div>
         </section>
     </div>
     <!-- END PAGE CONTENT  -->
-
 
 </div>
 
@@ -240,9 +224,6 @@
 <script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
 <script th:src="@{/vendor/select2/select2.min.js}">
 </script>
-
-<!-- Main JS-->
-<script th:src="@{/js/main.js}"></script>
 <script >
     $(document).ready(function() {
         // Add Row
@@ -252,7 +233,10 @@
 
     });
 </script>
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
 <script th:src="@{/js/datatables.min.js}"></script>
+
 
 </body>
 
