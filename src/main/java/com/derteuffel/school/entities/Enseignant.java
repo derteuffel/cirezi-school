@@ -39,4 +39,7 @@ public class Enseignant implements Serializable {
     @OneToOne
     private Compte compte;
 
+    @OneToMany(mappedBy = "enseignant")
+    private Collection<Salaire> salaires;
+
 }

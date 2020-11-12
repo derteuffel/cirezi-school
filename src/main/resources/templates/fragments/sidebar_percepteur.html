@@ -10,7 +10,7 @@
                 </li>
                 <li>
                     <a th:href="@{/percepteur/classe/lists}">
-                        <i class="fas fa-band-aid"></i>Etat de paie des eleves</a>
+                        <i class="fas fa-band-aid"></i>Frais de Scolarites </a>
                 </li>
                 <li th:if="${classe}!= null">
                     <a th:href="@{/percepteur/classe/eleves/payment/lists/}+${classe.id}">
@@ -20,31 +20,17 @@
                     <a href="#" type="button" data-toggle="modal" data-target="#addMontantModal" ><i class="fa fa-plus"></i>&nbsp;Ajouter un montant total</a>
 
                 </li>
-                <!--<li >
-                    <a  th:href="@{/secretaire/enseignant/lists}">
-                        <i class="fas fa-users"></i>Enseignants
-                    </a>
-                </li>
-                 <li >
-                    <a  th:href="@{/direction/administration/lists}">
-                        <i class="fas fa-users"></i>Administration
-                    </a>
-                </li>
-                <li >
-                    <a  th:href="@{/direction/administration/form}">
-                        <i class="fas fa-plus-circle"></i>Ajouter Directeur etude
-                    </a>
-                </li>-->
-
-                <li >
-                    <a  th:href="@{/percepteur/parent/lists}">
-                        <i class="fas fa-users"></i>Parents/Tuteurs
-                    </a>
-                </li>
-                
                 <li>
-                    <a th:href="@{/percepteur/eleve/lists}">
-                        <i class="fas fa-users"></i>Eleves</a>
+                    <a th:href="@{/percepteur/enseignants/lists}">
+                        <i class="fas fa-users"></i>Paiements des enseignants</a>
+                </li>
+                <li>
+                    <a th:href="@{/percepteur/staffs/lists}">
+                        <i class="fas fa-users"></i>Paiements staffs</a>
+                </li>
+                <li>
+                    <a th:href="@{/percepteur/mouvements/lists}">
+                        <i class="fas fa-money-bill-alt"></i>Mouvements financiers</a>
                 </li>
                 <li>
                     <a th:href="@{/percepteur/message/lists}">

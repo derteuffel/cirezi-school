@@ -50,6 +50,9 @@ public class Compte implements Serializable{
     @OneToOne(fetch = FetchType.LAZY)
     private Parent parent;
 
+    @OneToMany(mappedBy = "compte")
+    private Collection<Salaire> salaires;
+
    /* @OneToMany(mappedBy = "compte")
     private Collection<Cours> cours;*/
 
@@ -190,5 +193,13 @@ public class Compte implements Serializable{
 
     public void setEnfant(Enfant enfant) {
         this.enfant = enfant;
+    }
+
+    public Collection<Salaire> getSalaires() {
+        return salaires;
+    }
+
+    public void setSalaires(Collection<Salaire> salaires) {
+        this.salaires = salaires;
     }
 }

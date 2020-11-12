@@ -1,10 +1,12 @@
 package com.derteuffel.school.controllers;
 
 import com.derteuffel.school.entities.*;
+import com.derteuffel.school.enums.EMois;
 import com.derteuffel.school.enums.ERole;
 import com.derteuffel.school.enums.EType;
 import com.derteuffel.school.enums.EVisibilite;
 import com.derteuffel.school.helpers.CompteRegistrationDto;
+import com.derteuffel.school.helpers.SalaireHelper;
 import com.derteuffel.school.repositories.*;
 import com.derteuffel.school.services.CompteService;
 import com.derteuffel.school.services.Mail;
@@ -47,6 +49,12 @@ public class PercepteurLoginController {
 
     @Autowired
     private  RoleRepository roleRepository;
+
+    @Autowired
+    private CaisseRepository caisseRepository;
+
+    @Autowired
+    private MouvementRepository mouvementRepository;
 
     @Autowired
     private PaiementRepository paiementRepository;
@@ -314,46 +322,318 @@ public class PercepteurLoginController {
             paiement.setSolde(paiement.getCoutTotal()-montant);
         }
         paiementRepository.save(paiement);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy");
+        SimpleDateFormat formatMois = new SimpleDateFormat("MM");
+        String annee = format.format(new Date());
+        String mois = formatMois.format(new Date());
+        Caisse caisse = caisseRepository.findByStatus(true);
+        if(caisse != null){
+            Mouvement mouvement = new Mouvement();
+            mouvement.setType("ENTREE");
+            mouvement.setNumMouvement((mouvementRepository.findAllByCaisse_Id(caisse.getId()).size()+1)+"");
+            mouvement.setCaisse(caisse);
+            mouvement.setLibelle("Versement Montant : "+motif);
+            mouvement.setMontant(montant);
+            mouvement.setSoldeFin(caisse.getSoldeFinMois() + mouvement.getMontant());
+            mouvementRepository.save(mouvement);
+            caisse.setMouvementMensuel(caisse.getMouvementMensuel() + mouvement.getMontant());
+            caisse.setSoldeFinMois(mouvement.getSoldeFin());
+            caisseRepository.save(caisse);
+        }else {
+            Caisse caisse1 = new Caisse();
+            caisse1.setMouvementMensuel(montant);
+            caisse1.setSoldeFinMois(montant);
+            caisse1.setSoldeDebutmois(montant);
+            caisse1.setStatus(true);
+            if (Integer.parseInt(mois) == 01){
+                caisse1.setMois(EMois.Janvier.toString());
+            }else if (Integer.parseInt(mois) == 02){
+                caisse1.setMois(EMois.Fevrier.toString());
+            }else if (Integer.parseInt(mois) == 03){
+                caisse1.setMois(EMois.Mars.toString());
+            }else if (Integer.parseInt(mois) == 04){
+                caisse1.setMois(EMois.Avril.toString());
+            }else if (Integer.parseInt(mois) == 05){
+                caisse1.setMois(EMois.Mai.toString());
+            }else if (Integer.parseInt(mois) == 06){
+                caisse1.setMois(EMois.Juin.toString());
+            }else if (Integer.parseInt(mois) == 07){
+                caisse1.setMois(EMois.Juillet.toString());
+            }else if (Integer.parseInt(mois) == 8){
+                caisse1.setMois(EMois.Aout.toString());
+            }else if (Integer.parseInt(mois) == 9){
+                caisse1.setMois(EMois.Septembre.toString());
+            }else if (Integer.parseInt(mois) == 10){
+                caisse1.setMois(EMois.Octobre.toString());
+            }else if (Integer.parseInt(mois) == 11){
+                caisse1.setMois(EMois.Novembre.toString());
+            }else {
+                caisse1.setMois(EMois.Decembre.toString());
+            }
+            caisse1.setAnnee(Integer.parseInt(annee));
+            caisseRepository.save(caisse1);
+            Mouvement mouvement = new Mouvement();
+            mouvement.setSoldeFin(caisse1.getSoldeFinMois());
+            mouvement.setMontant(montant);
+            mouvement.setLibelle("Versement Montant : "+motif);
+            mouvement.setCaisse(caisse1);
+            mouvement.setNumMouvement((mouvementRepository.findAllByCaisse_Id(caisse1.getId()).size()+1)+"");
+            mouvement.setType("ENTREE");
+            mouvementRepository.save(mouvement);
+        }
         return "redirect:/percepteur/classe/eleves/payment/lists/"+paiement.getEleve().getSalle().getId();
     }
-    @GetMapping("/enseignant/classe/{id}")
-    public String classeTeachers(Model model, @PathVariable Long id) {
 
-        Collection<Compte> comptes = compteRepository.findAll();
-        List<Enseignant> teachers = new ArrayList<>();
-
-        for (Compte compte1 : comptes) {
-            if (compte1.getEnseignant() != null && !(comptes.contains(compte1.getEnseignant()))) {
-                teachers.add(compte1.getEnseignant());
-            }
-        }
-        Salle salle = salleRepository.getOne(id);
-
-        Collection<Enseignant> enseignants = salle.getEnseignants();
-
-        model.addAttribute("classe", salle);
-        model.addAttribute("teachers", teachers);
+    @GetMapping("/enseignants/lists")
+    public String getEnseignants(Model model){
+        Collection<Enseignant> enseignants = enseignantRepository.findAll();
         model.addAttribute("lists", enseignants);
+        return "percepteur/enseignants";
+    }
 
-        return "percepteur/classes/enseignants";
+    @GetMapping("/staffs/lists")
+    public String getStaffs(Model model){
+        Collection<Compte> staffs = compteRepository.findAllByType(EType.PREFET.toString());
+        staffs.addAll(compteRepository.findAllByType(EType.SECRETAIRE.toString()));
+        staffs.addAll(compteRepository.findAllByType(EType.DIRECTEUR_ETUDE.toString()));
+        staffs.addAll(compteRepository.findAllByType(EType.DIRECTEUR_DISCIPLINE.toString()));
+        staffs.addAll(compteRepository.findAllByType(EType.PERCEPTEUR.toString()));
+        model.addAttribute("lists", staffs);
+        return "percepteur/staffs";
+    }
+
+    @Autowired
+    private SalaireRepository salaireRepository;
+
+    @GetMapping("/enseignants/salaires/lists/{id}")
+    public String getEnseignantSalaire(@PathVariable Long id, Model model){
+        Enseignant enseignant = enseignantRepository.getOne(id);
+        Collection<Salaire> salaires = salaireRepository.findAllByEnseignant_Id(enseignant.getId());
+        ArrayList<Double> montants = new ArrayList<>();
+        for (int i=0; i<= 40; i++){
+            montants.add(i*0.25*100.0);
+        }
+        model.addAttribute("lists", salaires);
+        model.addAttribute("montants", montants);
+        model.addAttribute("enseignant",enseignant);
+        model.addAttribute("salaire", new SalaireHelper());
+        return "percepteur/salairesEnseignant";
+    }
+
+    @GetMapping("/staffs/salaires/lists/{id}")
+    public String getStaffSalaire(@PathVariable Long id, Model model){
+        Compte compte = compteRepository.getOne(id);
+        Collection<Salaire> salaires = salaireRepository.findAllByCompte_Id(compte.getId());
+        ArrayList<Double> montants = new ArrayList<>();
+        for (int i=0; i<= 40; i++){
+            montants.add(i*0.25*100.0);
+        }
+        model.addAttribute("lists", salaires);
+        model.addAttribute("montants", montants);
+        model.addAttribute("compte",compte);
+        model.addAttribute("salaire", new SalaireHelper());
+        return "percepteur/salairesStaff";
     }
 
 
-    //---- Classe management end ----//
-    //---- Eleve management start ----//
+    @PostMapping("/enseignants/salaire/save/{id}")
+    public String saveBulletin(@PathVariable Long id, SalaireHelper salaireHelper, RedirectAttributes redirectAttributes){
 
-    @GetMapping("/classe/eleves/{id}")
-    public String allEleves(@PathVariable Long id, Model model) {
+        Enseignant enseignant = enseignantRepository.getOne(id);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy");
+        Salaire salaire = new Salaire();
+        salaire.setAllocationFamilliale(salaireHelper.getAllocationFamilliale());
+        salaire.setAllocationTransport(salaireHelper.getAllocationTransport());
+        salaire.setAvanceSalaire(salaireHelper.getAvanceSalaire());
+        salaire.setDatePaiement(sdf.format(salaireHelper.getDatePaiement()));
+        salaire.setMois(salaireHelper.getMois());
+        salaire.setHousing(salaireHelper.getHousing());
+        salaire.setEnseignant(enseignant);
+        salaire.setSalaireBase(salaireHelper.getSalaireBase());
+        salaire.setNumBuletin((salaireRepository.findAllByEnseignant_Id(enseignant.getId()).size()+1));
+        salaire.setSalaireBrut(salaire.getAllocationFamilliale()+salaire.getAllocationTransport()+salaire.getHousing()+salaire.getSalaireBase());
+        salaire.setCafeteriat(5.0);
+        salaire.setRemboursementMensuelle(0.0);
+        salaire.setTaxe(salaire.getSalaireBase()*0.1);
+        salaire.setCnss(salaire.getSalaireBrut()*0.035);
+        salaire.setMutuelleSante(salaire.getSalaireBrut()*0.05);
+        salaire.setNetPaie(salaire.getSalaireBrut() - (salaire.getCnss()+salaire.getMutuelleSante()+salaire.getCafeteriat()+salaire.getRemboursementMensuelle()));
+        salaire.setSalaireNet(salaire.getNetPaie() - salaire.getAvanceSalaire());
+        salaireRepository.save(salaire);
+        String annee = format.format(new Date());
+        Caisse caisse = caisseRepository.findByAnneeAndMois(Integer.parseInt(annee),salaireHelper.getMois());
+        if(caisse != null){
+            Mouvement mouvement = new Mouvement();
+            mouvement.setType("SORTIE");
+            mouvement.setNumMouvement((mouvementRepository.findAllByCaisse_Id(caisse.getId()).size()+1)+"");
+            mouvement.setCaisse(caisse);
+            mouvement.setLibelle("Paiement Salaire d'un staff");
+            mouvement.setMontant(salaire.getSalaireNet());
+            mouvement.setSoldeFin(caisse.getSoldeFinMois() - mouvement.getMontant());
+            mouvementRepository.save(mouvement);
+            caisse.setMouvementMensuel(caisse.getMouvementMensuel() - mouvement.getMontant());
+            caisse.setSoldeFinMois(mouvement.getSoldeFin());
+            caisseRepository.save(caisse);
+        }else {
+            Caisse caisse1 = new Caisse();
+            caisse1.setMouvementMensuel(0.0 - salaire.getSalaireNet());
+            caisse1.setSoldeFinMois(0.0 - salaire.getSalaireNet());
+            caisse1.setSoldeDebutmois(0.0 - salaire.getSalaireNet());
+            caisse1.setStatus(true);
+            caisse1.setMois(salaireHelper.getMois());
+            caisse1.setAnnee(Integer.parseInt(annee));
+            caisseRepository.save(caisse1);
+            Mouvement mouvement = new Mouvement();
+            mouvement.setSoldeFin(caisse1.getSoldeFinMois());
+            mouvement.setMontant(salaire.getSalaireNet());
+            mouvement.setLibelle("Paiement Salaire d'un staff");
+            mouvement.setCaisse(caisse1);
+            mouvement.setNumMouvement((mouvementRepository.findAllByCaisse_Id(caisse1.getId()).size()+1)+"");
+            mouvement.setType("SORTIE");
+            mouvementRepository.save(mouvement);
+        }
+        redirectAttributes.addFlashAttribute("message","Vous avez ajouter avec succes un nouveau bulletin de paie");
+        return "redirect:/percepteur/enseignants/salaires/lists/"+enseignant.getId();
+    }
 
-        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(id);
-        model.addAttribute("classe", salleRepository.getOne(id));
-        model.addAttribute("student", new Eleve());
-        model.addAttribute("lists", eleves);
-        return "percepteur/classes/eleves";
+    @PostMapping("/staffs/salaire/save/{id}")
+    public String saveBulletinStaff(@PathVariable Long id, SalaireHelper salaireHelper, RedirectAttributes redirectAttributes){
+
+        Compte compte = compteRepository.getOne(id);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy");
+        Salaire salaire = new Salaire();
+        salaire.setAllocationFamilliale(salaireHelper.getAllocationFamilliale());
+        salaire.setAllocationTransport(salaireHelper.getAllocationTransport());
+        salaire.setAvanceSalaire(salaireHelper.getAvanceSalaire());
+        salaire.setDatePaiement(sdf.format(salaireHelper.getDatePaiement()));
+        salaire.setMois(salaireHelper.getMois());
+        salaire.setHousing(salaireHelper.getHousing());
+        salaire.setCompte(compte);
+        salaire.setSalaireBase(salaireHelper.getSalaireBase());
+        salaire.setNumBuletin((salaireRepository.findAllByCompte_Id(compte.getId()).size()+1));
+        salaire.setSalaireBrut(salaire.getAllocationFamilliale()+salaire.getAllocationTransport()+salaire.getHousing()+salaire.getSalaireBase());
+        salaire.setCafeteriat(5.0);
+        salaire.setRemboursementMensuelle(0.0);
+        salaire.setTaxe(salaire.getSalaireBase()*0.1);
+        salaire.setCnss(salaire.getSalaireBrut()*0.035);
+        salaire.setMutuelleSante(salaire.getSalaireBrut()*0.05);
+        salaire.setNetPaie(salaire.getSalaireBrut() - (salaire.getCnss()+salaire.getMutuelleSante()+salaire.getCafeteriat()+salaire.getRemboursementMensuelle()));
+        salaire.setSalaireNet(salaire.getNetPaie() - salaire.getAvanceSalaire());
+        salaireRepository.save(salaire);
+        String annee = format.format(new Date());
+        Caisse caisse = caisseRepository.findByAnneeAndMois(Integer.parseInt(annee),salaireHelper.getMois());
+        if(caisse != null){
+            Mouvement mouvement = new Mouvement();
+            mouvement.setType("SORTIE");
+            mouvement.setNumMouvement((mouvementRepository.findAllByCaisse_Id(caisse.getId()).size()+1)+"");
+            mouvement.setCaisse(caisse);
+            mouvement.setLibelle("Paiement Salaire d'un staff");
+            mouvement.setMontant(salaire.getSalaireNet());
+            mouvement.setSoldeFin(caisse.getSoldeFinMois() - mouvement.getMontant());
+            mouvementRepository.save(mouvement);
+            caisse.setMouvementMensuel(caisse.getMouvementMensuel() - mouvement.getMontant());
+            caisse.setSoldeFinMois(mouvement.getSoldeFin());
+            caisseRepository.save(caisse);
+        }else {
+            Caisse caisse1 = new Caisse();
+            caisse1.setMouvementMensuel(0.0 - salaire.getSalaireNet());
+            caisse1.setSoldeFinMois(0.0 - salaire.getSalaireNet());
+            caisse1.setSoldeDebutmois(0.0 - salaire.getSalaireNet());
+            caisse1.setStatus(true);
+            caisse1.setMois(salaireHelper.getMois());
+            caisse1.setAnnee(Integer.parseInt(annee));
+            caisseRepository.save(caisse1);
+            Mouvement mouvement = new Mouvement();
+            mouvement.setSoldeFin(caisse1.getSoldeFinMois());
+            mouvement.setMontant(salaire.getSalaireNet());
+            mouvement.setLibelle("Paiement Salaire d'un staff");
+            mouvement.setCaisse(caisse1);
+            mouvement.setNumMouvement((mouvementRepository.findAllByCaisse_Id(caisse1.getId()).size()+1)+"");
+            mouvement.setType("SORTIE");
+            mouvementRepository.save(mouvement);
+        }
+        redirectAttributes.addFlashAttribute("message","Vous avez ajouter avec succes un nouveau bulletin de paie");
+        return "redirect:/percepteur/staffs/salaires/lists/"+compte.getId();
+    }
+
+    @GetMapping("/enseignants/salaire/detail/{id}")
+    public String detailSalaire(@PathVariable Long id, Model model){
+        Salaire salaire = salaireRepository.getOne(id);
+        Enseignant enseignant = salaire.getEnseignant();
+        model.addAttribute("salaire", salaire);
+        model.addAttribute("enseignant",enseignant);
+        return "percepteur/salairesDetail";
     }
 
 
 
+
+    @GetMapping("/mouvements/lists")
+    public String caisses(Model model){
+        List<Caisse> caisses = caisseRepository.findAll(Sort.by(Sort.Direction.DESC,"id"));
+        if (caisses.size()== 0){
+            Caisse caisse = new Caisse();
+            caisse.setAnnee(2020);
+            caisse.setMois(EMois.Novembre.toString());
+            caisse.setMouvementMensuel(0.0);
+            caisse.setSoldeDebutmois(0.0);
+            caisse.setSoldeFinMois(0.0);
+            caisse.setStatus(true);
+            caisseRepository.save(caisse);
+        }
+        model.addAttribute("lists", caisses);
+        return "percepteur/caisses";
+    }
+
+    @GetMapping("/mouvements/detail/{id}")
+    public String caisseDetail(@PathVariable Long id, Model model){
+        Caisse caisse = caisseRepository.getOne(id);
+        model.addAttribute("caisse", caisse);
+        ArrayList<Double> montants = new ArrayList<>();
+        for (int i=0; i<= 80; i++){
+            montants.add(i*0.125*100.0);
+        }
+        Collection<Mouvement> mouvements = mouvementRepository.findAllByCaisse_Id(caisse.getId());
+        model.addAttribute("lists",mouvements);
+        model.addAttribute("montants", montants);
+        model.addAttribute("mouvement", new Mouvement());
+        return "percepteur/caisse";
+
+    }
+
+    @PostMapping("/mouvements/save/{id}")
+    public String saveMouvement(Mouvement mouvement, @PathVariable Long id, RedirectAttributes redirectAttributes ){
+        Caisse caisse = caisseRepository.getOne(id);
+        mouvement.setCaisse(caisse);
+        mouvement.setNumMouvement(""+(mouvementRepository.findAll().size()+1));
+        if (mouvement.getType().equals("ENTREE")){
+            mouvement.setSoldeFin(caisse.getSoldeFinMois()+mouvement.getMontant());
+            caisse.setSoldeFinMois(mouvement.getSoldeFin());
+            caisse.setMouvementMensuel(caisse.getMouvementMensuel()+mouvement.getMontant());
+        }else {
+            mouvement.setSoldeFin(caisse.getSoldeFinMois() - mouvement.getMontant());
+            caisse.setSoldeFinMois(mouvement.getSoldeFin());
+            caisse.setMouvementMensuel(caisse.getMouvementMensuel()-mouvement.getMontant());
+        }
+
+        caisseRepository.save(caisse);
+        mouvementRepository.save(mouvement);
+        redirectAttributes.addFlashAttribute("message", "Vous avez ajouter votre mouvement de caisse avec success!");
+
+        return "redirect:/percepteur/mouvements/detail/"+caisse.getId();
+    }
+
+
+    @GetMapping("/staffs/salaire/detail/{id}")
+    public String detailSalaireStaff(@PathVariable Long id, Model model){
+        Salaire salaire = salaireRepository.getOne(id);
+        Compte compte = salaire.getCompte();
+        model.addAttribute("salaire", salaire);
+        model.addAttribute("compte",compte);
+        return "percepteur/salairesDetailStaff";
+    }
 
 
     @GetMapping("/access-denied")
@@ -454,48 +734,6 @@ public class PercepteurLoginController {
     }
 
 
-    @Autowired
-    private HebdoRepository hebdoRepository;
-
-    @Autowired
-    private PlanningRepository planningRepository;
-
-    @Autowired
-    private PresenceRepository presenceRepository;
-
-    @GetMapping("/classe/hebdos/{id}")
-    public String presences(@PathVariable Long id, Model model){
-
-        Salle salle = salleRepository.getOne(id);
-
-                Collection<Hebdo> hebdos = hebdoRepository.findAllBySalles_Id(salle.getId(),Sort.by(Sort.Direction.DESC,"id"));
-        model.addAttribute("classe",salle);
-        model.addAttribute("lists",hebdos);
-        return "percepteur/classes/hebdos";
-    }
-
-    public List<String> removeDuplicates(List<String> list)
-    {
-        if (list == null){
-            return new ArrayList<>();
-        }
-
-        // Create a new ArrayList
-        List<String> newList = new ArrayList<String>();
-        // Traverse through the first list
-        for (String element : list) {
-
-            // If this element is not present in newList
-            // then add it
-
-            if (element !=null && !newList.contains(element) && !element.isEmpty()) {
-
-                newList.add(element);
-            }
-        }
-        // return the new list
-        return newList;
-    }
 
 
     @GetMapping("/account/detail/{id}")

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Percepteur</title>
+
+    <!-- Fontfaces CSS-->
+    <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-4.7/css/font-awesome.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/font-awesome-5/css/fontawesome-all.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/mdi-font/css/material-design-iconic-font.min.css}" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link th:href="@{/vendor/bootstrap-4.1/bootstrap.min.css}" rel="stylesheet" media="all">
+
+    <!-- Vendor CSS-->
+    <link th:href="@{/vendor/animsition/animsition.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/wow/animate.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/css-hamburgers/hamburgers.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/slick/slick.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/select2/select2.min.css}" rel="stylesheet" media="all">
+    <link th:href="@{/vendor/perfect-scrollbar/perfect-scrollbar.css}" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link th:href="@{/css/theme.css}" rel="stylesheet" media="all">
+
+</head>
+
+<body class="animsition">
+<div class="page-wrapper">
+    <!-- HEADER DESKTOP-->
+    <header th:replace="~{../templates/fragments/header_percepteur :: header_percepteur}">
+    </header>
+    <!-- END HEADER DESKTOP -->
+
+    <!-- PAGE CONTENT-->
+    <div class="page-container3">
+        <section class="alert-wrap p-t-70 p-b-70">
+            <div class="container">
+                <!-- ALERT-->
+                <div class="alert au-alert-success alert-dismissible fade show au-alert au-alert--70per" role="alert">
+                    <i class="zmdi zmdi-check-circle"></i>
+                    <span th:if="${success}" class="content" th:text="${success}">Vous etes connecté successivement a votre compte</span>
+                    <span th:unless="${success}" class="content">Vous etes connecté successivement a votre compte</span>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">
+                                <i class="zmdi zmdi-close-circle"></i>
+                            </span>
+                    </button>
+                </div>
+                <div th:if="${error}" class="alert au-alert-warning alert-dismissible fade show au-alert au-alert--70per" role="alert">
+                    <i class="zmdi zmdi-check-circle"></i>
+                    <span  class="content" th:text="${error}">Vous êtes connecté successivement à votre compte</span>
+                    <button class="close" type="button" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">
+                                <i class="zmdi zmdi-close-circle"></i>
+                            </span>
+                    </button>
+                </div>
+                <!-- END ALERT-->
+            </div>
+        </section>
+        <section>
+            <div class="container">
+                <div class="row">
+                    <div th:replace="~{../templates/fragments/sidebar_percepteur :: sidebar_percepteur}">
+                    </div>
+                    <div class="col-xl-9">
+                        <!-- PAGE CONTENT-->
+                        <button type="button" data-toggle="modal" data-target="#addSalaireModal" class="btn btn-primary">Nouveau bulletin &nbsp;&nbsp;<i class="fa fa-plus"></i></button>
+                        <hr>
+                        <div class="page-content row">
+                                <table class="table table-bordered table-responsive-lg" id="add-row">
+                                    <thead>
+                                    <th>Numero Bulletin</th>
+                                    <th>Mois</th>
+                                    <th>ACTION</th>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="item : ${lists}">
+                                        <td th:text="${item.numBuletin}"></td>
+                                        <td th:text="${item.mois}"></td>
+                                        <td>
+                                            <a th:href="@{/percepteur/staffs/salaire/detail/}+${item.id}"  class="text-success"><i class="fas fa-eye"></i></a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <!-- END PAGE CONTENT-->
+                    </div>
+                </div>
+                <!-- COPYRIGHT-->
+                <section th:replace="~{../templates/fragments/footer :: footer}"></section>
+
+                <!-- END COPYRIGHT-->
+            </div>
+        </section>
+    </div>
+
+
+    <!-- modal medium -->
+    <div class="modal fade" id="addSalaireModal" tabindex="-1" role="dialog" aria-labelledby="addSalaireModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form th:action="@{/percepteur/staffs/salaire/save/}+${compte.id}" autocomplete="off" method="post" th:object="${salaire}" class="form-horizontal">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addModalLabel">Nouveau Bulletin de paiement de <span th:text="${compte.username}"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block">
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label  class=" form-control-label">Bulletin du mois de </label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select th:field="*{mois}" class="form-control">
+                                    <option value="">--Choisir un mois ici--</option>
+                                    <option th:each="item : ${T(com.derteuffel.school.enums.EMois).values()}" th:value="${item}" th:text="${item}"></option>
+                                </select>
+                                <small class="form-text text-muted" >Mois de l'annee</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-nom" class=" form-control-label">Date de paiement</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="date" id="text-nom" th:field="*{datePaiement}" placeholder="Nom" class="form-control">
+                                <small class="form-text text-muted">Date de paiement</small>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label  class=" form-control-label">Salaire de base</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                    <select th:field="*{salaireBase}" class="form-control">
+                                        <option value="">--Choisir un montant ici--</option>
+                                        <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
+                                    </select>
+                                <small class="form-text text-muted">Salaire de base</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label  class=" form-control-label">Housing</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select th:field="*{housing}" class="form-control">
+                                    <option value="">--Choisir un montant ici--</option>
+                                    <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
+                                </select>
+                                <small class="form-text text-muted">Housing</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label  class=" form-control-label">Allocation Familliale</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select th:field="*{allocationFamilliale}" class="form-control">
+                                    <option value="">--Choisir un montant ici--</option>
+                                    <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
+                                </select>
+                                <small class="form-text text-muted">Allocation Familliale</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label  class=" form-control-label">Allocation Transport</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select th:field="*{allocationTransport}" class="form-control">
+                                    <option value="">--Choisir un montant ici--</option>
+                                    <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
+                                </select>
+                                <small class="form-text text-muted">Allocation Transport</small>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label  class=" form-control-label">Avance sur salaire</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <select th:field="*{avanceSalaire}" class="form-control">
+                                    <option value="">--Choisir un montant ici--</option>
+                                    <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
+                                </select>
+                                <small class="form-text text-muted">Avance sur sallaire</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- end modal medium -->
+</div>
+
+<!-- Jquery JS-->
+<script th:src="@{/vendor/jquery-3.2.1.min.js}"></script>
+<!-- Bootstrap JS-->
+<script th:src="@{/vendor/bootstrap-4.1/popper.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-4.1/bootstrap.min.js}"></script>
+<!-- Vendor JS       -->
+<script th:src="@{/vendor/slick/slick.min.js}">
+</script>
+<script th:src="@{/vendor/wow/wow.min.js}"></script>
+<script th:src="@{/vendor/animsition/animsition.min.js}"></script>
+<script th:src="@{/vendor/bootstrap-progressbar/bootstrap-progressbar.min.js}">
+</script>
+<script th:src="@{/vendor/counter-up/jquery.waypoints.min.js}"></script>
+<script th:src="@{/vendor/counter-up/jquery.counterup.min.js}">
+</script>
+<script th:src="@{/vendor/circle-progress/circle-progress.min.js}"></script>
+<script th:src="@{/vendor/perfect-scrollbar/perfect-scrollbar.js}"></script>
+<script th:src="@{/vendor/chartjs/Chart.bundle.min.js}"></script>
+<script th:src="@{/vendor/select2/select2.min.js}">
+</script>
+
+<!-- Main JS-->
+<script th:src="@{/js/main.js}"></script>
+<script >
+    $(document).ready(function() {
+        // Add Row
+        $('#add-row').DataTable({
+            "pageLength": 10,
+        });
+
+    });
+</script>
+<script th:src="@{/js/datatables.min.js}"></script>
+
+</body>
+
+</html>
+<!-- end document-->
