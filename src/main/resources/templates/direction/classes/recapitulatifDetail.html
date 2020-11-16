@@ -78,44 +78,62 @@
                                     <table class="table table-bordered table-responsive" id="add-row">
                                         <thead>
                                         <th>Matiere</th>
-                                        <th>Max</th>
+                                        <th class="alert alert-secondary">Max</th>
                                         <th>1e P</th>
                                         <th>2e P</th>
+                                        <th class="alert alert-secondary">Max</th>
                                         <th>Examen</th>
+                                        <th>Total Premier Semestre</th>
+                                        <th class="alert alert-secondary">Max</th>
                                         <th>3e P</th>
                                         <th>4e P</th>
+                                        <th class="alert alert-secondary">Max</th>
                                         <th>Examen</th>
+                                        <th>Total Second semestre</th>
+                                        <th>Total General</th>
                                         <th>Date d'ajout</th>
                                         </thead>
                                         <tbody>
                                         <tr th:each="item : ${lists}" >
                                             <td th:text="${item.matiere.name}"></td>
-                                            <td th:text="${item.noteMax}"></td>
-                                            <td >
-                                                <span th:if="${item.periode}=='Premiere_periode'" th:text="${item.note}"></span>
-                                                <span th:unless="${item.periode}=='Premiere_periode'" th:text="${'0'}"></span>
+                                            <td class="alert alert-secondary" th:text="${item?.maxPeriode}"></td>
+                                            <td th:text="${item?.premierePeriode}">
+
                                             </td>
                                             <td >
-                                                <span th:if="${item.periode}=='Deuxieme_periode'" th:text="${item.note}"></span>
-                                                <span th:unless="${item.periode}=='Deuxieme_periode'" th:text="${'0'}"></span>
+                                                <span  th:text="${item?.deuxiemePeriode}"></span>
+                                            </td>
+                                            <td class="alert alert-secondary">
+                                                <span  th:text="${item?.examen}"></span>
                                             </td>
                                             <td >
-                                                <span th:if="${item.periode}=='Examen'" th:text="${item.note}"></span>
-                                                <span th:unless="${item.periode}=='Examen'" th:text="${'0'}"></span>
+                                                <span  th:text="${item?.examePremier}"></span>
                                             </td>
                                             <td >
-                                                <span th:if="${item.periode}=='Troisieme_periode'" th:text="${item.note}"></span>
-                                                <span th:unless="${item.periode}=='Troisieme_periode'" th:text="${'0'}"></span>
+                                                <span  th:text="${item?.totalSemestrePremier}"></span>
+                                            </td>
+                                            <td class="alert alert-secondary" >
+                                                <span th:text="${item?.maxPeriode}"></span>
                                             </td>
                                             <td >
-                                                <span th:if="${item.periode}=='Quatrieme_periode'" th:text="${item.note}"></span>
-                                                <span th:unless="${item.periode}=='Quatrieme_periode'" th:text="${'0'}"></span>
+                                                <span th:text="${item?.troisiemePeriode}"></span>
                                             </td>
                                             <td >
-                                                <span th:if="${item.periode}=='Examen'" th:text="${item.note}"></span>
-                                                <span th:unless="${item.periode}=='Examen'" th:text="${'0'}"></span>
+                                                <span th:text="${item?.quatriemePeriode}"></span>
                                             </td>
-                                            <td th:text="${item.dateAjout}"></td>
+                                            <td class="alert alert-secondary" >
+                                                <span th:text="${item?.examen}"></span>
+                                            </td>
+                                            <td >
+                                                <span th:text="${item?.exameSecond}"></span>
+                                            </td>
+                                            <td >
+                                                <span th:text="${item?.totalSemestreSecond}"></span>
+                                            </td>
+                                            <td >
+                                                <span th:text="${item?.totalGeneral}"></span>
+                                            </td>
+                                            <td th:text="${item?.dateAjout}"></td>
 
                                         </tr>
                                         </tbody>

@@ -1,6 +1,8 @@
 package com.derteuffel.school.enums;
 
-public interface ECategoryMatiere {
+public enum  ECategoryMatiere {
+
+
 
 
 }

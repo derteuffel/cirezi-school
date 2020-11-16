@@ -147,10 +147,7 @@
                                 <label  class=" form-control-label">Salaire de base</label>
                             </div>
                             <div class="col-12 col-md-9">
-                                    <select th:field="*{salaireBase}" class="form-control">
-                                        <option value="">--Choisir un montant ici--</option>
-                                        <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
-                                    </select>
+                                <input type="text" id="text-montant" name="montant" placeholder="Montant" class="form-control">
                                 <small class="form-text text-muted">Salaire de base</small>
                             </div>
                         </div>
@@ -159,10 +156,7 @@
                                 <label  class=" form-control-label">Housing</label>
                             </div>
                             <div class="col-12 col-md-9">
-                                <select th:field="*{housing}" class="form-control">
-                                    <option value="">--Choisir un montant ici--</option>
-                                    <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
-                                </select>
+                                <input type="text" id="text-housing" name="housing" placeholder="Housing" class="form-control">
                                 <small class="form-text text-muted">Housing</small>
                             </div>
                         </div>
@@ -171,10 +165,7 @@
                                 <label  class=" form-control-label">Allocation Familliale</label>
                             </div>
                             <div class="col-12 col-md-9">
-                                <select th:field="*{allocationFamilliale}" class="form-control">
-                                    <option value="">--Choisir un montant ici--</option>
-                                    <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
-                                </select>
+                                <input type="text" id="text-allocation-famille" name="allocFamille" placeholder="Allocation Familliale" class="form-control">
                                 <small class="form-text text-muted">Allocation Familliale</small>
                             </div>
                         </div>
@@ -183,10 +174,7 @@
                                 <label  class=" form-control-label">Allocation Transport</label>
                             </div>
                             <div class="col-12 col-md-9">
-                                <select th:field="*{allocationTransport}" class="form-control">
-                                    <option value="">--Choisir un montant ici--</option>
-                                    <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
-                                </select>
+                                <input type="text" id="text-allocation-transport" name="allocTransport" placeholder="Allocation Transport" class="form-control">
                                 <small class="form-text text-muted">Allocation Transport</small>
                             </div>
                         </div>
@@ -195,10 +183,7 @@
                                 <label  class=" form-control-label">Avance sur salaire</label>
                             </div>
                             <div class="col-12 col-md-9">
-                                <select th:field="*{avanceSalaire}" class="form-control">
-                                    <option value="">--Choisir un montant ici--</option>
-                                    <option  th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
-                                </select>
+                                <input type="text" id="text-avance-salaire" name="avanceSalaire" placeholder="Avance salaire" class="form-control">
                                 <small class="form-text text-muted">Avance sur sallaire</small>
                             </div>
                         </div>

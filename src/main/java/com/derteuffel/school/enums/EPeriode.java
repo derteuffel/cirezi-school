@@ -6,5 +6,6 @@ public enum EPeriode {
     Troisieme_periode,
     Quatrieme_periode,
     Cinquieme_periode,
-    Examen
+    Examen_un,
+    Examen_deux
 }

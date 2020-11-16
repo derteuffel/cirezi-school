@@ -1,6 +1,7 @@
 package com.derteuffel.school.controllers;
 
 import com.derteuffel.school.entities.*;
+import com.derteuffel.school.enums.EPeriode;
 import com.derteuffel.school.enums.ERole;
 import com.derteuffel.school.enums.EType;
 import com.derteuffel.school.enums.EVisibilite;
@@ -1420,12 +1421,11 @@ public class PrefetLoginController {
     public String noteDetail(@PathVariable Long id, @PathVariable Long matiereId, Model model){
         Eleve eleve = eleveRepository.getOne(id);
         Matiere matiere = matiereRepository.getOne(matiereId);
-        List<Note> notes = noteRepository.findAllByMatiere_IdAndEleve_Id(matiere.getId(),eleve.getId());
-        System.out.println(notes.size());
+        Note note = noteRepository.findByMatiere_IdAndEleve_Id(matiere.getId(),eleve.getId());
         model.addAttribute("matiere",matiere);
         model.addAttribute("eleve", eleve);
         model.addAttribute("classe",matiere.getSalle());
-        model.addAttribute("lists", notes);
+        model.addAttribute("note", note);
         return "prefet/classes/note";
     }
 
@@ -1443,13 +1443,33 @@ public class PrefetLoginController {
     }
 
 
-    @PostMapping("/classes/note/update/{id}/{eleveId}")
-    public String noteUpdateSave(Note note, @PathVariable Long id, @PathVariable Long eleveId, RedirectAttributes redirectAttributes){
+    @GetMapping("/classes/note/update/{id}/{eleveId}/{noteId}")
+    public String noteUpdateSave(@PathVariable Long noteId, @PathVariable Long id, @PathVariable Long eleveId,
+                                 RedirectAttributes redirectAttributes, String periode, String note){
         Matiere matiere = matiereRepository.getOne(id);
         Eleve eleve = eleveRepository.getOne(eleveId);
-        Note note1 = noteRepository.getOne(note.getId());
-        note1.setPeriode(note.getPeriode());
-        note1.setNote(note.getNote());
+        Note note1 = noteRepository.getOne(noteId);
+        if (periode.equals(EPeriode.Premiere_periode.toString())){
+            note1.setTotalSemestrePremier(note1.getTotalSemestrePremier() - note1.getPremierePeriode() + Float.parseFloat(note));
+            note1.setPremierePeriode(Float.parseFloat(note));
+        }else if (periode.equals(EPeriode.Deuxieme_periode.toString())){
+            note1.setTotalSemestrePremier(note1.getTotalSemestrePremier() - note1.getDeuxiemePeriode() + Float.parseFloat(note));
+            note1.setDeuxiemePeriode(Float.parseFloat(note));
+        }else if (periode.equals(EPeriode.Troisieme_periode.toString())){
+            note1.setTotalSemestreSecond(note1.getTotalSemestreSecond() - note1.getTroisiemePeriode() + Float.parseFloat(note));
+            note1.setTroisiemePeriode(Float.parseFloat(note));
+        }else if (periode.equals(EPeriode.Quatrieme_periode.toString())){
+            note1.setTotalSemestreSecond(note1.getTotalSemestreSecond() - note1.getQuatriemePeriode() + Float.parseFloat(note));
+            note1.setQuatriemePeriode(Float.parseFloat(note));
+        }else if (periode.equals(EPeriode.Examen_un.toString())){
+            note1.setTotalSemestrePremier(note1.getTotalSemestrePremier() - note1.getExamePremier() + Float.parseFloat(note));
+            note1.setExamePremier(Float.parseFloat(note));
+        }else {
+            note1.setTotalSemestreSecond(note1.getTotalSemestreSecond() - note1.getExameSecond() + Float.parseFloat(note));
+            note1.setExameSecond(Float.parseFloat(note));
+        }
+
+        note1.setTotalGeneral(note1.getTotalSemestrePremier()+note1.getTotalSemestreSecond());
         noteRepository.save(note1);
         redirectAttributes.addFlashAttribute("message","Vous avez modifier avec succes votre note");
         return "redirect:/prefet/classes/eleve/note/detail/"+eleve.getId()+"/"+matiere.getId();
@@ -1488,20 +1508,70 @@ public class PrefetLoginController {
             for (NoteHelper noteHelper : saveNoteHelper.getNoteHelpers()){
                 System.out.println(noteHelper.getEleveId()+"  "+noteHelper.getNomEleve()+"  "+noteHelper.getNote());
                 System.out.println("-----------------------------------------------");
-                if (saveNoteHelper.getNoteMax() < noteHelper.getNote()){
+                if (saveNoteHelper.getNoteMax() < Integer.parseInt(noteHelper.getNote())){
                     model.addAttribute("message", "Vous avez entrer une note superieur au maximum de cette matiere, merci de bien vouloir revoir vos notes entrer");
                     model.addAttribute("saveNoteHelper",saveNoteHelper);
                     model.addAttribute("matiere",matiere);
                     model.addAttribute("classe",salle);
-                    return "prefet/classes/noteForm";
+                    return "direction/classes/noteForm";
                 }
-                Note note = new Note();
-                note.setNote(noteHelper.getNote());
-                note.setNoteMax(saveNoteHelper.getNoteMax());
-                note.setEleve(eleveRepository.getOne(noteHelper.getEleveId()));
-                note.setMatiere(matiere);
-                note.setPeriode(saveNoteHelper.getPeriode());
-                noteRepository.save(note);
+                Note note = noteRepository.findByMatiere_IdAndEleve_Id(matiere.getId(),noteHelper.getEleveId());
+                if (note != null){
+                    if (saveNoteHelper.getPeriode().equals(EPeriode.Premiere_periode.toString())){
+                        note.setPremierePeriode(Float.parseFloat(noteHelper.getNote()));
+                        note.setTotalSemestrePremier(Float.parseFloat(noteHelper.getNote()));
+                    }else if (saveNoteHelper.getPeriode().equals(EPeriode.Deuxieme_periode.toString())){
+                        note.setDeuxiemePeriode(Float.parseFloat(noteHelper.getNote()));
+                        note.setTotalSemestrePremier(note.getTotalSemestrePremier()+Float.parseFloat(noteHelper.getNote()));
+                    }else if (saveNoteHelper.getPeriode().equals(EPeriode.Troisieme_periode.toString())){
+                        note.setTroisiemePeriode(Float.parseFloat(noteHelper.getNote()));
+                        note.setTotalSemestreSecond(Float.parseFloat(noteHelper.getNote()));
+                    }else if (saveNoteHelper.getPeriode().equals(EPeriode.Quatrieme_periode.toString())){
+                        note.setQuatriemePeriode(Float.parseFloat(noteHelper.getNote()));
+                        note.setTotalSemestreSecond(note.getTotalSemestreSecond()+Float.parseFloat(noteHelper.getNote()));
+                    }else if (saveNoteHelper.getPeriode().equals(EPeriode.Examen_un.toString())){
+                        note.setExamePremier(Float.parseFloat(noteHelper.getNote()));
+                        note.setTotalSemestrePremier(note.getTotalSemestrePremier()+Float.parseFloat(noteHelper.getNote()));
+                    }else {
+                        note.setExameSecond(Float.parseFloat(noteHelper.getNote()));
+                        note.setTotalSemestreSecond(note.getTotalSemestreSecond()+Float.parseFloat(noteHelper.getNote()));
+                    }
+                    note.setTotalGeneral(note.getTotalSemestrePremier()+note.getTotalSemestreSecond());
+                    noteRepository.save(note);
+                }else {
+                    Note newNote = new Note();
+                    if (!((saveNoteHelper.getPeriode().equals(EPeriode.Examen_un.toString())) || (saveNoteHelper.getPeriode().equals(EPeriode.Examen_un.toString())))) {
+                        newNote.setMaxPeriode(saveNoteHelper.getNoteMax());
+                        newNote.setExamen(newNote.getMaxPeriode() * 2);
+                    }
+
+                    if (saveNoteHelper.getPeriode().equals(EPeriode.Premiere_periode.toString())) {
+                        newNote.setPremierePeriode(Float.parseFloat(noteHelper.getNote()));
+                        newNote.setTotalSemestrePremier(Float.parseFloat(noteHelper.getNote()));
+                    } else if (saveNoteHelper.getPeriode().equals(EPeriode.Deuxieme_periode.toString())) {
+                        newNote.setDeuxiemePeriode(Float.parseFloat(noteHelper.getNote()));
+                        newNote.setTotalSemestrePremier(Float.parseFloat(noteHelper.getNote()));
+                    } else if (saveNoteHelper.getPeriode().equals(EPeriode.Troisieme_periode.toString())) {
+                        newNote.setTroisiemePeriode(Float.parseFloat(noteHelper.getNote()));
+                        newNote.setTotalSemestreSecond(Float.parseFloat(noteHelper.getNote()));
+                    } else if (saveNoteHelper.getPeriode().equals(EPeriode.Quatrieme_periode.toString())) {
+                        newNote.setQuatriemePeriode(Float.parseFloat(noteHelper.getNote()));
+                        newNote.setTotalSemestreSecond(Float.parseFloat(noteHelper.getNote()));
+                    } else if (saveNoteHelper.getPeriode().equals(EPeriode.Examen_un.toString())) {
+                        newNote.setExamePremier(Float.parseFloat(noteHelper.getNote()));
+                        newNote.setTotalSemestrePremier(Float.parseFloat(noteHelper.getNote()));
+                        newNote.setTotalSemestreSecond(new Float(0));
+                    } else {
+                        newNote.setExameSecond(Float.parseFloat(noteHelper.getNote()));
+                        newNote.setTotalSemestreSecond(Float.parseFloat(noteHelper.getNote()));
+                        newNote.setTotalSemestrePremier(new Float(0));
+                    }
+
+                    newNote.setTotalGeneral((newNote.getTotalSemestrePremier()+new Float(0))+(newNote.getTotalSemestreSecond()+new Float(0)));
+                    newNote.setEleve(eleveRepository.getOne(noteHelper.getEleveId()));
+                    newNote.setMatiere(matiere);
+                    noteRepository.save(newNote);
+                }
             }
         }
         return "redirect:/prefet/classes/matieres/detail/"+matiere.getId()+"/"+salle.getId();

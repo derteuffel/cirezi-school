@@ -26,11 +26,7 @@
                             <label  class=" form-control-label">Montant</label>
                         </div>
                         <div class="col-12 col-md-9">
-                            <select name="montant" class="form-control">
-                                <option value="">--Choisir un montant ici--</option>
-                                <option th:if="${montants}!=null" th:each="item : ${montants}" th:value="${item}" th:text="${item+' $'}"></option>
-                                <option th:unless="${montants}!=null" th:each="item : ${session.montants}" th:value="${item}" th:text="${item+' $'}"></option>
-                            </select>
+                            <input type="text" id="text-avance-salaire" name="montant" placeholder="Montant" class="form-control">
                             <small class="form-text text-muted" >Montant a appliquer a ce niveau</small>
                         </div>
                     </div>

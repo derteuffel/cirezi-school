@@ -2,15 +2,15 @@ package com.derteuffel.school.helpers;
 
 public class NoteHelper {
 
-    private int note;
+    private String note;
     private Long eleveId;
     private String nomEleve;
 
-    public int getNote() {
+    public String getNote() {
         return note;
     }
 
-    public void setNote(int note) {
+    public void setNote(String note) {
         this.note = note;
     }
 

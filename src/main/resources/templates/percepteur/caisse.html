@@ -86,8 +86,10 @@
                                 <hr>
                                 <h5><span> Mouvement mensuel :</span> &nbsp;&nbsp;<span th:text="${caisse.mouvementMensuel+' $'}"></span></h5>
                             </div>
-                            <div class="col-md-4">
+                            <div th:if="${caisse.status}!= false" class="col-md-4">
                                 <button type="button" data-toggle="modal" data-target="#addMouvementModal" class="btn btn-primary">Ajouter un mouvement&nbsp;<i class="fa fa-plus"></i></button>
+                                <hr>
+                                <button type="button" data-toggle="modal" data-target="#addFermerMoisModal" class="btn btn-secondary">Terminer le mois&nbsp;<i class="fa fa-user-clock"></i></button>
                             </div>
                         </div>
                         <hr>
@@ -129,7 +131,7 @@
                                         <td th:text="${item.soldeFin+' $'}"></td>
                                         <td th:text="${item.numMouvement}"></td>
                                         <td>
-                                            <a th:href="@{/percepteur/mouvements/update/}+${item.id}" class="text-success"><i class="fas fa-edit"></i></a>
+                                            <a th:href="@{/percepteur/mouvements/update/}+${item.id}" class="text-success"><i class="fas fa-edit"></i>&nbsp;Editer</a>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -186,10 +188,7 @@
                                 <label  class=" form-control-label">Montant</label>
                             </div>
                             <div class="col-12 col-md-9">
-                                <select th:field="*{montant}" class="form-control">
-                                    <option value="">--Choisir un montant ici--</option>
-                                    <option  th:each="item1 : ${montants}" th:value="${item1}" th:text="${item1+' $'}"></option>
-                                </select>
+                                <input type="text" id="text-montant" name="montant" placeholder="Montant" class="form-control">
                                 <small class="form-text text-muted">Montant du mouvement de caisse</small>
                             </div>
                         </div>
@@ -197,6 +196,29 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
                         <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addFermerMoisModal" tabindex="-1" role="dialog" aria-labelledby="addFermerMoisModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form th:action="@{/percepteur/mouvements/terminer/}+${caisse.id}" autocomplete="off" method="get"  class="form-horizontal">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addFermerMoisModalLabel">Fermeture de la session du mois de <span th:text="${caisse.mois}"></span></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block">
+                        <div class="alert alert-warning">
+                            <p>Voulez-vous vraiment terminer avec l'exercice de ce mois??</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Oui</button>
                     </div>
                 </form>
             </div>

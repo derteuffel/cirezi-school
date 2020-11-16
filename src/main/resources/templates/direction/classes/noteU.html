@@ -72,7 +72,7 @@
                             <hr>
                             <h5 class="title-1"><span th:text="${'Modification de note de : '+matiere.name}"></span></h5>
                             <hr>
-                            <form th:action="@{/direction/classes/note/update/}+${matiere.id+'/'+eleve.id}" autocomplete="off" method="post" th:object="${note}"  class="form-horizontal">
+                            <form th:action="@{/direction/classes/note/update/}+${matiere.id+'/'+eleve.id+'/'+note.id}" autocomplete="off" method="get"   class="form-horizontal">
                                 <div class="card-header">
                                     <h5 class="card-title">Formulaire de modification</h5>
                                 </div>
@@ -83,8 +83,8 @@
                                             <label for="text-cours" class=" form-control-label">Periode d'evaluation</label>
                                         </div>
                                         <div class="col-12 col-md-9">
-                                            <select th:field="*{periode}" class="form-control" id="text-cours">
-                                                <option value="">--Choisir un code de la matiere--</option>
+                                            <select name="periode" class="form-control" id="text-cours">
+                                                <option value="">--Choisir une periode--</option>
                                                 <option th:each="item : ${T(com.derteuffel.school.enums.EPeriode).values()}" th:value="${item}" th:text="${item}"></option>
                                             </select>
                                             <small class="form-text text-muted">Intitule de la periode d'evaluation</small>
@@ -95,8 +95,7 @@
                                             <label  class=" form-control-label">Note </label>
                                         </div>
                                         <div class="col-12 col-md-9">
-                                            <input type="number"  th:field="*{note}" class="form-control"/>
-                                            <input type="hidden"  th:field="*{id}" class="form-control"/>
+                                            <input type="text"  name="note" class="form-control"/>
                                         </div>
                                     </div>
                                 </div>

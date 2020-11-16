@@ -75,22 +75,39 @@
 
 
                             <div class="row"  >
-                                    <table class="table table-bordered table-responsive-lg" id="add-row">
-                                        <thead>
-                                        <th>Periode</th>
-                                        <th>Note</th>
-                                        <th>Date d'ajout</th>
-                                        <th>Action</th>
-                                        </thead>
+                                    <table class="table table-bordered table-responsive-lg">
                                         <tbody>
-                                        <tr th:each="item : ${lists}">
-                                            <td th:text="${item.periode}"></td>
-                                            <td th:text="${item.note}"></td>
-                                            <td th:text="${item.dateAjout}"></td>
+                                        <tr>
+                                            <td th:text="${'Premiere periode'}"></td>
+                                            <td th:text="${note?.premierePeriode}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="${'Deuxieme periode'}"></td>
+                                            <td th:text="${note?.deuxiemePeriode}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="${'Premier examen'}"></td>
+                                            <td th:text="${note?.examePremier}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="${'Troisieme periode'}"></td>
+                                            <td th:text="${note?.troisiemePeriode}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="${'Quatrieme periode'}"></td>
+                                            <td th:text="${note?.quatriemePeriode}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="${'Deuxieme examen'}"></td>
+                                            <td th:text="${note?.exameSecond}"></td>
+                                        </tr>
+                                        <tr>
+                                            <td th:text="${'Action'}"></td>
                                             <td>
-                                                <a th:href="@{/direction/classes/eleve/note/update/}+${eleve?.id+'/'+matiere.id+'/'+item.id}" class="btn" ><i class="fa fa-edit"></i></a>
+                                                <a th:href="@{/direction/classes/eleve/note/update/}+${eleve?.id+'/'+matiere.id+'/'+note?.id}" class="btn" ><i class="fa fa-edit"></i>&nbsp Modifier</a>
                                             </td>
                                         </tr>
+
                                         </tbody>
                                     </table>
                             </div>

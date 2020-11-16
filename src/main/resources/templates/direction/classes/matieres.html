@@ -155,10 +155,7 @@
                                 <label for="text-cours" class=" form-control-label">Intitule de la matiere</label>
                             </div>
                             <div class="col-12 col-md-9">
-                                <select th:field="*{name}" class="form-control" id="text-cours">
-                                    <option value="">--Choisir un code de la matiere--</option>
-                                    <option th:each="item : ${T(com.derteuffel.school.enums.EMatiere).values()}" th:value="${item}" th:text="${item}"></option>
-                                </select>
+                                <input type="text" class="form-control" id="text-cours" th:field="*{name}" placeholder="Intitule de la matiere">
                                 <small class="form-text text-muted">Intitule de la lecon</small>
                             </div>
                         </div>

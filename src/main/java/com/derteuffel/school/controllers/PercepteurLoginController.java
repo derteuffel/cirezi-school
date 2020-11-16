@@ -222,12 +222,6 @@ public class PercepteurLoginController {
     @GetMapping("/classe/lists")
     public String classe(Model model, HttpServletRequest request) {
         List<Enseignant> enseignants = enseignantRepository.findAll();
-        ArrayList<Double> montants = new ArrayList<>();
-        for (int i=0; i<= 20; i++){
-            montants.add(i*0.5*100.0);
-        }
-        model.addAttribute("montants",montants);
-        request.getSession().setAttribute("montants", montants);
         model.addAttribute("lists", salleRepository.findAll());
         model.addAttribute("enseignants", enseignants);
         return "percepteur/classes/lists";
@@ -261,12 +255,7 @@ public class PercepteurLoginController {
     @GetMapping("/classe/eleves/payment/lists/{id}")
     public String paymentLists(@PathVariable Long id, Model model){
         Salle salle = salleRepository.getOne(id);
-        ArrayList<Double> montants = new ArrayList<>();
-        for (int i=0; i<= 20; i++){
-            montants.add(i*0.5*100.0);
-        }
 
-        System.out.println(montants);
         Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salle.getId());
         Collection<Paiement> paiements = new ArrayList<>();
         for (Eleve eleve : eleves){
@@ -275,13 +264,12 @@ public class PercepteurLoginController {
         }
         model.addAttribute("classe", salle);
         model.addAttribute("lists", paiements);
-        model.addAttribute("montants",montants);
         return "percepteur/classes/paiements";
     }
 
 
     @GetMapping("/add/montant")
-    public String addMontant(Double montant, String niveau, String categorie){
+    public String addMontant(String montant, String niveau, String categorie){
         Collection<Salle> salles = salleRepository.findAll();
         Collection<Eleve> eleves = new ArrayList<>();
         for (Salle salle : salles){
@@ -291,7 +279,7 @@ public class PercepteurLoginController {
                 for (Eleve eleve : eleveRepository.findAllByCategorieAndSalle_Id(categorie, salle.getId())){
                     System.out.println(eleveRepository.findAllByCategorieAndSalle_Id(categorie, salle.getId()).size());
                     Paiement paiement = paiementRepository.findByEleve_Id(eleve.getId());
-                    paiement.setCoutTotal(montant);
+                    paiement.setCoutTotal(Double.parseDouble(montant));
                     paiementRepository.save(paiement);
                     System.out.println("et la cest la fin ");
                 }
@@ -301,25 +289,25 @@ public class PercepteurLoginController {
     }
 
     @GetMapping("/classe/eleves/add/account/{id}")
-    public String addPaiement(String motif, @PathVariable Long id, Double montant){
+    public String addPaiement(String motif, @PathVariable Long id, String montant){
         Paiement paiement = paiementRepository.getOne(id);
         if (motif.equals("premier")){
-            paiement.setAccountTrimestrePremier(montant);
+            paiement.setAccountTrimestrePremier(Double.parseDouble(montant));
         }else if (motif.equals("deuxieme")){
-            paiement.setAccountTrimestreSecond(montant);
+            paiement.setAccountTrimestreSecond(Double.parseDouble(montant));
         }else if (motif.equals("troisieme")){
-            paiement.setAccountTrimestreTroisieme(montant);
+            paiement.setAccountTrimestreTroisieme(Double.parseDouble(montant));
         }else if (motif.equals("sport")){
-            paiement.setAccountSport(montant);
+            paiement.setAccountSport(Double.parseDouble(montant));
         }else {
-            paiement.setAccountBibliotheque(montant);
+            paiement.setAccountBibliotheque(Double.parseDouble(montant));
         }
         if (paiement.getTotalPayer() != null) {
-            paiement.setTotalPayer(paiement.getTotalPayer() + montant);
+            paiement.setTotalPayer(paiement.getTotalPayer() + Double.parseDouble(montant));
             paiement.setSolde(paiement.getCoutTotal() - paiement.getTotalPayer());
         }else {
-            paiement.setTotalPayer(montant);
-            paiement.setSolde(paiement.getCoutTotal()-montant);
+            paiement.setTotalPayer(Double.parseDouble(montant));
+            paiement.setSolde(paiement.getCoutTotal()-Double.parseDouble(montant));
         }
         paiementRepository.save(paiement);
         SimpleDateFormat format = new SimpleDateFormat("yyyy");
@@ -333,7 +321,7 @@ public class PercepteurLoginController {
             mouvement.setNumMouvement((mouvementRepository.findAllByCaisse_Id(caisse.getId()).size()+1)+"");
             mouvement.setCaisse(caisse);
             mouvement.setLibelle("Versement Montant : "+motif);
-            mouvement.setMontant(montant);
+            mouvement.setMontant(Double.parseDouble(montant));
             mouvement.setSoldeFin(caisse.getSoldeFinMois() + mouvement.getMontant());
             mouvementRepository.save(mouvement);
             caisse.setMouvementMensuel(caisse.getMouvementMensuel() + mouvement.getMontant());
@@ -341,9 +329,9 @@ public class PercepteurLoginController {
             caisseRepository.save(caisse);
         }else {
             Caisse caisse1 = new Caisse();
-            caisse1.setMouvementMensuel(montant);
-            caisse1.setSoldeFinMois(montant);
-            caisse1.setSoldeDebutmois(montant);
+            caisse1.setMouvementMensuel(Double.parseDouble(montant));
+            caisse1.setSoldeFinMois(Double.parseDouble(montant));
+            caisse1.setSoldeDebutmois(Double.parseDouble(montant));
             caisse1.setStatus(true);
             if (Integer.parseInt(mois) == 01){
                 caisse1.setMois(EMois.Janvier.toString());
@@ -374,7 +362,7 @@ public class PercepteurLoginController {
             caisseRepository.save(caisse1);
             Mouvement mouvement = new Mouvement();
             mouvement.setSoldeFin(caisse1.getSoldeFinMois());
-            mouvement.setMontant(montant);
+            mouvement.setMontant(Double.parseDouble(montant));
             mouvement.setLibelle("Versement Montant : "+motif);
             mouvement.setCaisse(caisse1);
             mouvement.setNumMouvement((mouvementRepository.findAllByCaisse_Id(caisse1.getId()).size()+1)+"");
@@ -409,12 +397,8 @@ public class PercepteurLoginController {
     public String getEnseignantSalaire(@PathVariable Long id, Model model){
         Enseignant enseignant = enseignantRepository.getOne(id);
         Collection<Salaire> salaires = salaireRepository.findAllByEnseignant_Id(enseignant.getId());
-        ArrayList<Double> montants = new ArrayList<>();
-        for (int i=0; i<= 40; i++){
-            montants.add(i*0.25*100.0);
-        }
+
         model.addAttribute("lists", salaires);
-        model.addAttribute("montants", montants);
         model.addAttribute("enseignant",enseignant);
         model.addAttribute("salaire", new SalaireHelper());
         return "percepteur/salairesEnseignant";
@@ -424,12 +408,8 @@ public class PercepteurLoginController {
     public String getStaffSalaire(@PathVariable Long id, Model model){
         Compte compte = compteRepository.getOne(id);
         Collection<Salaire> salaires = salaireRepository.findAllByCompte_Id(compte.getId());
-        ArrayList<Double> montants = new ArrayList<>();
-        for (int i=0; i<= 40; i++){
-            montants.add(i*0.25*100.0);
-        }
+
         model.addAttribute("lists", salaires);
-        model.addAttribute("montants", montants);
         model.addAttribute("compte",compte);
         model.addAttribute("salaire", new SalaireHelper());
         return "percepteur/salairesStaff";
@@ -437,11 +417,18 @@ public class PercepteurLoginController {
 
 
     @PostMapping("/enseignants/salaire/save/{id}")
-    public String saveBulletin(@PathVariable Long id, SalaireHelper salaireHelper, RedirectAttributes redirectAttributes){
+    public String saveBulletin(@PathVariable Long id, SalaireHelper salaireHelper, RedirectAttributes redirectAttributes,
+                               String montant, String housing, String allocFamille, String allocTransport,
+                               String avanceSalaire){
 
         Enseignant enseignant = enseignantRepository.getOne(id);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat format = new SimpleDateFormat("yyyy");
+        salaireHelper.setSalaireBase(Double.parseDouble(montant));
+        salaireHelper.setHousing(Double.parseDouble(housing));
+        salaireHelper.setAllocationFamilliale(Double.parseDouble(allocFamille));
+        salaireHelper.setAllocationTransport(Double.parseDouble(allocTransport));
+        salaireHelper.setAvanceSalaire(Double.parseDouble(avanceSalaire));
         Salaire salaire = new Salaire();
         salaire.setAllocationFamilliale(salaireHelper.getAllocationFamilliale());
         salaire.setAllocationTransport(salaireHelper.getAllocationTransport());
@@ -498,11 +485,18 @@ public class PercepteurLoginController {
     }
 
     @PostMapping("/staffs/salaire/save/{id}")
-    public String saveBulletinStaff(@PathVariable Long id, SalaireHelper salaireHelper, RedirectAttributes redirectAttributes){
+    public String saveBulletinStaff(@PathVariable Long id, SalaireHelper salaireHelper, RedirectAttributes redirectAttributes,
+                                    String montant, String housing, String allocFamille, String allocTransport,
+                                    String avanceSalaire){
 
         Compte compte = compteRepository.getOne(id);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat format = new SimpleDateFormat("yyyy");
+        salaireHelper.setSalaireBase(Double.parseDouble(montant));
+        salaireHelper.setHousing(Double.parseDouble(housing));
+        salaireHelper.setAllocationFamilliale(Double.parseDouble(allocFamille));
+        salaireHelper.setAllocationTransport(Double.parseDouble(allocTransport));
+        salaireHelper.setAvanceSalaire(Double.parseDouble(avanceSalaire));
         Salaire salaire = new Salaire();
         salaire.setAllocationFamilliale(salaireHelper.getAllocationFamilliale());
         salaire.setAllocationTransport(salaireHelper.getAllocationTransport());
@@ -591,22 +585,59 @@ public class PercepteurLoginController {
     public String caisseDetail(@PathVariable Long id, Model model){
         Caisse caisse = caisseRepository.getOne(id);
         model.addAttribute("caisse", caisse);
-        ArrayList<Double> montants = new ArrayList<>();
-        for (int i=0; i<= 80; i++){
-            montants.add(i*0.125*100.0);
-        }
         Collection<Mouvement> mouvements = mouvementRepository.findAllByCaisse_Id(caisse.getId());
         model.addAttribute("lists",mouvements);
-        model.addAttribute("montants", montants);
         model.addAttribute("mouvement", new Mouvement());
         return "percepteur/caisse";
 
     }
 
+    @GetMapping("/mouvements/terminer/{id}")
+    public String closeMonth(@PathVariable Long id,RedirectAttributes redirectAttributes){
+        Caisse caisse = caisseRepository.getOne(id);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+        String annee = sdf.format(new Date());
+        caisse.setStatus(false);
+        Caisse newCaisse = new Caisse();
+        newCaisse.setStatus(true);
+        newCaisse.setAnnee(Integer.parseInt(annee));
+        newCaisse.setSoldeDebutmois(caisse.getSoldeFinMois());
+        newCaisse.setSoldeFinMois(caisse.getSoldeFinMois());
+        newCaisse.setMouvementMensuel(0.0);
+        if (caisse.getMois().equals(EMois.Janvier.toString())){
+            newCaisse.setMois(EMois.Fevrier.toString());
+        }else if (caisse.getMois().equals(EMois.Fevrier.toString())){
+            newCaisse.setMois(EMois.Mars.toString());
+        }else if (caisse.getMois().equals(EMois.Mars.toString())){
+            newCaisse.setMois(EMois.Avril.toString());
+        }else if (caisse.getMois().equals(EMois.Avril.toString())){
+            newCaisse.setMois(EMois.Mai.toString());
+        }else if (caisse.getMois().equals(EMois.Mai.toString())){
+            newCaisse.setMois(EMois.Juin.toString());
+        }else if (caisse.getMois().equals(EMois.Juin.toString())){
+            newCaisse.setMois(EMois.Juillet.toString());
+        }else if (caisse.getMois().equals(EMois.Juillet.toString())){
+            newCaisse.setMois(EMois.Aout.toString());
+        }else if (caisse.getMois().equals(EMois.Aout.toString())){
+            newCaisse.setMois(EMois.Septembre.toString());
+        }else if (caisse.getMois().equals(EMois.Septembre.toString())){
+            newCaisse.setMois(EMois.Octobre.toString());
+        }else if (caisse.getMois().equals(EMois.Octobre.toString())){
+            newCaisse.setMois(EMois.Novembre.toString());
+        }else if (caisse.getMois().equals(EMois.Novembre.toString())){
+            newCaisse.setMois(EMois.Decembre.toString());
+        }
+        caisseRepository.save(newCaisse);
+        redirectAttributes.addFlashAttribute("message","Vous venez de cloturer le mois de : "+caisse.getMois()+" et vous etes au debut du mois de : "+newCaisse.getMois());
+        return "redirect:/percepteur/mouvements/detail/"+newCaisse.getId();
+    }
+
     @PostMapping("/mouvements/save/{id}")
-    public String saveMouvement(Mouvement mouvement, @PathVariable Long id, RedirectAttributes redirectAttributes ){
+    public String saveMouvement(Mouvement mouvement, @PathVariable Long id, RedirectAttributes redirectAttributes,
+                                String montant){
         Caisse caisse = caisseRepository.getOne(id);
         mouvement.setCaisse(caisse);
+        mouvement.setMontant(Double.parseDouble(montant));
         mouvement.setNumMouvement(""+(mouvementRepository.findAll().size()+1));
         if (mouvement.getType().equals("ENTREE")){
             mouvement.setSoldeFin(caisse.getSoldeFinMois()+mouvement.getMontant());
@@ -623,6 +654,45 @@ public class PercepteurLoginController {
         redirectAttributes.addFlashAttribute("message", "Vous avez ajouter votre mouvement de caisse avec success!");
 
         return "redirect:/percepteur/mouvements/detail/"+caisse.getId();
+    }
+
+
+    @GetMapping("/mouvements/update/{id}")
+    public String updateMouvement(@PathVariable Long id, Model model){
+        Mouvement mouvement = mouvementRepository.getOne(id);
+        model.addAttribute("mouvement", mouvement);
+        return "percepteur/mouvementU";
+    }
+
+    @PostMapping("/mouvements/update/{id}")
+    public String saveUpdateMouvement(Mouvement mouvement, @PathVariable Long id, RedirectAttributes redirectAttributes,
+                                      String montant){
+        Mouvement mouvement1 = mouvementRepository.getOne(id);
+        mouvement.setMontant(Double.parseDouble(montant));
+        Caisse caisse = mouvement1.getCaisse();
+        mouvement1.setType(mouvement.getType());
+
+        if (mouvement.getType().equals("ENTREE")){
+            mouvement1.setType(mouvement.getType());
+            mouvement1.setSoldeFin(caisse.getSoldeFinMois()-mouvement1.getMontant()+mouvement.getMontant());
+            caisse.setSoldeFinMois(mouvement1.getSoldeFin());
+            caisse.setMouvementMensuel(caisse.getMouvementMensuel()-mouvement1.getMontant()+mouvement.getMontant());
+            mouvement1.setMontant(mouvement.getMontant());
+
+        }else {
+            mouvement1.setType(mouvement.getType());
+            mouvement1.setSoldeFin(caisse.getSoldeFinMois()+mouvement1.getMontant()-mouvement.getMontant());
+            caisse.setSoldeFinMois(mouvement1.getSoldeFin());
+            caisse.setMouvementMensuel(caisse.getMouvementMensuel()+mouvement1.getMontant()-mouvement.getMontant());
+            mouvement1.setMontant(mouvement.getMontant());
+        }
+
+        caisseRepository.save(caisse);
+        mouvementRepository.save(mouvement1);
+        redirectAttributes.addFlashAttribute("message", "Vous avez modifier votre mouvement de caisse avec success!");
+
+        return "redirect:/percepteur/mouvements/detail/"+caisse.getId();
+
     }
 
 

@@ -16,6 +16,7 @@ public class Matiere implements Serializable{
     private Long id;
     private String name;
     private int noteMax;
+    private String categorie;
     @ManyToOne
     private Enseignant enseignant;
     @ManyToOne
@@ -27,9 +28,18 @@ public class Matiere implements Serializable{
     public Matiere() {
     }
 
-    public Matiere(String name, int noteMax) {
+    public Matiere(String name, int noteMax, String categorie) {
         this.name = name;
         this.noteMax = noteMax;
+        this.categorie = categorie;
+    }
+
+    public String getCategorie() {
+        return categorie;
+    }
+
+    public void setCategorie(String categorie) {
+        this.categorie = categorie;
     }
 
     public Long getId() {

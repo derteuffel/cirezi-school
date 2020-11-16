@@ -3,6 +3,7 @@ package com.derteuffel.school.entities;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,9 +15,26 @@ public class Note implements Serializable{
     @Id
     @GeneratedValue
     private Long id;
-    private String periode;
-    private int note;
-    private int noteMax;
+    private int maxPeriode;
+    private int examen;
+    @NotNull
+    private Float premierePeriode = 0F;
+    @NotNull
+    private Float deuxiemePeriode = 0F;
+    @NotNull
+    private Float troisiemePeriode = 0F;
+    @NotNull
+    private Float quatriemePeriode = 0F;
+    @NotNull
+    private Float examePremier = 0F;
+    @NotNull
+    private Float exameSecond = 0F;
+    @NotNull
+    private Float totalSemestrePremier = 0F;
+    @NotNull
+    private Float totalSemestreSecond = 0F;
+    @NotNull
+    private Float totalGeneral = 0F;
     private Date dateAjout = new Date();
 
     @ManyToOne
@@ -28,19 +46,38 @@ public class Note implements Serializable{
     public Note() {
     }
 
-    public Note(String periode, int note, int noteMax, Date dateAjout) {
-        this.periode = periode;
-        this.note = note;
-        this.noteMax = noteMax;
+    public Note(int maxPeriode, int examen, Float premierePeriode, Float deuxiemePeriode,
+                Float troisiemePeriode, Float quatriemePeriode, Float examePremier,
+                Float exameSecond, Float totalSemestrePremier, Float totalSemestreSecond,
+                Float totalGeneral, Date dateAjout) {
+        this.maxPeriode = maxPeriode;
+        this.examen = examen;
+        this.premierePeriode = premierePeriode;
+        this.deuxiemePeriode = deuxiemePeriode;
+        this.troisiemePeriode = troisiemePeriode;
+        this.quatriemePeriode = quatriemePeriode;
+        this.examePremier = examePremier;
+        this.exameSecond = exameSecond;
+        this.totalSemestrePremier = totalSemestrePremier;
+        this.totalSemestreSecond = totalSemestreSecond;
+        this.totalGeneral = totalGeneral;
         this.dateAjout = dateAjout;
     }
 
-    public int getNoteMax() {
-        return noteMax;
+    public int getMaxPeriode() {
+        return maxPeriode;
     }
 
-    public void setNoteMax(int noteMax) {
-        this.noteMax = noteMax;
+    public void setMaxPeriode(int maxPeriode) {
+        this.maxPeriode = maxPeriode;
+    }
+
+    public int getExamen() {
+        return examen;
+    }
+
+    public void setExamen(int examen) {
+        this.examen = examen;
     }
 
     public Date getDateAjout() {
@@ -59,20 +96,52 @@ public class Note implements Serializable{
         this.id = id;
     }
 
-    public String getPeriode() {
-        return periode;
+    public Float getPremierePeriode() {
+        return premierePeriode;
     }
 
-    public void setPeriode(String periode) {
-        this.periode = periode;
+    public void setPremierePeriode(Float premierePeriode) {
+        this.premierePeriode = premierePeriode;
     }
 
-    public int getNote() {
-        return note;
+    public Float getDeuxiemePeriode() {
+        return deuxiemePeriode;
     }
 
-    public void setNote(int note) {
-        this.note = note;
+    public void setDeuxiemePeriode(Float deuxiemePeriode) {
+        this.deuxiemePeriode = deuxiemePeriode;
+    }
+
+    public Float getTroisiemePeriode() {
+        return troisiemePeriode;
+    }
+
+    public void setTroisiemePeriode(Float troisiemePeriode) {
+        this.troisiemePeriode = troisiemePeriode;
+    }
+
+    public Float getQuatriemePeriode() {
+        return quatriemePeriode;
+    }
+
+    public void setQuatriemePeriode(Float quatriemePeriode) {
+        this.quatriemePeriode = quatriemePeriode;
+    }
+
+    public Float getExamePremier() {
+        return examePremier;
+    }
+
+    public void setExamePremier(Float examePremier) {
+        this.examePremier = examePremier;
+    }
+
+    public Float getExameSecond() {
+        return exameSecond;
+    }
+
+    public void setExameSecond(Float exameSecond) {
+        this.exameSecond = exameSecond;
     }
 
     public Matiere getMatiere() {
@@ -89,5 +158,29 @@ public class Note implements Serializable{
 
     public void setEleve(Eleve eleve) {
         this.eleve = eleve;
+    }
+
+    public Float getTotalSemestrePremier() {
+        return totalSemestrePremier;
+    }
+
+    public void setTotalSemestrePremier(Float totalSemestrePremier) {
+        this.totalSemestrePremier = totalSemestrePremier;
+    }
+
+    public Float getTotalSemestreSecond() {
+        return totalSemestreSecond;
+    }
+
+    public void setTotalSemestreSecond(Float totalSemestreSecond) {
+        this.totalSemestreSecond = totalSemestreSecond;
+    }
+
+    public Float getTotalGeneral() {
+        return totalGeneral;
+    }
+
+    public void setTotalGeneral(Float totalGeneral) {
+        this.totalGeneral = totalGeneral;
     }
 }
