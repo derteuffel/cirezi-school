@@ -87,14 +87,16 @@
                                 <h5><span> Mouvement mensuel :</span> &nbsp;&nbsp;<span th:text="${caisse.mouvementMensuel+' $'}"></span></h5>
                             </div>
                             <div th:if="${caisse.status}!= false" class="col-md-4">
-                                <button type="button" data-toggle="modal" data-target="#addMouvementModal" class="btn btn-primary">Ajouter un mouvement&nbsp;<i class="fa fa-plus"></i></button>
+                                <button type="button" data-toggle="modal" data-target="#addMouvementEntrerModal" class="btn btn-primary">Ajouter un mouvement (ENTRER)&nbsp;<i class="fa fa-plus"></i></button>
+                                <hr>
+                                <button type="button" data-toggle="modal" data-target="#addMouvementSortieModal" class="btn btn-info">Ajouter un mouvement (SORTIE)&nbsp;<i class="fa fa-plus"></i></button>
                                 <hr>
                                 <button type="button" data-toggle="modal" data-target="#addFermerMoisModal" class="btn btn-secondary">Terminer le mois&nbsp;<i class="fa fa-user-clock"></i></button>
                             </div>
                         </div>
                         <hr>
                         <div class="page-content row">
-                                <table class="table table-bordered table-responsive-lg" id="add-row">
+                                <table class="table table-bordered table-responsive-lg table-responsive" id="add-row">
                                     <thead>
                                     <th>Dates</th>
                                     <th>Solde debut du mois</th>
@@ -125,14 +127,43 @@
                                             <span th:unless="${item.type}== 'ENTREE'" th:text="${'#'}"></span>
                                         </td>
                                         <td  >
-                                            <span th:if="${item.type}== 'SORTIE'" th:text="${item.montant}"></span>
+                                            <span th:if="${item.type}== 'SORTIE'" th:text="${item.montant+' $'}"></span>
                                             <span th:unless="${item.type}== 'SORTIE'" th:text="${'#'}"></span>
                                         </td>
                                         <td th:text="${item.soldeFin+' $'}"></td>
                                         <td th:text="${item.numMouvement}"></td>
                                         <td>
                                             <a th:href="@{/percepteur/mouvements/update/}+${item.id}" class="text-success"><i class="fas fa-edit"></i>&nbsp;Editer</a>
+                                            <button type="button" data-toggle="modal" data-target="#imprimerModal" th:attr="data-target='#imprimerModal'+${item?.id}" class="text-secondary"><i class="fas fa-print"></i>&nbsp;Imprimer</button>
                                         </td>
+                                        <div class="modal fade" th:id="imprimerModal+${item?.id}" tabindex="-1" role="dialog" aria-labelledby="imprimerModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <form th:action="@{/percepteur/mouvements/print/}+${item.id}" autocomplete="off" method="get"  class="form-horizontal">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="imprimerModalLabel">Impression bon de caisse <span th:text="${item.libelle}"></span></h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body card-block">
+                                                            <div class="form-group row">
+                                                                <div class="col-md-4">
+                                                                    <label>Nom de l'imprimante</label>
+                                                                </div>
+                                                                <div class="col-md-8">
+                                                                    <input type="text" name="printerName" placeholder="Entrer le nom de l'imprimante" class="form-control">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                                                            <button type="submit" class="btn btn-primary">Imprimer</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -149,30 +180,17 @@
     </div>
 
     <!-- modal medium -->
-    <div class="modal fade" id="addMouvementModal" tabindex="-1" role="dialog" aria-labelledby="addMouvementModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addMouvementEntrerModal" tabindex="-1" role="dialog" aria-labelledby="addMouvementEntrerModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form th:action="@{/percepteur/mouvements/save/}+${caisse.id}" autocomplete="off" method="post" th:object="${mouvement}" class="form-horizontal">
+                <form th:action="@{/percepteur/mouvements/save/entree/}+${caisse.id}" autocomplete="off" method="post" th:object="${mouvement}" class="form-horizontal">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addModalLabel">Nouveau mouvement de caisse</h5>
+                        <h5 class="modal-title" id="addModalLabel">Nouveau mouvement de caisse (ENTRER)</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body card-block">
-                        <div class="row form-group">
-                            <div class="col col-md-3">
-                                <label  class=" form-control-label">Type de mouvement </label>
-                            </div>
-                            <div class="col-12 col-md-9">
-                                <select th:field="*{type}" class="form-control">
-                                    <option value="">--Choisir un type ici--</option>
-                                    <option  th:value="${'ENTREE'}" th:text="${'ENTREE'}"></option>
-                                    <option  th:value="${'SORTIE'}" th:text="${'SORTIE'}"></option>
-                                </select>
-                                <small class="form-text text-muted" >Mouvement de caisse</small>
-                            </div>
-                        </div>
                         <div class="row form-group">
                             <div class="col col-md-3">
                                 <label for="text-nom" class=" form-control-label">Libelle</label>
@@ -189,6 +207,45 @@
                             </div>
                             <div class="col-12 col-md-9">
                                 <input type="text" id="text-montant" name="montant" placeholder="Montant" class="form-control">
+                                <small class="form-text text-muted">Montant du mouvement de caisse</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Retour</button>
+                        <button type="submit" class="btn btn-primary">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addMouvementSortieModal" tabindex="-1" role="dialog" aria-labelledby="addMouvementSortieModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form th:action="@{/percepteur/mouvements/save/sortie/}+${caisse.id}" autocomplete="off" method="post" th:object="${mouvement}" class="form-horizontal">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addMouvementSortieLabel">Nouveau mouvement de caisse (SORTIE)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body card-block">
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-nom1" class=" form-control-label">Libelle</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="text" id="text-nom1" th:field="*{libelle}" placeholder="Nom" class="form-control">
+                                <small class="form-text text-muted">Motif du mouvement de caisse</small>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label  class=" form-control-label">Montant</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input type="text" id="text-montant1" name="montant" placeholder="Montant" class="form-control">
                                 <small class="form-text text-muted">Montant du mouvement de caisse</small>
                             </div>
                         </div>

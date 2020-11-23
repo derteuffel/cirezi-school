@@ -11,6 +11,11 @@ import com.derteuffel.school.repositories.*;
 import com.derteuffel.school.services.CompteService;
 import com.derteuffel.school.services.Mail;
 import com.derteuffel.school.services.Multipart;
+import com.derteuffel.school.services.Printer;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -22,9 +27,14 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by user on 23/03/2020.
@@ -315,8 +325,9 @@ public class PercepteurLoginController {
         String annee = format.format(new Date());
         String mois = formatMois.format(new Date());
         Caisse caisse = caisseRepository.findByStatus(true);
+        Mouvement mouvement = new Mouvement();
         if(caisse != null){
-            Mouvement mouvement = new Mouvement();
+
             mouvement.setType("ENTREE");
             mouvement.setNumMouvement((mouvementRepository.findAllByCaisse_Id(caisse.getId()).size()+1)+"");
             mouvement.setCaisse(caisse);
@@ -360,7 +371,6 @@ public class PercepteurLoginController {
             }
             caisse1.setAnnee(Integer.parseInt(annee));
             caisseRepository.save(caisse1);
-            Mouvement mouvement = new Mouvement();
             mouvement.setSoldeFin(caisse1.getSoldeFinMois());
             mouvement.setMontant(Double.parseDouble(montant));
             mouvement.setLibelle("Versement Montant : "+motif);
@@ -369,6 +379,79 @@ public class PercepteurLoginController {
             mouvement.setType("ENTREE");
             mouvementRepository.save(mouvement);
         }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+        String printerName = "Canon iR-ADV C5535/5540 UFR II";
+
+        String filePath = location+mouvement.getNumMouvement()+"_"+sdf.format(mouvement.getCreatedDate())+".pdf";
+        Document document = new Document(PageSize.A5, 5, 5, 5, 5);
+        try{
+            PdfWriter.getInstance(document,new FileOutputStream(new File((filePath).toString())));
+            document.open();
+            Paragraph para1 = new Paragraph("LYCEE CIREZI");
+            para1.setAlignment(Paragraph.ALIGN_CENTER);
+            para1.setFont(new Font(Font.FontFamily.TIMES_ROMAN, 4, Font.BOLD,
+                    BaseColor.GREEN));
+            para1.setSpacingAfter(10);
+            document.add(para1);
+
+            Paragraph paragraph = new Paragraph("Ecole Conventionnelle Catholique. \n");
+            paragraph.setSpacingAfter(10);
+            Paragraph paragraph1 = new Paragraph("B.P.  2276      Bukavu\n");
+            paragraph1.setSpacingAfter(10);
+            Paragraph paragraph2 = new Paragraph("SECOPE  :   6001299 \n");
+            paragraph2.setSpacingAfter(10);
+            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU 21/02/2005");
+            paragraph.setAlignment(Paragraph.ALIGN_CENTER);
+            paragraph1.setAlignment(Paragraph.ALIGN_LEFT);
+            paragraph2.setAlignment(Paragraph.ALIGN_LEFT);
+            paragraph3.setAlignment(Paragraph.ALIGN_CENTER);
+            paragraph.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph1.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph2.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph3.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            document.add(paragraph);
+            document.add(paragraph1);
+            document.add(paragraph2);
+            document.add(paragraph3);
+            Paragraph line = new Paragraph("----------------------------------------------------------------");
+            line.setAlignment(Element.ALIGN_CENTER);
+            document.add(line);
+            document.add(new Paragraph("Bon de caisse :   "+mouvement.getType().toUpperCase()));
+            document.add(new Paragraph("Numero  :  "+mouvement.getNumMouvement()));
+            document.add(new Paragraph("Nom et Prenom  :  "+paiement.getEleve().getName()+" "+paiement.getEleve().getPrenom()));
+            document.add(new Paragraph("Classe  :  "+paiement.getEleve().getSalle().getNiveau()));
+
+            PdfPTable table = new PdfPTable(4);
+            table.setWidthPercentage(100.0f);
+            table.setWidths(new float[] {3.0f, 2.0f,2.0f,2.0f});
+            table.setSpacingBefore(10);
+            table.setSpacingAfter(20f);
+            table.setSpacingBefore(20f);
+            // define font for table header row
+            Font font = FontFactory.getFont(FontFactory.HELVETICA);
+            font.setColor(BaseColor.WHITE);
+            addTableHeader(table);
+            table.addCell("1");
+            table.addCell(mouvement.getLibelle());
+            table.addCell("1");
+            table.addCell(mouvement.getMontant().toString()+" $");
+            System.out.println("inside the table");
+
+            document.add(table);
+            document.add(new Paragraph("Fait le  :  "+sdf1.format(new Date())));
+            document.add(new Paragraph("Signature Caisse  "));
+            document.close();
+            System.out.println("the job is done!!!");
+
+        } catch (FileNotFoundException | DocumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Printer printer = new Printer();
+        printer.print(filePath,printerName);
         return "redirect:/percepteur/classe/eleves/payment/lists/"+paiement.getEleve().getSalle().getId();
     }
 
@@ -632,14 +715,14 @@ public class PercepteurLoginController {
         return "redirect:/percepteur/mouvements/detail/"+newCaisse.getId();
     }
 
-    @PostMapping("/mouvements/save/{id}")
-    public String saveMouvement(Mouvement mouvement, @PathVariable Long id, RedirectAttributes redirectAttributes,
+    @PostMapping("/mouvements/save/{type}/{id}")
+    public String saveMouvement(Mouvement mouvement, @PathVariable Long id,@PathVariable String type, RedirectAttributes redirectAttributes,
                                 String montant){
         Caisse caisse = caisseRepository.getOne(id);
         mouvement.setCaisse(caisse);
         mouvement.setMontant(Double.parseDouble(montant));
         mouvement.setNumMouvement(""+(mouvementRepository.findAll().size()+1));
-        if (mouvement.getType().equals("ENTREE")){
+        if (type.equals("entree")){
             mouvement.setSoldeFin(caisse.getSoldeFinMois()+mouvement.getMontant());
             caisse.setSoldeFinMois(mouvement.getSoldeFin());
             caisse.setMouvementMensuel(caisse.getMouvementMensuel()+mouvement.getMontant());
@@ -648,6 +731,7 @@ public class PercepteurLoginController {
             caisse.setSoldeFinMois(mouvement.getSoldeFin());
             caisse.setMouvementMensuel(caisse.getMouvementMensuel()-mouvement.getMontant());
         }
+        mouvement.setType(type.toUpperCase());
 
         caisseRepository.save(caisse);
         mouvementRepository.save(mouvement);
@@ -672,15 +756,13 @@ public class PercepteurLoginController {
         Caisse caisse = mouvement1.getCaisse();
         mouvement1.setType(mouvement.getType());
 
-        if (mouvement.getType().equals("ENTREE")){
-            mouvement1.setType(mouvement.getType());
+        if (mouvement1.getType().equals("ENTREE")){
             mouvement1.setSoldeFin(caisse.getSoldeFinMois()-mouvement1.getMontant()+mouvement.getMontant());
             caisse.setSoldeFinMois(mouvement1.getSoldeFin());
             caisse.setMouvementMensuel(caisse.getMouvementMensuel()-mouvement1.getMontant()+mouvement.getMontant());
             mouvement1.setMontant(mouvement.getMontant());
 
         }else {
-            mouvement1.setType(mouvement.getType());
             mouvement1.setSoldeFin(caisse.getSoldeFinMois()+mouvement1.getMontant()-mouvement.getMontant());
             caisse.setSoldeFinMois(mouvement1.getSoldeFin());
             caisse.setMouvementMensuel(caisse.getMouvementMensuel()+mouvement1.getMontant()-mouvement.getMontant());
@@ -695,6 +777,104 @@ public class PercepteurLoginController {
 
     }
 
+    @GetMapping("/mouvements/print/{id}")
+    public String producePrinter(Model model, @PathVariable Long id, String printerName){
+
+        Mouvement mouvement = mouvementRepository.getOne(id);
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
+
+        String filePath = location+mouvement.getNumMouvement()+"_"+sdf.format(mouvement.getCreatedDate())+".pdf";
+        Document document = new Document(PageSize.A5, 5, 5, 5, 5);
+        try{
+            PdfWriter.getInstance(document,new FileOutputStream(new File((filePath).toString())));
+            document.open();
+            Paragraph para1 = new Paragraph("LYCEE CIREZI");
+            para1.setAlignment(Paragraph.ALIGN_CENTER);
+            para1.setFont(new Font(Font.FontFamily.TIMES_ROMAN, 4, Font.BOLD,
+                    BaseColor.GREEN));
+            para1.setSpacingAfter(10);
+            document.add(para1);
+
+            Paragraph paragraph = new Paragraph("Ecole Conventionnelle Catholique. \n");
+            paragraph.setSpacingAfter(10);
+            Paragraph paragraph1 = new Paragraph("B.P.  2276      Bukavu\n");
+            paragraph1.setSpacingAfter(10);
+            Paragraph paragraph2 = new Paragraph("SECOPE  :   6001299 \n");
+            paragraph2.setSpacingAfter(10);
+            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU 21/02/2005");
+            paragraph.setAlignment(Paragraph.ALIGN_CENTER);
+            paragraph1.setAlignment(Paragraph.ALIGN_LEFT);
+            paragraph2.setAlignment(Paragraph.ALIGN_LEFT);
+            paragraph3.setAlignment(Paragraph.ALIGN_CENTER);
+            paragraph.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph1.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph2.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph3.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            document.add(paragraph);
+            document.add(paragraph1);
+            document.add(paragraph2);
+            document.add(paragraph3);
+            Paragraph line = new Paragraph("----------------------------------------------------------------");
+            line.setAlignment(Element.ALIGN_CENTER);
+            document.add(line);
+            document.add(new Paragraph("Bon de caisse :   "+mouvement.getType().toUpperCase()));
+            document.add(new Paragraph("Numero  :  "+mouvement.getNumMouvement()));
+
+            PdfPTable table = new PdfPTable(4);
+            table.setWidthPercentage(100.0f);
+            table.setWidths(new float[] {3.0f, 2.0f,2.0f,2.0f});
+            table.setSpacingBefore(10);
+            table.setSpacingAfter(20f);
+            table.setSpacingBefore(20f);
+            // define font for table header row
+            Font font = FontFactory.getFont(FontFactory.HELVETICA);
+            font.setColor(BaseColor.WHITE);
+            addTableHeader(table);
+                table.addCell("1");
+                table.addCell(mouvement.getLibelle());
+                table.addCell("1");
+                table.addCell(mouvement.getMontant().toString()+" $");
+                System.out.println("inside the table");
+
+            document.add(table);
+            document.close();
+            System.out.println("the job is done!!!");
+
+        } catch (FileNotFoundException | DocumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Printer printer = new Printer();
+        printer.print(filePath,printerName);
+
+        return "redirect:/percepteur/mouvements/detail/"+mouvement.getCaisse().getId();
+    }
+
+    static void addTableHeader(PdfPTable table) {
+        Stream.of("Index", "Libelle", "Quantite","Montant")
+                .forEach(columnTitle -> {
+                    PdfPCell header = new PdfPCell();
+                    header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                    header.setBorderWidth(2);
+                    header.setPadding(5);
+                    header.setPhrase(new Phrase(columnTitle));
+                    table.addCell(header);
+                });
+    }
+
+    static void addTableHeaderSalaire(PdfPTable table) {
+        Stream.of( "Libelle","Montant")
+                .forEach(columnTitle -> {
+                    PdfPCell header = new PdfPCell();
+                    header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                    header.setBorderWidth(2);
+                    header.setPadding(5);
+                    header.setPhrase(new Phrase(columnTitle));
+                    table.addCell(header);
+                });
+    }
+
 
     @GetMapping("/staffs/salaire/detail/{id}")
     public String detailSalaireStaff(@PathVariable Long id, Model model){
@@ -703,6 +883,117 @@ public class PercepteurLoginController {
         model.addAttribute("salaire", salaire);
         model.addAttribute("compte",compte);
         return "percepteur/salairesDetailStaff";
+    }
+
+    @GetMapping("/salaire/detail/print/{id}")
+    public String producePrinterSalaire(Model model, @PathVariable Long id, String printerName){
+
+        Salaire salaire = salaireRepository.getOne(id);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String filePath = location+salaire.getNumBuletin()+"_"+salaire.getDatePaiement()+".pdf";
+
+        Document document = new Document(PageSize.A5, 5, 5, 10, 10);
+        try{
+            PdfWriter.getInstance(document,new FileOutputStream(new File((filePath).toString())));
+            document.open();
+            Paragraph para1 = new Paragraph("LYCEE CIREZI");
+            para1.setAlignment(Paragraph.ALIGN_CENTER);
+            para1.setFont(new Font(Font.FontFamily.TIMES_ROMAN, 4, Font.BOLD,
+                    BaseColor.GREEN));
+            para1.setSpacingAfter(10);
+            document.add(para1);
+
+            Paragraph paragraph = new Paragraph("Ecole Conventionnelle Catholique. \n");
+            paragraph.setSpacingAfter(10);
+            Paragraph paragraph1 = new Paragraph("B.P.  2276      Bukavu\n");
+            paragraph1.setSpacingAfter(10);
+            Paragraph paragraph2 = new Paragraph("SECOPE  :   6001299 \n");
+            paragraph2.setSpacingAfter(10);
+            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU 21/02/2005");
+            paragraph.setAlignment(Paragraph.ALIGN_CENTER);
+            paragraph1.setAlignment(Paragraph.ALIGN_LEFT);
+            paragraph2.setAlignment(Paragraph.ALIGN_LEFT);
+            paragraph3.setAlignment(Paragraph.ALIGN_CENTER);
+            paragraph.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph1.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph2.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph3.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            document.add(paragraph);
+            document.add(paragraph1);
+            document.add(paragraph2);
+            document.add(paragraph3);
+            Paragraph line = new Paragraph("----------------------------------------------------------------");
+            line.setAlignment(Element.ALIGN_CENTER);
+            document.add(line);
+            document.add(new Paragraph("Bulletin de paie Numero :   "+salaire.getNumBuletin()));
+            if (salaire.getCompte()!= null) {
+                document.add(new Paragraph("Nom et prenom  :  " + salaire.getCompte().getUsername()));
+            }else {
+                document.add(new Paragraph("Nom et prenom  :  " + salaire.getEnseignant().getName()+" "+salaire.getEnseignant().getPrenom()));
+            }
+            document.add(new Paragraph("Paiement du Mois de  :  "+salaire.getMois()));
+            document.add(new Paragraph("Date  :  "+salaire.getDatePaiement()));
+
+            PdfPTable table = new PdfPTable(2);
+            table.setWidthPercentage(100.0f);
+            table.setWidths(new float[] {3.0f, 2.0f});
+            table.setSpacingBefore(10);
+            table.setSpacingAfter(20f);
+            table.setSpacingBefore(20f);
+            // define font for table header row
+            Font font = FontFactory.getFont(FontFactory.HELVETICA);
+            font.setColor(BaseColor.WHITE);
+            addTableHeaderSalaire(table);
+            table.addCell("Salaire de base");
+            table.addCell(salaire.getSalaireBase().toString()+" $");
+            table.addCell("Housing");
+            table.addCell(salaire.getHousing().toString()+" $");
+            table.addCell("Allocation familliale");
+            table.addCell(salaire.getAllocationFamilliale().toString()+" $");
+            table.addCell("Allocation transport");
+            table.addCell(salaire.getAllocationTransport().toString()+" $");
+            table.addCell("Salaire brut");
+            table.addCell(salaire.getSalaireBrut().toString()+" $");
+            table.addCell("Taxe IPR(10% salaire de base)");
+            table.addCell(salaire.getTaxe().toString()+" $");
+            table.addCell("Mutuelle de sante(5% de salaire brut)");
+            table.addCell(salaire.getMutuelleSante().toString()+" $");
+            table.addCell("Contribution CNSS(3.5% du salaire brut)");
+            table.addCell(salaire.getCnss().toString()+" $");
+            table.addCell("Cafeteriat");
+            table.addCell(salaire.getCafeteriat().toString()+" $");
+            table.addCell("Remboursement mensuel");
+            table.addCell(salaire.getRemboursementMensuelle().toString()+" $");
+            table.addCell("Net a payer");
+            table.addCell(salaire.getNetPaie().toString()+" $");
+            table.addCell("Avance salaire");
+            table.addCell(salaire.getAvanceSalaire().toString()+" $");
+            table.addCell("Salaire net");
+            table.addCell(salaire.getSalaireNet().toString()+" $");
+            System.out.println("inside the table");
+
+            document.add(table);
+            document.add(new Paragraph("Fait a Bukavu le : "+sdf.format(new Date())));
+            document.add(new Paragraph("Recu par :                         Signature du staff"));
+            document.add(new Paragraph(""));
+            document.add(new Paragraph("Signature de la caisse"));
+            document.close();
+            System.out.println("the job is done!!!");
+
+        } catch (FileNotFoundException | DocumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Printer printer = new Printer();
+        printer.print(filePath,printerName);
+
+        if (salaire.getCompte()!=null) {
+            return "redirect:/percepteur/staffs/salaire/detail/"+salaire.getId();
+        }else {
+            return "redirect:/percepteur/enseignants/salaire/detail/"+salaire.getId();
+        }
     }
 
 

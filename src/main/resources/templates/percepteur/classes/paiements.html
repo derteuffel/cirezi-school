@@ -100,7 +100,7 @@
                                             <td th:text="${item?.totalPayer+' $'}"></td>
                                             <td th:text="${item?.solde+' $'}"></td>
                                             <td>
-                                                <button type="button" data-toggle="modal" data-target="#addModal" th:attr="data-target='#addModal'+${item?.id}" class="text-success"><i class="fa fa-plus"></i></button>
+                                                <button type="button" data-toggle="modal" data-target="#addModal" th:attr="data-target='#addModal'+${item?.id}" class="text-success"><i class="fa fa-plus"></i>&nbsp;&nbsp;Ajouter</button>
                                             </td>
                                             <div  class="modal fade" th:id="addModal+${item?.id}" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg" role="document">
@@ -141,7 +141,7 @@
                                                             </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                                <button  class="btn btn-primary" type="submit">Enregistrer</button>
+                                                                <button  class="btn btn-primary" type="submit">Enregistrer et imprimer</button>
                                                             </div>
                                                         </form>
                                                     </div>

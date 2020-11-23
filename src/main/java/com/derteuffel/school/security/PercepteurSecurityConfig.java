@@ -66,7 +66,7 @@ public class PercepteurSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/vendor/**",
                         "/fonts/**",
                         "/downloadFile/**",
-                        "/upload-dir/**",
+                        "/src/main/resources/static/upload-dir/**",
                         "/images/**",
                         "/static/**",
                         "/ecole/connexion",
