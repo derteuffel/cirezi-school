@@ -33,6 +33,8 @@ public class Hebdo implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fin;
 
+    private String filePath;
+
     @ManyToMany(fetch = FetchType.LAZY)
     private Collection<Salle> salles;
 
@@ -40,5 +42,60 @@ public class Hebdo implements Serializable {
     private Compte compte;
 
 
+    public Hebdo() {
+    }
 
+    public Hebdo(Date debut, Date fin, String filePath) {
+        this.debut = debut;
+        this.fin = fin;
+        this.filePath = filePath;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getDebut() {
+        return debut;
+    }
+
+    public void setDebut(Date debut) {
+        this.debut = debut;
+    }
+
+    public Date getFin() {
+        return fin;
+    }
+
+    public void setFin(Date fin) {
+        this.fin = fin;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public Collection<Salle> getSalles() {
+        return salles;
+    }
+
+    public void setSalles(Collection<Salle> salles) {
+        this.salles = salles;
+    }
+
+    public Compte getCompte() {
+        return compte;
+    }
+
+    public void setCompte(Compte compte) {
+        this.compte = compte;
+    }
 }

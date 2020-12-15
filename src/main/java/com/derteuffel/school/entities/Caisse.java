@@ -23,18 +23,20 @@ public class Caisse implements Serializable{
     private Double soldeFinMois;
     private Double mouvementMensuel;
     private Boolean status;
+    private String filePath;
 
     public Caisse() {
     }
 
     public Caisse(String mois, int annee, Double soldeDebutmois, Double soldeFinMois,
-                  Double mouvementMensuel, Boolean status) {
+                  Double mouvementMensuel, Boolean status, String filePath) {
         this.mois = mois;
         this.annee = annee;
         this.soldeDebutmois = soldeDebutmois;
         this.soldeFinMois = soldeFinMois;
         this.mouvementMensuel = mouvementMensuel;
         this.status = status;
+        this.filePath = filePath;
     }
 
     public Long getId() {
@@ -91,5 +93,13 @@ public class Caisse implements Serializable{
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

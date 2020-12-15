@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 @Data
 @Entity
@@ -24,6 +25,7 @@ public class Paiement implements Serializable{
     private Double accountSport = 0.0;
     private Double totalPayer = 0.0;
     private Double solde = 0.0;
+    private ArrayList<String> filePaths = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     private Eleve eleve;
@@ -32,7 +34,7 @@ public class Paiement implements Serializable{
     }
 
     public Paiement(String category, Double coutTotal, Double accountTrimestrePremier, Double accountTrimestreSecond, Double accountTrimestreTroisieme,
-                    Double accountBibliotheque, Double accountSport, Double totalPayer, Double solde) {
+                    Double accountBibliotheque, Double accountSport, Double totalPayer, Double solde, ArrayList<String> filePaths) {
         this.category = category;
         this.coutTotal = coutTotal;
         this.accountTrimestrePremier = accountTrimestrePremier;
@@ -42,6 +44,7 @@ public class Paiement implements Serializable{
         this.accountSport = accountSport;
         this.totalPayer = totalPayer;
         this.solde = solde;
+        this.filePaths = filePaths;
     }
 
     public Long getId() {
@@ -133,5 +136,13 @@ public class Paiement implements Serializable{
 
     public void setEleve(Eleve eleve) {
         this.eleve = eleve;
+    }
+
+    public ArrayList<String> getFilePaths() {
+        return filePaths;
+    }
+
+    public void setFilePaths(ArrayList<String> filePaths) {
+        this.filePaths = filePaths;
     }
 }

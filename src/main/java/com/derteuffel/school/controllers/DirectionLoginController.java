@@ -5,11 +5,16 @@ import com.derteuffel.school.enums.EPeriode;
 import com.derteuffel.school.enums.ERole;
 import com.derteuffel.school.enums.EType;
 import com.derteuffel.school.enums.EVisibilite;
+import com.derteuffel.school.exports.MouvementExport;
 import com.derteuffel.school.helpers.*;
 import com.derteuffel.school.repositories.*;
 import com.derteuffel.school.services.CompteService;
 import com.derteuffel.school.services.Mail;
 import com.derteuffel.school.services.Multipart;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -24,9 +29,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by user on 23/03/2020.
@@ -72,6 +83,9 @@ public class DirectionLoginController {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private MouvementExport mouvementExport;
 
     @Autowired
     private Multipart multipart;
@@ -844,6 +858,130 @@ public class DirectionLoginController {
         return "direction/classes/hebdo";
     }
 
+
+    @GetMapping("/hebdo/pdf/produce/{id}/{salleId}")
+    public String hebdoProducePdf(@PathVariable Long id, @PathVariable Long salleId) throws IOException, BadElementException {
+        Hebdo hebdo = hebdoRepository.getOne(id);
+        Salle salle = salleRepository.getOne(salleId);
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
+        Collection<Planning> plannings = planningRepository.findAllByHebdo_Id(hebdo.getId());
+        String image = location+"cirezi-picture.jpg";
+        Image image1 = Image.getInstance(image);
+        image1.scaleToFit(50,50);
+        image1.setPaddingTop(30);
+        String filePath = location+sdf.format(hebdo.getDebut())+"_"+sdf.format(hebdo.getFin())+".pdf";
+        Document document = new Document(PageSize.A4, 10, 10, 10, 10);
+        try{
+            PdfWriter.getInstance(document,new FileOutputStream(new File((filePath).toString())));
+            document.open();
+            Paragraph para1 = new Paragraph("LYCEE CIREZI");
+            para1.setAlignment(Paragraph.ALIGN_CENTER);
+            para1.setFont(new Font(Font.FontFamily.TIMES_ROMAN, 4, Font.BOLD,
+                    BaseColor.GREEN));
+            para1.setSpacingAfter(10);
+            document.add(para1);
+            document.add(image1);
+
+            Paragraph paragraph = new Paragraph("Ecole Conventionnelle Catholique. \n");
+            paragraph.setSpacingAfter(10);
+            Paragraph paragraph1 = new Paragraph("B.P.  2276      Bukavu\n");
+            paragraph1.setSpacingAfter(10);
+            Paragraph paragraph2 = new Paragraph("SECOPE  :   6001299 \n");
+            paragraph2.setSpacingAfter(10);
+            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU\n\n"+" 21/02/2005");
+            paragraph.setAlignment(Paragraph.ALIGN_CENTER);
+            paragraph1.setAlignment(Paragraph.ALIGN_LEFT);
+            paragraph2.setAlignment(Paragraph.ALIGN_LEFT);
+            paragraph3.setAlignment(Paragraph.ALIGN_CENTER);
+            paragraph.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph1.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph2.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            paragraph3.setFont(new Font(Font.FontFamily.TIMES_ROMAN,4,Font.BOLD));
+            document.add(paragraph);
+            document.add(paragraph1);
+            document.add(paragraph2);
+            document.add(paragraph3);
+            Paragraph line = new Paragraph("----------------------------------------------------------------");
+            line.setAlignment(Element.ALIGN_CENTER);
+            document.add(line);
+            document.add(new Paragraph("Programme hebdomadaire"));
+            document.add(new Paragraph("Classe  :  "+salle.getNiveau()));
+
+            PdfPTable table = new PdfPTable(7);
+            table.setWidthPercentage(100.0f);
+            table.setWidths(new float[] {14.28f, 14.28f,14.28f,14.28f,14.28f,14.28f,14.28f});
+            table.setSpacingBefore(10);
+            table.setSpacingAfter(20f);
+            table.setSpacingBefore(20f);
+            // define font for table header row
+
+            Font font = FontFactory.getFont(FontFactory.HELVETICA);
+            font.setColor(BaseColor.WHITE);
+            addTableHeader(table);
+
+            for (Planning planning : plannings){
+                table.addCell(planning.getHeureDebut()+" - "+ planning.getHeureFin());
+                if (planning.getDate().contains("Lundi")) {
+                    table.addCell(planning.getCours());
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                }else if (planning.getDate().contains("Mardi")) {
+                    table.addCell("");
+                    table.addCell(planning.getCours());
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                }else if (planning.getDate().contains("Mercredi")) {
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell(planning.getCours());
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                }else if (planning.getDate().contains("Jeudi")) {
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell(planning.getCours());
+                    table.addCell("");
+                    table.addCell("");
+                }else if (planning.getDate().contains("Vendredi")) {
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell(planning.getCours());
+                    table.addCell("");
+                }else {
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell("");
+                    table.addCell(planning.getCours());
+                }
+            }
+
+            System.out.println("inside the table");
+
+            document.add(table);
+            document.close();
+            System.out.println("the job is done!!!");
+            hebdo.setFilePath("/upload-dir/"+sdf.format(hebdo.getDebut())+"_"+sdf.format(hebdo.getFin())+".pdf");
+            hebdoRepository.save(hebdo);
+
+        } catch (FileNotFoundException | DocumentException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/direction/classes/planning/lists/"+hebdo.getId()+"/"+salleId;
+    }
+
     @GetMapping("/programme/hebdo/detail/{id}")
     public String detailHebdoPlanning(Model model, @PathVariable Long id, HttpServletRequest request){
         Principal principal = request.getUserPrincipal();
@@ -915,6 +1053,18 @@ public class DirectionLoginController {
         planningRepository.save(planning);
         redirectAttributes.addFlashAttribute("success", "vous avez ajouté une nouvelle journée avec succès");
         return "redirect:/direction/classes/planning/lists/"+ hebdo.getId()+"/"+salle.getId();
+    }
+
+    static void addTableHeader(PdfPTable table) {
+        Stream.of("", "Lundi", "Mardi","Mercredi","Jeudi","Vendredi","Samedi")
+                .forEach(columnTitle -> {
+                    PdfPCell header = new PdfPCell();
+                    header.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                    header.setBorderWidth(2);
+                    header.setPadding(5);
+                    header.setPhrase(new Phrase(columnTitle));
+                    table.addCell(header);
+                });
     }
 
     @PostMapping("/programme/planning/save/{id}")
@@ -1096,66 +1246,6 @@ public class DirectionLoginController {
 
 
 
-
-
-    /*@GetMapping("/presence/add/{id}")
-    public String presenceNew(Model model, @PathVariable Long id){
-
-        Collection<Presence> presences = new ArrayList<Presence>();
-
-        Hebdo hebdo = hebdoRepository.getOne(id);
-        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(hebdo.getSalle().getId());
-        Collection<Presence> existPresence = presenceRepository.findAllByDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-
-
-        if (existPresence.size() > 0) {
-            presences.addAll(existPresence);
-        } else {
-            for (Eleve eleve : eleves) {
-                Presence presence = new Presence();
-
-                presence.setHebdo(hebdo);
-                presence.setDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-                presence.setEleve(eleve);
-                presenceRepository.save(presence);
-                presences.add(presence);
-            }
-        }
-        System.out.println(presences);
-
-        PresenceForm presenceForm = new PresenceForm();
-        presenceForm.setPresences(presences);
-        model.addAttribute("lists",eleves);
-        model.addAttribute("hebdo",hebdo);
-        model.addAttribute("presenceForm", presenceForm);
-        model.addAttribute("classe",hebdo.getSalle());
-        return "direction/classes/presenceNew";
-
-    }
-
-    @GetMapping("/presence/activate/{id}")
-    public String presenceSave( @PathVariable Long id){
-        Presence presence = presenceRepository.getOne(id);
-        if (presence.getStatus() != true){
-            System.out.println("je suis ici");
-            presence.setStatus(true);
-        }else {
-            presence.setStatus(false);
-        }
-        presenceRepository.save(presence);
-        return "redirect:/direction/presence/add/"+presence.getHebdo().getId();
-    }
-
-
-    @GetMapping("/presence/detail/{id}")
-    public String getPresence(@PathVariable Long id, Model model, HttpServletRequest request){
-        Presence presence = presenceRepository.getOne(id);
-        model.addAttribute("presence",presence);
-        model.addAttribute("classe",presence.getHebdo().getSalle());
-        model.addAttribute("hebdo",presence.getHebdo());
-        return "direction/classes/presenceDetail";
-    }*/
-
     @GetMapping("/account/detail/{id}")
     public String getAccount(@PathVariable Long id, Model model){
         Compte compte = compteRepository.getOne(id);
@@ -1300,18 +1390,76 @@ public class DirectionLoginController {
     }
 
 
+    @GetMapping("/classes/recapitulatif/eleves/bulletins/lists/{id}")
+    public String produceAllBulletin(@PathVariable Long id)throws IOException, BadElementException{
+        Salle salle = salleRepository.getOne(id);
+
+        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salle.getId());
+
+        for (Eleve eleve : eleves){
+            mouvementExport.printBulletin(eleve.getId(),salle.getId());
+            System.out.println("Produce bulletin for "+eleve.getName()+" "+eleve.getPrenom());
+        }
+
+        return "redirect:/direction/classes/recapitulatif/eleves/lists/"+salle.getId();
+    }
+
+
 
     @GetMapping("/classes/recapitulatif/eleves/note/detail/{id}/{salleId}")
     public String recapitulatifDetail(@PathVariable Long id, @PathVariable Long salleId, Model model){
 
+        Float totalPremierePeriode = 0f;
+        Float totalTroisiemePeriode = 0f;
+        Float totalPremierExamen = 0f;
+        Float totalPremierSemestre = 0f;
+        Float totalDeuxiemeSemestre = 0f;
+        Float totalDeuxiemePeriode = 0f;
+        Float totalQuatriemePeriode = 0f;
+        Float totalDeuxiemeExamen = 0f;
+        Float totalGenerale = 0f;
+        int totalMaxPeriode = 0;
+        int totalMaxExamen = 0;
         Eleve eleve = eleveRepository.getOne(id);
         Salle salle = salleRepository.getOne(salleId);
         model.addAttribute("classe", salle);
         List<Note> notes = noteRepository.findAllByEleve_Id(eleve.getId());
+        for (Note note : notes){
+            totalPremierePeriode +=note.getPremierePeriode();
+            totalDeuxiemePeriode +=note.getDeuxiemePeriode();
+            totalTroisiemePeriode +=note.getTroisiemePeriode();
+            totalQuatriemePeriode +=note.getQuatriemePeriode();
+            totalDeuxiemeExamen +=note.getExameSecond();
+            totalPremierExamen +=note.getExamePremier();
+            totalPremierSemestre +=note.getTotalSemestrePremier();
+            totalDeuxiemeSemestre +=note.getTotalSemestreSecond();
+            totalMaxPeriode +=note.getMaxPeriode();
+            totalMaxExamen +=note.getExamen();
+            totalGenerale += note.getTotalGeneral();
+        }
+        model.addAttribute("totalPremierePeriode",totalPremierePeriode);
+        model.addAttribute("totalPremierSemestre",totalPremierSemestre);
+        model.addAttribute("totalDeuxiemeSemestre",totalDeuxiemeSemestre);
+        model.addAttribute("totalDeuxiemePeriode",totalDeuxiemePeriode);
+        model.addAttribute("totalDeuxiemeExamen",totalDeuxiemeExamen);
+        model.addAttribute("totalPremierExamen",totalPremierExamen);
+        model.addAttribute("totalQuatriemePeriode",totalQuatriemePeriode);
+        model.addAttribute("totalTroisiemePeriode",totalTroisiemePeriode);
+        model.addAttribute("totalMaxPeriode",totalMaxPeriode);
+        model.addAttribute("totalMaxExamen",totalMaxExamen);
+        model.addAttribute("totalGenerale",totalGenerale);
         model.addAttribute("lists", notes);
         model.addAttribute("eleve", eleve);
         return "direction/classes/recapitulatifDetail";
     }
+
+    @GetMapping("/classes/recapitulatif/eleves/note/print/{id}/{salleId}")
+    public String recapitulatifDetailPrint(@PathVariable Long id, @PathVariable Long salleId) throws IOException, BadElementException {
+
+        mouvementExport.printBulletin(id,salleId);
+        return "redirect:/direction/classes/recapitulatif/eleves/note/detail/{id}/{salleId}";
+    }
+    
 
     @GetMapping("/classes/eleve/note/detail/{id}/{matiereId}")
     public String noteDetail(@PathVariable Long id, @PathVariable Long matiereId, Model model){

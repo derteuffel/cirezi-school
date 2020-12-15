@@ -72,6 +72,7 @@
                             <hr>
                             <h5 class="title-1"><span th:text="${'Programme du : '+hebdo.debut+' au : '+hebdo.fin}"></span></h5>
 
+                            <hr>
                             <div class="row"  >
                                     <table class="table table-bordered table-responsive" id="add-row">
                                         <thead>
@@ -115,6 +116,20 @@
                                         </tr>
                                         </tbody>
                                     </table>
+                            </div>
+                            <hr>
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <a th:href="@{/direction/hebdo/detail/}+${hebdo.id+'/'+classe.id}">Retour</a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a th:href="@{/direction/hebdo/pdf/produce/}+${hebdo.id+'/'+classe.id}">Produire le pdf</a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a th:href="${hebdo.filePath}">Voir le programme</a>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>

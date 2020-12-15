@@ -22,6 +22,8 @@ public class Mouvement implements Serializable{
     private Double soldeFin;
     private String numMouvement;
 
+    private String filePath;
+
     @ManyToOne
     private Caisse caisse;
 
@@ -29,13 +31,14 @@ public class Mouvement implements Serializable{
     }
 
     public Mouvement(Date createdDate, String libelle, String type,
-                     Double montant, Double soldeFin, String numMouvement) {
+                     Double montant, Double soldeFin, String numMouvement, String filePath) {
         this.createdDate = createdDate;
         this.libelle = libelle;
         this.type = type;
         this.montant = montant;
         this.soldeFin = soldeFin;
         this.numMouvement = numMouvement;
+        this.filePath = filePath;
     }
 
     public Long getId() {
@@ -100,5 +103,13 @@ public class Mouvement implements Serializable{
 
     public void setNumMouvement(String numMouvement) {
         this.numMouvement = numMouvement;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

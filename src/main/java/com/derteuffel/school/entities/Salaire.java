@@ -31,6 +31,7 @@ public class Salaire implements Serializable{
     private Double netPaie;
     private Double avanceSalaire;
     private Double salaireNet;
+    private String filePath;
 
     @ManyToOne
     private Enseignant enseignant;
@@ -41,9 +42,10 @@ public class Salaire implements Serializable{
     public Salaire() {
     }
 
-    public Salaire(int numBuletin, String mois, String datePaiement, Double salaireBrut, Double housing, Double allocationFamilliale, Double allocationTransport,
-                   Double salaireBase, Double taxe, Double mutuelleSante, Double cnss, Double cafeteriat, Double remboursementMensuelle, Double netPaie, Double avanceSalaire,
-                   Double salaireNet) {
+    public Salaire(int numBuletin, String mois, String datePaiement, Double salaireBrut, Double housing,
+                   Double allocationFamilliale, Double allocationTransport, Double salaireBase, Double taxe,
+                   Double mutuelleSante, Double cnss, Double cafeteriat, Double remboursementMensuelle,
+                   Double netPaie, Double avanceSalaire, Double salaireNet, String filePath) {
         this.numBuletin = numBuletin;
         this.mois = mois;
         this.datePaiement = datePaiement;
@@ -60,6 +62,7 @@ public class Salaire implements Serializable{
         this.netPaie = netPaie;
         this.avanceSalaire = avanceSalaire;
         this.salaireNet = salaireNet;
+        this.filePath = filePath;
     }
 
     public Long getId() {
@@ -212,5 +215,13 @@ public class Salaire implements Serializable{
 
     public void setCompte(Compte compte) {
         this.compte = compte;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

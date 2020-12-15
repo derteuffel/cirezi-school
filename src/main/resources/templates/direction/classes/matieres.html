@@ -94,9 +94,9 @@
                                             <td th:text="${item.name}"></td>
                                             <td th:text="${item.enseignant.name+' '+item.enseignant.prenom}"></td>
                                             <td>
-                                                <a th:href="@{/direction/classes/matieres/update/}+${item?.id}" class="btn"><i class="fa fa-edit"></i></a>
-                                                <a th:href="@{/direction/classes/matieres/detail/}+${item?.id+'/'+classe.id}" class="btn"><i class="fa fa-eye"></i></a>
-                                                <button type="button" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${item?.id}" class="text-danger"><i class="fas fa-trash"></i></button>
+                                                <a th:href="@{/direction/classes/matieres/update/}+${item?.id}" class="btn btn-primary m-1"><i class="fa fa-edit"></i>&nbsp;Modifier</a>
+                                                <a th:href="@{/direction/classes/matieres/detail/}+${item?.id+'/'+classe.id}" class="btn btn-success m-1"><i class="fa fa-eye"></i>&nbsp;Detail</a>
+                                                <button type="button" data-toggle="modal" data-target="#deleteModal" th:attr="data-target='#deleteModal'+${item?.id}" class="btn btn-danger m-1"><i class="fas fa-trash"></i>&nbsp;Supprimer</button>
                                             </td>
                                             <div class="modal fade" th:id="deleteModal+${item?.id}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg" role="document">

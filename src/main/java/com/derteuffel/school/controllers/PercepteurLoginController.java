@@ -12,6 +12,8 @@ import com.derteuffel.school.services.CompteService;
 import com.derteuffel.school.services.Mail;
 import com.derteuffel.school.services.Multipart;
 import com.derteuffel.school.services.Printer;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -30,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -299,7 +303,7 @@ public class PercepteurLoginController {
     }
 
     @GetMapping("/classe/eleves/add/account/{id}")
-    public String addPaiement(String motif, @PathVariable Long id, String montant){
+    public String addPaiement(String motif, @PathVariable Long id, String montant) throws IOException, BadElementException {
         Paiement paiement = paiementRepository.getOne(id);
         if (motif.equals("premier")){
             paiement.setAccountTrimestrePremier(Double.parseDouble(montant));
@@ -384,11 +388,16 @@ public class PercepteurLoginController {
         SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
         String printerName = "Canon iR-ADV C5535/5540 UFR II";
 
+        String image = location+"cirezi-picture.jpg";
+        Image image1 = Image.getInstance(image);
+        image1.scaleToFit(50,50);
+        image1.setPaddingTop(30);
         String filePath = location+mouvement.getNumMouvement()+"_"+sdf.format(mouvement.getCreatedDate())+".pdf";
-        Document document = new Document(PageSize.A5, 5, 5, 5, 5);
+        Document document = new Document(PageSize.A5, 20, 20, 10, 10);
         try{
             PdfWriter.getInstance(document,new FileOutputStream(new File((filePath).toString())));
             document.open();
+            document.add(image1);
             Paragraph para1 = new Paragraph("LYCEE CIREZI");
             para1.setAlignment(Paragraph.ALIGN_CENTER);
             para1.setFont(new Font(Font.FontFamily.TIMES_ROMAN, 4, Font.BOLD,
@@ -402,7 +411,7 @@ public class PercepteurLoginController {
             paragraph1.setSpacingAfter(10);
             Paragraph paragraph2 = new Paragraph("SECOPE  :   6001299 \n");
             paragraph2.setSpacingAfter(10);
-            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU 21/02/2005");
+            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU\n"+" 21/02/2005");
             paragraph.setAlignment(Paragraph.ALIGN_CENTER);
             paragraph1.setAlignment(Paragraph.ALIGN_LEFT);
             paragraph2.setAlignment(Paragraph.ALIGN_LEFT);
@@ -450,6 +459,17 @@ public class PercepteurLoginController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        mouvement.setFilePath("/upload-dir/"+mouvement.getNumMouvement()+"_"+sdf.format(mouvement.getCreatedDate())+".pdf");
+        mouvementRepository.save(mouvement);
+        if (paiement.getFilePaths()!=null) {
+            paiement.getFilePaths().add("/upload-dir/" + mouvement.getNumMouvement() + "_" + sdf.format(mouvement.getCreatedDate()) + ".pdf");
+        }else {
+            ArrayList<String> tmpFiles = new ArrayList<>();
+            String tmp = "/upload-dir/" + mouvement.getNumMouvement() + "_" + sdf.format(mouvement.getCreatedDate()) + ".pdf";
+            tmpFiles.add(tmp);
+            paiement.setFilePaths(tmpFiles);
+        }
+        paiementRepository.save(paiement);
         Printer printer = new Printer();
         printer.print(filePath,printerName);
         return "redirect:/percepteur/classe/eleves/payment/lists/"+paiement.getEleve().getSalle().getId();
@@ -778,13 +798,16 @@ public class PercepteurLoginController {
     }
 
     @GetMapping("/mouvements/print/{id}")
-    public String producePrinter(Model model, @PathVariable Long id, String printerName){
+    public String producePrinter(Model model, @PathVariable Long id, String printerName) throws IOException, BadElementException {
 
         Mouvement mouvement = mouvementRepository.getOne(id);
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-
+        String image = location+"cirezi-picture.jpg";
+        Image image1 = Image.getInstance(image);
+        image1.scaleToFit(50,50);
+        image1.setPaddingTop(30);
         String filePath = location+mouvement.getNumMouvement()+"_"+sdf.format(mouvement.getCreatedDate())+".pdf";
-        Document document = new Document(PageSize.A5, 5, 5, 5, 5);
+        Document document = new Document(PageSize.A5, 20, 20, 10, 10);
         try{
             PdfWriter.getInstance(document,new FileOutputStream(new File((filePath).toString())));
             document.open();
@@ -794,6 +817,7 @@ public class PercepteurLoginController {
                     BaseColor.GREEN));
             para1.setSpacingAfter(10);
             document.add(para1);
+            document.add(image1);
 
             Paragraph paragraph = new Paragraph("Ecole Conventionnelle Catholique. \n");
             paragraph.setSpacingAfter(10);
@@ -801,7 +825,7 @@ public class PercepteurLoginController {
             paragraph1.setSpacingAfter(10);
             Paragraph paragraph2 = new Paragraph("SECOPE  :   6001299 \n");
             paragraph2.setSpacingAfter(10);
-            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU 21/02/2005");
+            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU\n"+" 21/02/2005");
             paragraph.setAlignment(Paragraph.ALIGN_CENTER);
             paragraph1.setAlignment(Paragraph.ALIGN_LEFT);
             paragraph2.setAlignment(Paragraph.ALIGN_LEFT);
@@ -845,6 +869,9 @@ public class PercepteurLoginController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        mouvement.setFilePath("/upload-dir/"+mouvement.getNumMouvement()+"_"+sdf.format(mouvement.getCreatedDate())+".pdf");
+        mouvementRepository.save(mouvement);
         Printer printer = new Printer();
         printer.print(filePath,printerName);
 
@@ -886,13 +913,17 @@ public class PercepteurLoginController {
     }
 
     @GetMapping("/salaire/detail/print/{id}")
-    public String producePrinterSalaire(Model model, @PathVariable Long id, String printerName){
+    public String producePrinterSalaire(Model model, @PathVariable Long id, String printerName) throws IOException, BadElementException {
 
         Salaire salaire = salaireRepository.getOne(id);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         String filePath = location+salaire.getNumBuletin()+"_"+salaire.getDatePaiement()+".pdf";
 
-        Document document = new Document(PageSize.A5, 5, 5, 10, 10);
+        String image = location+"cirezi-picture.jpg";
+        Image image1 = Image.getInstance(image);
+        image1.scaleToFit(50,50);
+        image1.setPaddingTop(30);
+        Document document = new Document(PageSize.A5, 20, 20, 10, 10);
         try{
             PdfWriter.getInstance(document,new FileOutputStream(new File((filePath).toString())));
             document.open();
@@ -903,13 +934,14 @@ public class PercepteurLoginController {
             para1.setSpacingAfter(10);
             document.add(para1);
 
+            document.add(image1);
             Paragraph paragraph = new Paragraph("Ecole Conventionnelle Catholique. \n");
             paragraph.setSpacingAfter(10);
             Paragraph paragraph1 = new Paragraph("B.P.  2276      Bukavu\n");
             paragraph1.setSpacingAfter(10);
             Paragraph paragraph2 = new Paragraph("SECOPE  :   6001299 \n");
             paragraph2.setSpacingAfter(10);
-            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU 21/02/2005");
+            Paragraph paragraph3 = new Paragraph("ARRETE MINISTERIEL N MINEPSP/CABMIN/0614/2005 DU\n"+" 21/02/2005");
             paragraph.setAlignment(Paragraph.ALIGN_CENTER);
             paragraph1.setAlignment(Paragraph.ALIGN_LEFT);
             paragraph2.setAlignment(Paragraph.ALIGN_LEFT);
@@ -985,6 +1017,8 @@ public class PercepteurLoginController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        salaire.setFilePath("/upload-dir/"+salaire.getNumBuletin()+"_"+salaire.getDatePaiement()+".pdf");
+        salaireRepository.save(salaire);
 
         Printer printer = new Printer();
         printer.print(filePath,printerName);
