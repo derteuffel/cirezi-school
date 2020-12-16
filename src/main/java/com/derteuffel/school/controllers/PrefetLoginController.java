@@ -5,6 +5,7 @@ import com.derteuffel.school.enums.EPeriode;
 import com.derteuffel.school.enums.ERole;
 import com.derteuffel.school.enums.EType;
 import com.derteuffel.school.enums.EVisibilite;
+import com.derteuffel.school.exports.MouvementExport;
 import com.derteuffel.school.helpers.CompteRegistrationDto;
 import com.derteuffel.school.helpers.NoteHelper;
 import com.derteuffel.school.helpers.PlanningHelpers;
@@ -13,6 +14,7 @@ import com.derteuffel.school.repositories.*;
 import com.derteuffel.school.services.CompteService;
 import com.derteuffel.school.services.Mail;
 import com.derteuffel.school.services.Multipart;
+import com.itextpdf.text.BadElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -27,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -80,6 +83,10 @@ public class PrefetLoginController {
     private Multipart multipart;
     @Value("${file.upload-dir}")
     private String location ;
+
+    @Autowired
+    private MouvementExport mouvementExport;
+
     @GetMapping("/login")
     public String director() {
         return "prefet/login";
@@ -1403,18 +1410,74 @@ public class PrefetLoginController {
         return "prefet/classes/recapitulatifEleves";
     }
 
+    @GetMapping("/classes/recapitulatif/eleves/bulletins/lists/{id}")
+    public String produceAllBulletin(@PathVariable Long id)throws IOException, BadElementException {
+        Salle salle = salleRepository.getOne(id);
+
+        Collection<Eleve> eleves = eleveRepository.findAllBySalle_Id(salle.getId());
+
+        for (Eleve eleve : eleves){
+            mouvementExport.printBulletin(eleve.getId(),salle.getId());
+            System.out.println("Produce bulletin for "+eleve.getName()+" "+eleve.getPrenom());
+        }
+
+        return "redirect:/direction/classes/recapitulatif/eleves/lists/"+salle.getId();
+    }
+
 
 
     @GetMapping("/classes/recapitulatif/eleves/note/detail/{id}/{salleId}")
     public String recapitulatifDetail(@PathVariable Long id, @PathVariable Long salleId, Model model){
 
+        Float totalPremierePeriode = 0f;
+        Float totalTroisiemePeriode = 0f;
+        Float totalPremierExamen = 0f;
+        Float totalPremierSemestre = 0f;
+        Float totalDeuxiemeSemestre = 0f;
+        Float totalDeuxiemePeriode = 0f;
+        Float totalQuatriemePeriode = 0f;
+        Float totalDeuxiemeExamen = 0f;
+        Float totalGenerale = 0f;
+        int totalMaxPeriode = 0;
+        int totalMaxExamen = 0;
         Eleve eleve = eleveRepository.getOne(id);
         Salle salle = salleRepository.getOne(salleId);
         model.addAttribute("classe", salle);
         List<Note> notes = noteRepository.findAllByEleve_Id(eleve.getId());
+        for (Note note : notes){
+            totalPremierePeriode +=note.getPremierePeriode();
+            totalDeuxiemePeriode +=note.getDeuxiemePeriode();
+            totalTroisiemePeriode +=note.getTroisiemePeriode();
+            totalQuatriemePeriode +=note.getQuatriemePeriode();
+            totalDeuxiemeExamen +=note.getExameSecond();
+            totalPremierExamen +=note.getExamePremier();
+            totalPremierSemestre +=note.getTotalSemestrePremier();
+            totalDeuxiemeSemestre +=note.getTotalSemestreSecond();
+            totalMaxPeriode +=note.getMaxPeriode();
+            totalMaxExamen +=note.getExamen();
+            totalGenerale += note.getTotalGeneral();
+        }
+        model.addAttribute("totalPremierePeriode",totalPremierePeriode);
+        model.addAttribute("totalPremierSemestre",totalPremierSemestre);
+        model.addAttribute("totalDeuxiemeSemestre",totalDeuxiemeSemestre);
+        model.addAttribute("totalDeuxiemePeriode",totalDeuxiemePeriode);
+        model.addAttribute("totalDeuxiemeExamen",totalDeuxiemeExamen);
+        model.addAttribute("totalPremierExamen",totalPremierExamen);
+        model.addAttribute("totalQuatriemePeriode",totalQuatriemePeriode);
+        model.addAttribute("totalTroisiemePeriode",totalTroisiemePeriode);
+        model.addAttribute("totalMaxPeriode",totalMaxPeriode);
+        model.addAttribute("totalMaxExamen",totalMaxExamen);
+        model.addAttribute("totalGenerale",totalGenerale);
         model.addAttribute("lists", notes);
         model.addAttribute("eleve", eleve);
         return "prefet/classes/recapitulatifDetail";
+    }
+
+    @GetMapping("/classes/recapitulatif/eleves/note/print/{id}/{salleId}")
+    public String recapitulatifDetailPrint(@PathVariable Long id, @PathVariable Long salleId) throws IOException, BadElementException {
+
+        mouvementExport.printBulletin(id,salleId);
+        return "redirect:/prefet/classes/recapitulatif/eleves/note/detail/{id}/{salleId}";
     }
 
     @GetMapping("/classes/eleve/note/detail/{id}/{matiereId}")

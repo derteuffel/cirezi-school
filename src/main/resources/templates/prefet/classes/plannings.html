@@ -10,7 +10,7 @@
     <meta name="keywords" content="au theme template">
 
     <!-- Title Page-->
-    <title>Prefet</title>
+    <title>Prefecture</title>
 
     <!-- Fontfaces CSS-->
     <link th:href="@{/css/font-face.css}" rel="stylesheet" media="all">
@@ -72,6 +72,7 @@
                             <hr>
                             <h5 class="title-1"><span th:text="${'Programme du : '+hebdo.debut+' au : '+hebdo.fin}"></span></h5>
 
+                            <hr>
                             <div class="row"  >
                                     <table class="table table-bordered table-responsive" id="add-row">
                                         <thead>
@@ -97,7 +98,7 @@
                                                 <div class="modal-dialog modal-lg" role="document">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteModalLabel">Supprimer ce programme</h5>
+                                                            <h5 class="modal-title" id="deleteModalLabel">Supprimer programme</h5>
                                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
@@ -115,6 +116,20 @@
                                         </tr>
                                         </tbody>
                                     </table>
+                            </div>
+                            <hr>
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <a th:href="@{/prefet/hebdo/detail/}+${hebdo.id+'/'+classe.id}">Retour</a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a th:href="@{/prefet/hebdo/pdf/produce/}+${hebdo.id+'/'+classe.id}">Produire le pdf</a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <a th:href="${hebdo.filePath}">Voir le programme</a>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
